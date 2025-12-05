@@ -1,0 +1,6 @@
+@navsaar.api_HostAddress = http://localhost:5125
+
+GET {{navsaar.api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
