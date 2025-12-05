@@ -18,7 +18,7 @@
         public DateTime DraftGivenToBankOn { get; set; }
         public string Notes { get; set; }
     }
-    public class UploadLoanDocumentRequest
+    public class UploadDocumentRequest
     {
         public int BookingId { get; set; }
         public int DocumentTypeId { get; set; }    
@@ -27,11 +27,12 @@
     }
     public class  DocumentModel
     {
-        public int BookingId { get; set; }
-        public int DocumentTypeId { get; set; }
-        public int DocumentTypeName { get; set; }
-        public string Url { get; set; }
-        public DateTime UploadedOn { get; set; }
-        public string Notes { get; set; }
+        public int DocumentId { get; set; }
+        public int? BookingId { get; set; } 
+        public string? DocumentTypeName { get; set; }
+        public string? Url { get; set; }
+        public DateTime? UploadedOn { get; set; }
+        public string? Notes { get; set; }
+        public string? UploadedBy { get; set; }
     }
 }

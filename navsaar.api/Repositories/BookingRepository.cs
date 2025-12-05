@@ -132,24 +132,6 @@ namespace navsaar.api.Repositories
             _context.SaveChanges();
             return true;
         }
-
-        public bool UploadLoanDocument(UploadLoanDocumentRequest request)
-        {
-            Document document = new Document();
-            document.BookingId = request.BookingId;
-            document.DocumentTypeId = request.DocumentTypeId;
-            document.Notes = request.Notes;
-            document.UploadedOn = DateTime.Now;
-            document.UploadedBy = 1; //TODO: Change to logged in user
-            document.FilePath = "/Uploads/" + request.File.FileName;
-            _context.Documents.Add(document);
-            _context.SaveChanges();
-            return true;
-        }
-
-        public List<DocumentModel> GetAllUploadedLoanDocuments(int bookingId)
-        {
-            throw new NotImplementedException();
-        }
+         
     }
 }

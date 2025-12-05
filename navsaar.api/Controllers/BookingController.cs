@@ -27,7 +27,7 @@ namespace navsaar.api.Controllers
         }
         [HttpPost]
         [Route("Save")]
-        public void Save(CreateUpdateBookingModel model)
+        public void Save([FromForm] CreateUpdateBookingModel model)
         {
               _bookingRepository.Save(model);
         }
@@ -38,18 +38,7 @@ namespace navsaar.api.Controllers
             return _bookingRepository.UpdateInitialPayment(request);
         }
 
-        [HttpPost]
-        [Route("UploadLoanDocument")]
-        public bool UpdateDraftPerparationStatus(UploadLoanDocumentRequest request)
-        {
-            return _bookingRepository.UploadLoanDocument(request);
-        }
-        [HttpGet]
-        [Route("GetAllUploadedLoanDocuments")]
-        public List<DocumentModel> GetAllUploadedLoanDocuments(int bookingId)
-        {
-            return _bookingRepository.GetAllUploadedLoanDocuments(bookingId);
-        }
+        
 
         [HttpPost]
         [Route("UpdateLoginStatus")]
