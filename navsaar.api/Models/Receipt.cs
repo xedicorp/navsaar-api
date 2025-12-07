@@ -1,5 +1,8 @@
-﻿namespace navsaar.api.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace navsaar.api.Models
 {
+  [Table("tblReceipts")]
     public class Receipt
     {
         public int Id { get; set; }
