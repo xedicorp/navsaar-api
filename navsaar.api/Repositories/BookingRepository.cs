@@ -17,7 +17,7 @@ namespace navsaar.api.Repositories
         {
             var entity = new Models.Booking();
 
-            if(booking.File!=null)
+            if (booking.File != null)
             {
                 // Define the path where the file will be saved
                 var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "Uploads");
@@ -25,7 +25,7 @@ namespace navsaar.api.Repositories
                 {
                     Directory.CreateDirectory(uploadsFolder);
                 }
-                string fileName = Guid.NewGuid().ToString() + "_" + booking.File.FileName;  
+                string fileName = Guid.NewGuid().ToString() + "_" + booking.File.FileName;
                 var filePath = Path.Combine(uploadsFolder, fileName);
 
                 using (var stream = new FileStream(filePath, FileMode.Create))
@@ -54,7 +54,10 @@ namespace navsaar.api.Repositories
             entity.LeaderName = booking.LeaderName;
             entity.WorkflowTypeId = 1; // Booking Workflow
 
-            _context.Bookings.Add(entity);
+            if (booking.Id == 0)
+            {
+                _context.Bookings.Add(entity);
+            }
             _context.SaveChanges();
         }
         public List<BookingInfo> List()
@@ -132,6 +135,20 @@ namespace navsaar.api.Repositories
             _context.SaveChanges();
             return true;
         }
-         
+        public bool UpdateLoanSanctionStatus(UpdateLoanSanctionStatusRequest request)
+        {
+            //Stage5
+            var entity = _context.Bookings.Find(request.BookingId);
+            if (entity == null)
+            {
+                return false;
+            }
+            entity.IsLoanSanctioned = request.IsLoanSanctioned;
+            entity.LoanSanctionDate = request.LoanSanctionDate;  
+            entity.LoanSanctionNotes = request.Notes;
+            entity.CurrentStage = 5;
+            _context.SaveChanges();
+            return true;
+        }
     }
 }

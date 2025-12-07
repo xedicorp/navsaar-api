@@ -13,6 +13,10 @@ namespace navsaar.api.Repositories
 
         bool UpdateLoginStatus(UpdateLoginStatusRequest request); //Stage 4
         bool UpdateDraftPerparationStatus(DraftPerparationStatusRequest request); //Stage 5
+
+        bool UpdateLoanSanctionStatus(UpdateLoanSanctionStatusRequest request); //Stage 5
+
         
+
     }
 }

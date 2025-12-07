@@ -40,5 +40,12 @@ namespace navsaar.api.Models
         public bool? IsDraftGivenToBank { get; set; }
         public DateTime? DraftGivenToBankOn { get; set; }
         public string? Notes_4 { get; set; }
+
+        //stage5
+        public bool? IsLoanSanctioned { get; set; }
+        public DateOnly? LoanSanctionDate { get; set; }
+        public string? LoanSanctionNotes { get; set; }
+
+        
     }
 }

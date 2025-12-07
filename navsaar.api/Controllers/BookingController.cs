@@ -52,5 +52,11 @@ namespace navsaar.api.Controllers
         {
             return _bookingRepository.UpdateDraftPerparationStatus(request);
         }
+        [HttpPost]
+        [Route("UpdateLoanSanctionStatus")]
+        public bool UpdateLoanSanctionStatus(UpdateLoanSanctionStatusRequest request)
+        {
+            return _bookingRepository.UpdateLoanSanctionStatus(request);
+        }
     }
 }

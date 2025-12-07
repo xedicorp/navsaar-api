@@ -17,6 +17,7 @@ namespace navsaar.api.Infrastructure
         public DbSet<DocumentType> DocumentTypes { get; set; }
         public DbSet<Role> Roles { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<Receipt> Receipts { get; set; }
 
     }
 }
