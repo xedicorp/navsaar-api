@@ -43,9 +43,42 @@ namespace navsaar.api.Models
 
         //stage5
         public bool? IsLoanSanctioned { get; set; }
-        public DateOnly? LoanSanctionDate { get; set; }
+        public DateTime? LoanSanctionDate { get; set; }
         public string? LoanSanctionNotes { get; set; }
 
-        
+        //Stateg6
+        public bool? IsCompletedOnAllSides { get; set; }
+        public DateTime? CompletionDate { get; set; }
+        public string? MarkFileCheckNotes { get; set; }
+
+        public string? OriginalATTPath { get; set; }
+        public string? OriginalATTNotes { get; set; }
+
+        public bool? IsDokitSigned { get; set; }
+        public DateTime? DokitSignDate { get; set; }
+        public bool? IsJDAFileSigned { get; set; }
+        public DateTime? JDAFileSignDate { get; set; }
+        public string? DokitSigingNotes { get; set; }
+
+        public string? BankDDPath { get; set; }
+        public string? DDNo { get; set; }
+        public decimal? DDAmount { get; set; }
+        public string? DDNotes { get; set; }
+        //JDA Patta
+        public bool? IsJDAPattaApplied { get; set; }
+        public DateTime? JDAPattaAppliedOn { get; set; }
+        public bool? IsJDAPattaRegistered { get; set; }
+        public DateTime? JDAPattaRegisteredOn { get; set; }
+        public bool? IsJDAPattaGivenToBank { get; set; }
+        public DateTime? JDAPattaGivenToBankOn { get; set; }
+        public bool? IsDDReceivedFromBank { get; set; }
+        public DateTime? DDReceivedFromBankOn { get; set; }
+        public string? JDAPattaNotes { get; set; }
+
+
+        public bool? IsDDSubmittedToBank { get; set; }
+        public DateTime? DDClearedOn { get; set; }
+        public string? DDUpdateNotes { get; set; }
+
     }
 }

@@ -13,7 +13,7 @@ namespace navsaar.api.Repositories
         {
             _context = context;
         }
-        public async void Save(CreateUpdateBookingModel booking)
+        public async Task Save(CreateUpdateBookingModel booking)
         {
             var entity = new Models.Booking();
 
@@ -30,7 +30,7 @@ namespace navsaar.api.Repositories
 
                 using (var stream = new FileStream(filePath, FileMode.Create))
                 {
-                    await booking.File.CopyToAsync(stream);
+                      booking.File.CopyTo(stream);
                 }
             }
 
@@ -147,6 +147,137 @@ namespace navsaar.api.Repositories
             entity.LoanSanctionDate = request.LoanSanctionDate;  
             entity.LoanSanctionNotes = request.Notes;
             entity.CurrentStage = 5;
+            _context.SaveChanges();
+            return true;
+        }
+        public bool UpdateMarkFileCheckStatus(UpdateMarkFileCheckStatusRequest request)
+        {
+            //Stage5
+            var entity = _context.Bookings.Find(request.BookingId);
+            if (entity == null)
+            {
+                return false;
+            }
+            entity.IsCompletedOnAllSides = request.IsCompletedOnAllSides;
+            entity.CompletionDate = request.CompletionDate;
+            entity.MarkFileCheckNotes = request.Notes;
+            entity.CurrentStage = 6;
+            _context.SaveChanges();
+            return true;
+        }
+        public async Task UploadOriginalATT(UploadOriginalATTRequest request)
+        {
+            var entity = new Models.Booking();
+
+            if (request.File != null)
+            {
+                // Define the path where the file will be saved
+                var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "Uploads");
+                if (!Directory.Exists(uploadsFolder))
+                {
+                    Directory.CreateDirectory(uploadsFolder);
+                }
+                string fileName = Guid.NewGuid().ToString() + "_" + request.File.FileName;
+                var filePath = Path.Combine(uploadsFolder, fileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    request.File.CopyTo(stream);
+                }
+            }
+
+            if (request.BookingId != 0)
+            {
+                entity = _context.Bookings.Find(request.BookingId);
+                entity.CurrentStage = 7;
+            }
+
+            entity.OriginalATTPath = request.File != null ? entity.ChequeFilePath : entity.ChequeFilePath;
+            entity.OriginalATTNotes=request.Notes;
+       
+            _context.SaveChanges();
+        }
+
+        public bool UpdateDokitSigningStatus(UpdateDokitSigningStatusRequest request)
+        {
+            var entity = _context.Bookings.Find(request.BookingId);
+            if (entity == null)
+            {
+                return false;
+            }
+            entity.IsDokitSigned = request.IsDokitSigned;
+            entity.DokitSignDate = request.DokitSignDate;
+            entity.IsJDAFileSigned = request.IsJDAFileSigned;
+            entity.JDAFileSignDate = request.JDAFileSignDate;
+            entity.DokitSigingNotes = request.Notes;
+            entity.CurrentStage = 8;
+            _context.SaveChanges();
+            return true;
+        }
+        public async Task UploadBankDD(UploadBankDDRequest request)
+        {
+            var entity = new Models.Booking();
+
+            if (request.File != null)
+            {
+                // Define the path where the file will be saved
+                var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "Uploads");
+                if (!Directory.Exists(uploadsFolder))
+                {
+                    Directory.CreateDirectory(uploadsFolder);
+                }
+                string fileName = Guid.NewGuid().ToString() + "_" + request.File.FileName;
+                var filePath = Path.Combine(uploadsFolder, fileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    request.File.CopyTo(stream);
+                }
+            }
+
+            if (request.BookingId != 0)
+            {
+                entity = _context.Bookings.Find(request.BookingId);
+                entity.CurrentStage = 9;
+            }
+
+            entity.BankDDPath = request.File != null ? entity.BankDDPath : entity.BankDDPath;
+            entity.DDAmount = request.DDAmount;
+            entity.DDNo = request.DDNo;
+            entity.DDNotes = request.DDNotes;
+            _context.SaveChanges();
+        }
+        public bool UpdateJDAPattaStatus(UpdateJDAPattaStatusRequest request)
+        {
+            var entity = _context.Bookings.Find(request.BookingId);
+            if (entity == null)
+            {
+                return false;
+            }
+            entity.IsJDAPattaApplied = request.IsJDAPattaApplied;
+            entity.JDAPattaAppliedOn = request.JDAPattaAppliedOn;
+            entity.IsJDAPattaRegistered = request.IsJDAPattaRegistered;
+            entity.JDAPattaRegisteredOn = request.JDAPattaRegisteredOn;
+            entity.IsJDAPattaGivenToBank = request.IsJDAPattaGivenToBank;
+            entity.JDAPattaGivenToBankOn = request.JDAPattaGivenToBankOn;
+            entity.IsDDReceivedFromBank = request.IsDDReceivedFromBank;
+            entity.DDReceivedFromBankOn = request.DDReceivedFromBankOn;
+            entity.JDAPattaNotes = request.Notes;
+            entity.CurrentStage = 8;
+            _context.SaveChanges();
+            return true;
+        }
+        public bool UpdateBankDDStatus(UpdateBankDDStatusRequest request)
+        {
+            var entity = _context.Bookings.Find(request.BookingId);
+            if (entity == null)
+            {
+                return false;
+            }
+            entity.IsDDSubmittedToBank = request.IsDDSubmittedToBank;
+            entity.DDClearedOn = request.DDClearedOn;            
+            entity.DDUpdateNotes = request.Notes;
+            entity.CurrentStage = 8;
             _context.SaveChanges();
             return true;
         }

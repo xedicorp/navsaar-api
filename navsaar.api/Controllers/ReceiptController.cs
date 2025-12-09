@@ -27,7 +27,7 @@ namespace navsaar.api.Controllers
         }
         [HttpPost]
         [Route("Save")]
-        public bool Save([FromForm] CreateUpdateReceiptModel model)
+        public bool Save(  CreateUpdateReceiptModel model)
         {
             return _receiptRepository.Save(model);
         } 

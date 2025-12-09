@@ -58,5 +58,41 @@ namespace navsaar.api.Controllers
         {
             return _bookingRepository.UpdateLoanSanctionStatus(request);
         }
+        [HttpPost]
+        [Route("UpdateMarkFileCheckStatus")]
+        public bool UpdateMarkFileCheckStatus(UpdateMarkFileCheckStatusRequest request)
+        {
+            return _bookingRepository.UpdateMarkFileCheckStatus(request);
+        }
+        [HttpPost]
+        [Route("UploadOriginalATTRequest")]
+        public void UploadOriginalATT([FromForm] UploadOriginalATTRequest request)
+        {
+            _bookingRepository.UploadOriginalATT(request);
+        }
+        [HttpPost]
+        [Route("UpdateDokitSigningStatus")]
+        public void UpdateDokitSigningStatus(  UpdateDokitSigningStatusRequest request)
+        {
+            _bookingRepository.UpdateDokitSigningStatus(request);
+        }
+        [HttpPost]
+        [Route("UploadBankDD")]
+        public void UploadBankDD([FromForm] UploadBankDDRequest request)
+        {
+            _bookingRepository.UploadBankDD(request);
+        }
+        [HttpPost]
+        [Route("UpdateJDAPattaStatus")]
+        public void UpdateJDAPattaStatus([FromForm] UpdateJDAPattaStatusRequest request)
+        {
+            _bookingRepository.UpdateJDAPattaStatus(request);
+        }
+        [HttpPost]
+        [Route("UpdateBankDDStatus")]
+        public void UpdateBankDDStatus([FromForm] UpdateBankDDStatusRequest request)
+        {
+            _bookingRepository.UpdateBankDDStatus(request);
+        }
     }
 }

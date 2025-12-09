@@ -18,6 +18,8 @@ namespace navsaar.api.Infrastructure
         public DbSet<Role> Roles { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Receipt> Receipts { get; set; }
+        public DbSet<Plot> Plots { get; set; }
+        public DbSet<PlotType> PlotTypes { get; set; }
 
     }
 }

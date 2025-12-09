@@ -6,14 +6,14 @@ namespace navsaar.api.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class TownshipController : ControllerBase
+    public class PlotController : ControllerBase
     {
-        ITownshipRepository _repository;
+        IPlotRepository _repository;
 
         private readonly ILogger<WeatherForecastController> _logger;
 
-        public TownshipController(ILogger<WeatherForecastController> logger,
-               ITownshipRepository repository)
+        public PlotController(ILogger<WeatherForecastController> logger,
+               IPlotRepository repository)
         {
             _logger = logger;
             _repository = repository;
@@ -21,9 +21,9 @@ namespace navsaar.api.Controllers
 
         [HttpGet]
         [Route("List")]
-        public IEnumerable<TownshipInfo> List()
+        public IEnumerable<PlotInfo> List(int townshipId)
         {
-            return _repository.List();
+            return _repository.List(townshipId);
         }
         
     }
