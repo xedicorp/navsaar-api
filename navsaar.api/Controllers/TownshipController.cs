@@ -25,6 +25,11 @@ namespace navsaar.api.Controllers
         {
             return _repository.List();
         }
-        
+        [HttpPost]
+        [Route("Save")]
+        public bool Save( TownshipCreateUpdateRequest request)
+        {
+          return  _repository.Save(request);
+        }
     }
 }

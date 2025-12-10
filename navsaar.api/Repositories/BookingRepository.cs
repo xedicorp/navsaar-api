@@ -1,5 +1,6 @@
 ﻿
 
+using Azure.Core;
 using navsaar.api.Infrastructure;
 using navsaar.api.Models;
 using navsaar.api.ViewModels;
@@ -77,7 +78,59 @@ namespace navsaar.api.Repositories
                         AssociateName = p.AssociateName,
                         AssociateReraNo = p.AssociateReraNo,
                         AssociateContactNo = p.AssociateContactNo,
-                        LeaderName = p.LeaderName
+                        LeaderName = p.LeaderName,
+                         DDClearedOn = p.DDClearedOn,
+                        DraftPreparedOn = p.DraftPreparedOn,
+                        TownshipId = p.TownshipId,
+                        ChequeFilePath = p.ChequeFilePath,
+                        IsDDSubmittedToBank = p.IsDDSubmittedToBank,
+                        WorkflowTypeId = p.WorkflowTypeId,
+                         DDReceivedFromBankOn = p.DDReceivedFromBankOn,
+                        CurrentStage = p.CurrentStage,
+                        IsDDReceivedFromBank = p.IsDDReceivedFromBank,
+                        PaymentMode = p.PaymentMode,
+                        JDAPattaGivenToBankOn = p.JDAPattaGivenToBankOn,
+                         IsJDAPattaGivenToBank = p.IsJDAPattaGivenToBank,
+                          Amount_2 = p.Amount_2,    
+                           BankDDPath = p.BankDDPath,
+                        TransNo = p.TransNo,
+                         BankName = p.BankName,
+                        BranchName = p.BranchName,
+                        CompletionDate = p.CompletionDate,  
+                         DateOfLogin = p.DateOfLogin,
+                          DateOfTransfer = p.DateOfTransfer ,
+                        DDAmount = p.DDAmount,  
+                         DDNo = p.DDNo ,
+                          DDNotes = p.DDNotes,
+                           DDUpdateNotes= p.DDUpdateNotes,
+                            DokitSigingNotes = p.DokitSigingNotes,
+                             DokitSignDate = p.DokitSignDate,
+                        IsDokitSigned = p.IsDokitSigned,
+                        IsJDAFileSigned = p.IsJDAFileSigned,
+                        JDAFileSignDate = p.JDAFileSignDate,
+                        DraftGivenToBankOn = p.DraftGivenToBankOn,
+                         IsCompletedOnAllSides = p.IsCompletedOnAllSides,
+                        IsDraftGivenToBank = p.IsDraftGivenToBank,
+                        IsDraftPrepared = p.IsDraftPrepared,
+                        IsLoanSanctioned = p.IsLoanSanctioned,
+                        LoanSanctionDate = p.LoanSanctionDate,
+                        LoanSanctionNotes = p.LoanSanctionNotes,
+                        MarkFileCheckNotes = p.MarkFileCheckNotes,
+                        OriginalATTPath = p.OriginalATTPath,
+                        OriginalATTNotes = p.OriginalATTNotes,
+                        LoginRefNo = p.LoginRefNo,
+                        Notes_3 = p.Notes_3,
+                        Notes_4 = p.Notes_4,
+                        IsPaymentVerified = p.IsPaymentVerified,
+                        Notes_2 = p.Notes_2,
+                        IsJDAPattaApplied = p.IsJDAPattaApplied,
+                         IsJDAPattaRegistered = p.IsJDAPattaRegistered,
+                          JDAPattaAppliedOn= p.JDAPattaAppliedOn,
+                           JDAPattaNotes= p.JDAPattaNotes,
+                        JDAPattaRegisteredOn = p.JDAPattaRegisteredOn 
+                         
+
+
                     }).ToList();
 
         }
@@ -280,6 +333,256 @@ namespace navsaar.api.Repositories
             entity.CurrentStage = 8;
             _context.SaveChanges();
             return true;
+        }
+
+        public List<BookingProgressModel> GetBookingProgress(int bookingId)
+        {
+            List<BookingProgressModel> progressModels= new List<BookingProgressModel>();
+            var entity = _context.Bookings.Find(bookingId);
+            //1. Booking Created
+            progressModels.Add(new BookingProgressModel
+            {
+               ProgressDate = entity.BookingDate,
+                ProgressDetails = "Booking Created"
+            });
+
+            //2. Booking Confirmed
+            if (entity.DateOfTransfer != null)
+            {
+                progressModels.Add(new BookingProgressModel
+                {
+                    ProgressDate = entity.DateOfTransfer.GetValueOrDefault(),
+                    ProgressDetails = "Booking Confirmed",
+                    DaysFromBooking = entity. DateOfTransfer.GetValueOrDefault().Subtract(entity.BookingDate).Days
+                });
+            }
+
+            //3. Loan Document Upload
+            var docs = _context.Documents.FirstOrDefault(d => d.BookingId == bookingId && d.DocumentTypeId == 1);
+            if (docs != null)
+            {
+                progressModels.Add(new BookingProgressModel
+                {
+                    ProgressDate = docs.UploadedOn,
+                    ProgressDetails = "Loan Document Uploaded",
+                    DaysFromBooking =  docs.UploadedOn.Subtract(entity.BookingDate).Days
+                });
+            }
+            //4. Agreement Draft Created
+            if (entity.IsDraftPrepared.GetValueOrDefault())
+            {
+               
+                progressModels.Add(new BookingProgressModel
+                {
+                    ProgressDate = entity.DraftPreparedOn.GetValueOrDefault(),
+                    ProgressDetails = "Draft Prepared",
+                    DaysFromBooking = entity.DraftPreparedOn.GetValueOrDefault().Subtract(entity.BookingDate).Days
+                });
+            }
+
+            //4.1. Agreement Draft Given to Bank
+            if (entity.IsDraftGivenToBank.GetValueOrDefault())
+            {
+                progressModels.Add(new BookingProgressModel
+                {
+                    ProgressDate = entity.DraftGivenToBankOn.GetValueOrDefault(),
+                    ProgressDetails = "Draft Given To Bank",
+                    DaysFromBooking = entity.DraftGivenToBankOn.GetValueOrDefault().Subtract(entity.BookingDate).Days
+                });
+            }
+
+            //5. File Login
+            if (entity.DateOfLogin!=null)
+            {
+                progressModels.Add(new BookingProgressModel
+                {
+                    ProgressDate = entity.DateOfLogin.GetValueOrDefault(),
+                    ProgressDetails = "File Login",
+                    DaysFromBooking = entity.DateOfLogin.GetValueOrDefault().Subtract(entity.BookingDate).Days
+                });
+            }
+            //6. Loan Sanction
+            if (entity.IsLoanSanctioned.GetValueOrDefault() )
+            {
+                progressModels.Add(new BookingProgressModel
+                {
+                    ProgressDate = entity.LoanSanctionDate.GetValueOrDefault(),
+                    ProgressDetails = "Loan Sanctioned",
+                    DaysFromBooking = entity.LoanSanctionDate.GetValueOrDefault().Subtract(entity.BookingDate).Days
+                });
+            }
+            //7. Mark File Check & Completed
+            if (entity.IsCompletedOnAllSides.GetValueOrDefault())
+            {
+                progressModels.Add(new BookingProgressModel
+                {
+                    ProgressDate = entity.CompletionDate.GetValueOrDefault(),
+                    ProgressDetails = "File mark completed",
+                    DaysFromBooking = entity.CompletionDate.GetValueOrDefault().Subtract(entity.BookingDate).Days
+                });
+            }
+            //8. Original ATT 
+            //if (entity.IsCompletedOnAllSides.GetValueOrDefault())
+            //{
+            //    progressModels.Add(new BookingProgressModel
+            //    {
+            //        ProgressDate = entity.CompletionDate.GetValueOrDefault(),
+            //        ProgressDetails = "File mark completed",
+            //        DaysFromBooking = entity.CompletionDate.GetValueOrDefault().Subtract(entity.BookingDate).Days
+            //    });
+            //}
+            //9. Dokit Sign
+            if (entity.IsDokitSigned.GetValueOrDefault())
+            {
+                progressModels.Add(new BookingProgressModel
+                {
+                    ProgressDate = entity.DokitSignDate.GetValueOrDefault(),
+                    ProgressDetails = "Dokit Signed",
+                    DaysFromBooking = entity.DokitSignDate.GetValueOrDefault().Subtract(entity.BookingDate).Days
+                });
+            }
+            //9.1 JDA File Sign
+            if (entity.IsJDAFileSigned.GetValueOrDefault())
+            {
+                progressModels.Add(new BookingProgressModel
+                {
+                    ProgressDate = entity.JDAFileSignDate.GetValueOrDefault(),
+                    ProgressDetails = "JDA File Signed",
+                    DaysFromBooking = entity.JDAFileSignDate.GetValueOrDefault().Subtract(entity.BookingDate).Days
+                });
+            }
+            //10 JDA Patta Applied
+            if (entity.IsJDAPattaApplied.GetValueOrDefault())
+            {
+                progressModels.Add(new BookingProgressModel
+                {
+                    ProgressDate = entity.JDAPattaAppliedOn.GetValueOrDefault(),
+                    ProgressDetails = "JDA Patta Applied",
+                    DaysFromBooking = entity.JDAPattaAppliedOn.GetValueOrDefault().Subtract(entity.BookingDate).Days
+                });
+            }
+            //10.1 JDA Patta Registered
+            if (entity.IsJDAPattaRegistered.GetValueOrDefault())
+            {
+                progressModels.Add(new BookingProgressModel
+                {
+                    ProgressDate = entity.JDAPattaRegisteredOn.GetValueOrDefault(),
+                    ProgressDetails = "JDA Patta Registered",
+                    DaysFromBooking = entity.JDAPattaRegisteredOn.GetValueOrDefault().Subtract(entity.BookingDate).Days
+                });
+            }
+            //10.2 JDA Patta Given to Bank
+            if (entity.IsJDAPattaGivenToBank.GetValueOrDefault())
+            {
+                progressModels.Add(new BookingProgressModel
+                {
+                    ProgressDate = entity.JDAPattaGivenToBankOn.GetValueOrDefault(),
+                    ProgressDetails = "JDA Patta Given to Bank",
+                    DaysFromBooking = entity.JDAPattaGivenToBankOn.GetValueOrDefault().Subtract(entity.BookingDate).Days
+                });
+            }
+            //10.3  DD Received from Bank
+            if (entity.IsDDReceivedFromBank.GetValueOrDefault())
+            {
+                progressModels.Add(new BookingProgressModel
+                {
+                    ProgressDate = entity.DDReceivedFromBankOn.GetValueOrDefault(),
+                    ProgressDetails = "DD Received from Bank",
+                    DaysFromBooking = entity.DDReceivedFromBankOn.GetValueOrDefault().Subtract(entity.BookingDate).Days
+                });
+            }
+            ////11  DD Received from Bank
+            //if (entity.IsDDSubmittedToBank.GetValueOrDefault())
+            //{
+            //    progressModels.Add(new BookingProgressModel
+            //    {
+            //        ProgressDate = entity.DDSubmittedOn.GetValueOrDefault(),
+            //        ProgressDetails = "DD Received from Bank",
+            //        DaysFromBooking = entity.DDReceivedFromBankOn.GetValueOrDefault().Subtract(entity.BookingDate).Days
+            //    });
+            //}
+            //11.1  DD clreaed On
+            if (entity.IsDDSubmittedToBank.GetValueOrDefault())
+            {
+                progressModels.Add(new BookingProgressModel
+                {
+                    ProgressDate = entity.DDClearedOn.GetValueOrDefault(),
+                    ProgressDetails = "DD Cleared On",
+                    DaysFromBooking = entity.DDClearedOn.GetValueOrDefault().Subtract(entity.BookingDate).Days
+                });
+            }
+            return progressModels;
+        }
+
+        public BookingInfo GetById(int bookingId)
+        {
+            return (from p in _context.Bookings
+                    join t in _context.Townships on p.TownshipId equals t.Id
+                    where p.Id==bookingId
+                    select new BookingInfo
+                    {
+                        Id = p.Id,
+                        TownshipName = t.Name,
+                        PlotNo = p.PlotNo,
+                        PlotSize = p.PlotSize,
+                        BookingDate = p.BookingDate,
+                        ClientName = p.ClientName,
+                        ClientEmail = p.ClientEmail,
+                        ContactNo = p.ClientContactNo,
+                        AssociateName = p.AssociateName,
+                        AssociateReraNo = p.AssociateReraNo,
+                        AssociateContactNo = p.AssociateContactNo,
+                        LeaderName = p.LeaderName,
+                        DDClearedOn = p.DDClearedOn,
+                        DraftPreparedOn = p.DraftPreparedOn,
+                        TownshipId = p.TownshipId,
+                        ChequeFilePath = p.ChequeFilePath,
+                        IsDDSubmittedToBank = p.IsDDSubmittedToBank,
+                        WorkflowTypeId = p.WorkflowTypeId,
+                        DDReceivedFromBankOn = p.DDReceivedFromBankOn,
+                        CurrentStage = p.CurrentStage,
+                        IsDDReceivedFromBank = p.IsDDReceivedFromBank,
+                        PaymentMode = p.PaymentMode,
+                        JDAPattaGivenToBankOn = p.JDAPattaGivenToBankOn,
+                        IsJDAPattaGivenToBank = p.IsJDAPattaGivenToBank,
+                        Amount_2 = p.Amount_2,
+                        BankDDPath = p.BankDDPath,
+                        TransNo = p.TransNo,
+                        BankName = p.BankName,
+                        BranchName = p.BranchName,
+                        CompletionDate = p.CompletionDate,
+                        DateOfLogin = p.DateOfLogin,
+                        DateOfTransfer = p.DateOfTransfer,
+                        DDAmount = p.DDAmount,
+                        DDNo = p.DDNo,
+                        DDNotes = p.DDNotes,
+                        DDUpdateNotes = p.DDUpdateNotes,
+                        DokitSigingNotes = p.DokitSigingNotes,
+                        DokitSignDate = p.DokitSignDate,
+                        IsDokitSigned = p.IsDokitSigned,
+                        IsJDAFileSigned = p.IsJDAFileSigned,
+                        JDAFileSignDate = p.JDAFileSignDate,
+                        DraftGivenToBankOn = p.DraftGivenToBankOn,
+                        IsCompletedOnAllSides = p.IsCompletedOnAllSides,
+                        IsDraftGivenToBank = p.IsDraftGivenToBank,
+                        IsDraftPrepared = p.IsDraftPrepared,
+                        IsLoanSanctioned = p.IsLoanSanctioned,
+                        LoanSanctionDate = p.LoanSanctionDate,
+                        LoanSanctionNotes = p.LoanSanctionNotes,
+                        MarkFileCheckNotes = p.MarkFileCheckNotes,
+                        OriginalATTPath = p.OriginalATTPath,
+                        OriginalATTNotes = p.OriginalATTNotes,
+                        LoginRefNo = p.LoginRefNo,
+                        Notes_3 = p.Notes_3,
+                        Notes_4 = p.Notes_4,
+                        IsPaymentVerified = p.IsPaymentVerified,
+                        Notes_2 = p.Notes_2,
+                        IsJDAPattaApplied = p.IsJDAPattaApplied,
+                        IsJDAPattaRegistered = p.IsJDAPattaRegistered,
+                        JDAPattaAppliedOn = p.JDAPattaAppliedOn,
+                        JDAPattaNotes = p.JDAPattaNotes,
+                        JDAPattaRegisteredOn = p.JDAPattaRegisteredOn 
+                    }).FirstOrDefault();
         }
     }
 }

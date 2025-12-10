@@ -25,12 +25,25 @@ namespace navsaar.api.Controllers
         {
             return _bookingRepository.List();
         }
+        [HttpGet]
+        [Route("GetById")]
+        public  BookingInfo GetById(int bookingId)
+        {
+            return _bookingRepository.GetById(bookingId);
+        }
         [HttpPost]
         [Route("Save")]
         public void Save([FromForm] CreateUpdateBookingModel model)
         {
               _bookingRepository.Save(model);
         }
+        [HttpGet]
+        [Route("GetBookingProgress")]
+        public IEnumerable<BookingProgressModel> List(int bookingId)
+        {
+            return _bookingRepository.GetBookingProgress(bookingId);
+        }
+
         [HttpPost]
         [Route("UpdateInitialPayment")]
         public bool UpdateInitialPayment(UpdateInitialPaymentRequest request)
@@ -84,13 +97,13 @@ namespace navsaar.api.Controllers
         }
         [HttpPost]
         [Route("UpdateJDAPattaStatus")]
-        public void UpdateJDAPattaStatus([FromForm] UpdateJDAPattaStatusRequest request)
+        public void UpdateJDAPattaStatus(  UpdateJDAPattaStatusRequest request)
         {
             _bookingRepository.UpdateJDAPattaStatus(request);
         }
         [HttpPost]
         [Route("UpdateBankDDStatus")]
-        public void UpdateBankDDStatus([FromForm] UpdateBankDDStatusRequest request)
+        public void UpdateBankDDStatus( UpdateBankDDStatusRequest request)
         {
             _bookingRepository.UpdateBankDDStatus(request);
         }

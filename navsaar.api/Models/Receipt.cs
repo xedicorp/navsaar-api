@@ -9,7 +9,7 @@ namespace navsaar.api.Models
         public int BookingId { get; set; }
         public decimal Amount { get; set; }
         public DateTime ReceiptDate { get; set; }
-        public string ReceiptMethod { get; set; }
+        public int ReceiptMethod { get; set; }
         public string TransactionId { get; set; }
         public string? BankName { get; set; }
         public string? ChequeNo { get; set; }

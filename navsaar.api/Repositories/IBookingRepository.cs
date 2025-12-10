@@ -7,6 +7,8 @@ namespace navsaar.api.Repositories
     public interface IBookingRepository
     {
         List<BookingInfo> List();
+         BookingInfo  GetById(int bookingId);
+        List<BookingProgressModel> GetBookingProgress(int bookingId);
         Task Save(CreateUpdateBookingModel booking);
         bool UpdateInitialPayment(UpdateInitialPaymentRequest request); //Stage2
        
