@@ -10,14 +10,16 @@ namespace navsaar.api.Controllers
     public class MasterController : ControllerBase
     {
         IDocumentTypeRepository _repository;
+        IMasterRepository _masterRepository;
 
         private readonly ILogger<WeatherForecastController> _logger;
 
         public MasterController(ILogger<WeatherForecastController> logger,
-               IDocumentTypeRepository repository)
+               IDocumentTypeRepository repository, IMasterRepository masterRepository)
         {
             _logger = logger;
             _repository = repository;
+            _masterRepository = masterRepository;
         }
 
         [HttpGet]
@@ -25,6 +27,12 @@ namespace navsaar.api.Controllers
         public IEnumerable<DocumentType> List()
         {
             return _repository.List();
+        }
+        [HttpGet]
+        [Route("PlotTypes")]
+        public IEnumerable<PlotType> PlotTypeList()
+        {
+            return _masterRepository.PlotTypeList();
         }
     }
 }
