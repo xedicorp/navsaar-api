@@ -2,7 +2,9 @@
 
 using Microsoft.EntityFrameworkCore;
 using navsaar.api.Infrastructure;
+using navsaar.api.Models;
 using navsaar.api.ViewModels;
+using navsaar.api.ViewModels.Identity;
 
 namespace navsaar.api.Repositories
 {
@@ -27,26 +29,51 @@ namespace navsaar.api.Repositories
                      }).ToList();
 
         }
+        public LoginResponse Login(LoginRequest request)
+        {
+            List<string> q = new List<string>();
+            bool isValid = _context.Users.Any(p => p.UserName == request.UserName && p.Password == request.Password && p.IsActive);
+            if (!isValid)
+            {
+                return new LoginResponse
+                {
+                    IsSuccessful = false,
+                    User = null,
+                    Permissions = null
+                };
+            }
+            var usr = _context.Users.FirstOrDefault(p => p.UserName == request.UserName 
+            && p.Password == request.Password && p.IsActive);
+          
+            var userInfo = new UserInfo
+            {
+                Id = usr.Id,
+                UserName = usr.UserName,
+                IsActive = usr.IsActive,
+                RoleId = usr.RoleId,
+                 RoleName = _context.Roles.FirstOrDefault(r => r.Id == usr.RoleId)?.Name
+            };
+            if (usr.RoleId == 1)
+            {
+                _context.Permissions.Select(p => p.Name).ToList().ForEach(p => q.Add(p));
+            }
+            else
+            {
+                q = (from u in _context.Users
+                     join r in _context.RolePermissions on u.RoleId equals r.RoleId
+                     join p in _context.Permissions on r.PermissionId equals p.Id
+                     where u.Id == usr.Id
+                     select p.Name
+                       ).ToList();
+            }
 
-        //public bool Save(TownshipCreateUpdateRequest request)
-        //{
-        //    var entity = new Models.Township();
-        //    entity.Name = request.Name;
-        //    if (request.Id>0)
-        //    {
-        //        entity = _context.Townships.Find(request.Id);
-        //        if (entity == null)
-        //        {
-        //            return false;
-        //        }
-        //        entity.Name  = request.Name;
-        //    }
-        //    if (request.Id == 0)
-        //        _context.Townships.Add(entity);
+            return new LoginResponse
+            {
+                IsSuccessful = true,
+                User = userInfo,
+                Permissions = q.ToList()
+            };
 
-        //    _context.SaveChanges();
-        //    return true;
-
-        //}
+        } 
     }
 }

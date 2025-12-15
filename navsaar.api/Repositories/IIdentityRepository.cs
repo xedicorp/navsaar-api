@@ -1,12 +1,13 @@
 ﻿
 
 using navsaar.api.ViewModels;
+using navsaar.api.ViewModels.Identity;
 
 namespace navsaar.api.Repositories
 {
     public interface IIdentityRepository
     {
         List<UserInfo> List();
-      //  bool Save(TownshipCreateUpdateRequest request);
+        LoginResponse Login(LoginRequest request);
     }
 }

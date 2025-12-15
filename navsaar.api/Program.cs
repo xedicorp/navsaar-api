@@ -2,6 +2,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using navsaar.api.Infrastructure;
 using navsaar.api.Repositories;
+using navsaar.api.Repositories.Followups;
+using navsaar.api.Repositories.Reminders;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +19,8 @@ builder.Services.AddScoped<IPlotRepository, PlotRepository>();
 builder.Services.AddScoped<IMasterRepository, MasterRepository>();
 builder.Services.AddScoped<IIdentityRepository, IdentityRepository>();
 builder.Services.AddScoped<IReportRepository, ReportRepository>();
+builder.Services.AddScoped<IFollowupRepository, FollowupRepository>();
+builder.Services.AddScoped<IReminderRepository, ReminderRepository>();
 
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

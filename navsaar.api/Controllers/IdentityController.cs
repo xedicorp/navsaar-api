@@ -1,6 +1,8 @@
+using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using navsaar.api.Repositories;
 using navsaar.api.ViewModels;
+using navsaar.api.ViewModels.Identity;
 
 namespace navsaar.api.Controllers
 {
@@ -22,11 +24,11 @@ namespace navsaar.api.Controllers
         {
             return _repository.List();
         }
-        //[HttpPost]
-        //[Route("Save")]
-        //public bool Save( TownshipCreateUpdateRequest request)
-        //{
-        //  return  _repository.Save(request);
-        //}
+        [HttpPost]
+        [Route("Login")]
+        public LoginResponse Save(ViewModels.Identity.LoginRequest request)
+        {
+            return _repository.Login(request);
+        }
     }
 }

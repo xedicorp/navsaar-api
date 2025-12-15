@@ -17,9 +17,14 @@ namespace navsaar.api.Infrastructure
         public DbSet<DocumentType> DocumentTypes { get; set; }
         public DbSet<Role> Roles { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<Permission> Permissions { get; set; }
+        public DbSet<RolePermission> RolePermissions { get; set; }
         public DbSet<Receipt> Receipts { get; set; }
         public DbSet<Plot> Plots { get; set; }
         public DbSet<PlotType> PlotTypes { get; set; }
+        public DbSet<Followup> Followups { get; set; }
+        public DbSet<FollowupType> FollowupTypes { get; set; }
+        public DbSet<Reminder> Reminders { get; set; }
 
     }
 }
