@@ -3,6 +3,7 @@
     public class TownshipCollectionModel
     {
         public string TownshipName { get; set; }
+        public decimal TodaysCollection { get; set; }
         public decimal TotalCollection { get; set; }
     }
 }

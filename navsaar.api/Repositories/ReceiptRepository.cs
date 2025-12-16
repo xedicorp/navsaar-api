@@ -31,6 +31,26 @@ namespace navsaar.api.Repositories
                     }).ToList(); 
         }
 
+        public List<ReceiptInfo> ListByBookingId(int bookingId)
+        {
+            return (from p in _context.Receipts
+                    where p.BookingId == bookingId
+                    select new ReceiptInfo
+                    {
+                        Id = p.Id,
+                        BookingId = p.BookingId,
+                        Amount = p.Amount,
+                        ReceiptDate = p.ReceiptDate,
+                        ReceiptMethod = p.ReceiptMethod,
+                        TransactionId = p.TransactionId,
+                        BankName = p.BankName,
+                        ChequeNo = p.ChequeNo,
+                        Status = p.Status,
+                        Notes = p.Notes
+
+                    }).ToList();
+        }
+
         public bool Save(CreateUpdateReceiptModel model)
         {
             var entity = new Models.Receipt();

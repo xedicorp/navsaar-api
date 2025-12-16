@@ -26,7 +26,8 @@ namespace navsaar.api.Repositories
                         {
                             TownshipId = t.Id,
                             TownshipName = t.Name,                            
-                            ReceiptAmount = receipt != null ? receipt.Amount : 0
+                            ReceiptAmount = receipt != null ? receipt.Amount : 0,
+                            ReceiptDate = receipt != null ? receipt.ReceiptDate : (DateTime?)null
                         };
 
             if (townshipId > 0)
@@ -39,7 +40,10 @@ namespace navsaar.api.Repositories
                 .Select(g => new TownshipCollectionModel
                 {
                     TownshipName = g.Key,
-                    TotalCollection = g.Sum(x => x.ReceiptAmount)
+                    TotalCollection = g.Sum(x => x.ReceiptAmount),
+                    TodaysCollection = g
+                        .Where(x => EF.Functions.DateDiffDay(x.ReceiptDate, DateTime.Now) == 0)
+                        .Sum(x => x.ReceiptAmount)
                 })
                 .ToList();
 

@@ -25,6 +25,12 @@ namespace navsaar.api.Controllers
         {
             return _receiptRepository.List();
         }
+        [HttpGet]
+        [Route("ListByBookingId")]
+        public IEnumerable<ReceiptInfo> List(int bookingId)
+        {
+            return _receiptRepository.ListByBookingId(bookingId);
+        }
         [HttpPost]
         [Route("Save")]
         public bool Save(  CreateUpdateReceiptModel model)

@@ -7,6 +7,7 @@ namespace navsaar.api.Repositories
     public interface IReceiptRepository
     {
         List<ReceiptInfo> List();
-       bool Save(CreateUpdateReceiptModel model);
+        List<ReceiptInfo> ListByBookingId(int bookingId);
+        bool Save(CreateUpdateReceiptModel model);
     }
 }
