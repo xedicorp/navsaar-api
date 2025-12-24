@@ -2,6 +2,7 @@
 
 using Microsoft.EntityFrameworkCore;
 using navsaar.api.Infrastructure;
+using navsaar.api.Models;
 using navsaar.api.ViewModels;
 using navsaar.api.ViewModels.Report;
 
@@ -13,6 +14,63 @@ namespace navsaar.api.Repositories
         public ReportRepository(AppDbContext context)
         {
             _context = context;
+        }
+
+        public List<TownshipCollectionDetail> TownshipCollectionDetailReport(int townshipId = 0)
+        {
+            var query = from b in _context.Bookings
+                        join t in _context.Townships on b.TownshipId equals t.Id
+                        join r in _context.Receipts on b.Id equals r.BookingId  
+                        where t.Id == townshipId || townshipId == 0
+                        select new TownshipCollectionDetail
+                        {
+                            TownshipName = t.Name,
+                            BookingNo = b.Id,
+                            CustomerName = b.ClientName,
+                            CustomerContactNo = b.ClientContactNo,
+                            Description = "Receipt",
+                            ReceiptDate =   r.ReceiptDate  ,
+                            Amount =   r.Amount  
+                        };
+
+            var township = _context.Townships.FirstOrDefault(p => p.Id == townshipId);
+
+           var bookings = (from b in _context.Bookings
+                           join t in _context.Townships on b.TownshipId equals t.Id
+                           where t.Id == townshipId || townshipId == 0
+                           select b).ToList();
+            List<TownshipCollectionDetail> collections= query.ToList();
+            //Initial Payment
+          
+            foreach(var booking in bookings)
+            {
+                collections.Add (new TownshipCollectionDetail
+                {
+                    TownshipName = township.Name,
+                    BookingNo = booking.Id,
+                    CustomerName = booking.ClientName,
+                    CustomerContactNo = booking.ClientContactNo,
+                    Description = "Initial Payment",
+                    ReceiptDate = booking.DateOfTransfer.GetValueOrDefault(),
+                    Amount = booking.Amount_2.GetValueOrDefault()
+                });
+                if (booking.DDClearedOn != null)
+                {
+                    collections.Add(new TownshipCollectionDetail
+                    {
+                        TownshipName = township.Name,
+                        BookingNo = booking.Id,
+                        CustomerName = booking.ClientName,
+                        CustomerContactNo = booking.ClientContactNo,
+                        Description = "Bank DD",
+                        ReceiptDate = booking.DDClearedOn.GetValueOrDefault(),
+                        Amount = booking.DDAmount.GetValueOrDefault()
+                    });
+                }
+            }
+            
+            
+            return collections;
         }
 
         public List<TownshipCollectionModel> TownshipCollectionSummaryReport(int townshipId = 0)
@@ -36,18 +94,90 @@ namespace navsaar.api.Repositories
             }
 
             var result = query
-                .GroupBy(x => x.TownshipName)
+                .GroupBy(x => new { TownshipName=x.TownshipName, TownshipId=x.TownshipId})
                 .Select(g => new TownshipCollectionModel
                 {
-                    TownshipName = g.Key,
+                    Id=g.Key.TownshipId,
+                    TownshipName = g.Key.TownshipName,
                     TotalCollection = g.Sum(x => x.ReceiptAmount),
                     TodaysCollection = g
                         .Where(x => EF.Functions.DateDiffDay(x.ReceiptDate, DateTime.Now) == 0)
                         .Sum(x => x.ReceiptAmount)
                 })
                 .ToList();
+            foreach(var item in result)
+            {
+                var bookings =  _context.Bookings.Where(p => p.TownshipId == item.Id).ToList();
+                var ttlInitialPayment=  bookings.Sum(p => p.Amount_2.GetValueOrDefault());
+                var ttlDDAmount = bookings.Sum(p => p.DDAmount.GetValueOrDefault());
+                item.TotalCollection += ttlInitialPayment + ttlDDAmount;
 
+
+                var todayInitialPayment = bookings.Where (p=> p.DateOfTransfer.GetValueOrDefault().Date==DateTime.Now.Date).Sum(p => p.Amount_2.GetValueOrDefault());
+                var todayDDAmount = bookings.Where(p => p.DDClearedOn.GetValueOrDefault().Date == DateTime.Now.Date).Sum(p => p.DDAmount.GetValueOrDefault());
+
+                 item.TodaysCollection += todayInitialPayment + todayDDAmount;
+
+            }
             return result; 
+        }
+
+        public TownshipHealthReportModel TownshipHealthReport(int townshipId)
+        {
+            TownshipHealthReportModel reportModel=new TownshipHealthReportModel();
+            var township= _context.Townships.FirstOrDefault(p=>p.Id == townshipId);
+            if (township != null)
+            {
+                reportModel.TownshipName = township.Name;
+                reportModel.TownshipAddress = "";
+
+                List<Plot> plots = _context.Plots.Where(p => p.TownshipId == townshipId).ToList();
+
+                reportModel.TotalPlotsCount = plots.Count();
+
+
+                List<Plot> bookedPlots = (from p in _context.Plots
+                                          join b in _context.Bookings on p.Id equals b.PlotId
+                                          where p.TownshipId == townshipId
+                                          select p).ToList();
+
+                reportModel.TotalBookedPlotsCount = bookedPlots.Count();
+
+                reportModel.TotalUnbookedPlotsCount = reportModel.TotalPlotsCount - reportModel.TotalBookedPlotsCount;
+
+                reportModel.TotalArea = plots.Sum(p => p.PlotSize);
+                reportModel.TotalBookedArea = bookedPlots.Sum(p => p.PlotSize);
+                reportModel.TotalUnbookedArea = reportModel.TotalArea - reportModel.TotalBookedArea;
+
+                List<Booking> bookings = (from b in _context.Bookings
+                                          join t in _context.Townships on b.TownshipId equals t.Id                                         
+                                          where t.Id == townshipId
+                                          select b).ToList();
+
+                List<Receipt> receipts = (from b in bookings                                           
+                                          join r in _context.Receipts on b.Id equals r.BookingId                                          
+                                          select r).ToList();
+                //Initial Payment
+                decimal initialPayment= bookings.Sum(p => p.Amount_2 ).GetValueOrDefault();
+                receipts.Add(new Receipt 
+                { 
+                    Amount = initialPayment  
+                } 
+                );
+                //Bank DD
+                decimal bankDD = bookings.Sum(p => p.DDAmount).GetValueOrDefault();
+                receipts.Add(new Receipt
+                {
+                    Amount = bankDD
+                }
+                );
+                reportModel.TotalBookedValue = _context.Bookings.Where(p => p.TownshipId == townshipId).Sum(p => (p.PlotSize * p.AgreementValue));
+                reportModel.TotalAmountReceived = receipts.Sum(p => p.Amount);
+                reportModel.TotalAmountPending = reportModel.TotalBookedValue - reportModel.TotalAmountReceived;
+
+
+            }
+            return reportModel;
         }
     }
 }

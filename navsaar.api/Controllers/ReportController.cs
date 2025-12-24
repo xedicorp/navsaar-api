@@ -24,6 +24,17 @@ namespace navsaar.api.Controllers
         {
             return _repository.TownshipCollectionSummaryReport(townshipId);
         }
-        
+        [HttpGet]
+        [Route("TownshipCollectionDetailReport")]
+        public IEnumerable<TownshipCollectionDetail> TownshipCollectionDetailReport(int townshipId = 0)
+        {
+            return _repository.TownshipCollectionDetailReport(townshipId);
+        }
+        [HttpGet]
+        [Route("TownshipHealthReport")]
+        public  TownshipHealthReportModel  TownshipHealthReport(int townshipId  )
+        {
+            return _repository.TownshipHealthReport(townshipId);
+        }
     }
 }

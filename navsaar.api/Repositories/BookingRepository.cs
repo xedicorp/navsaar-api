@@ -44,7 +44,7 @@ namespace navsaar.api.Repositories
             entity.ChequeFilePath = booking.File != null ? entity.ChequeFilePath : entity.ChequeFilePath;
             entity.TownshipId = booking.TownshipId;
             entity.PlotNo = booking.PlotNo;
-            entity.PlotSize = booking.PlotSize;
+            entity.PlotSize = booking.PlotSize ;
             entity.BookingDate = booking.BookingDate;
             entity.ClientName = booking.ClientName;
             entity.ClientEmail = booking.ClientEmail;
@@ -54,7 +54,8 @@ namespace navsaar.api.Repositories
             entity.AssociateContactNo = booking.AssociateContactNo;
             entity.LeaderName = booking.LeaderName;
             entity.WorkflowTypeId = 1; // Booking Workflow
-
+            entity.PlotId = booking.PlotId; 
+            entity.AgreementValue = booking.AgreementValue; 
             if (booking.Id == 0)
             {
                 _context.Bookings.Add(entity);
@@ -70,7 +71,7 @@ namespace navsaar.api.Repositories
                         Id = p.Id,
                         TownshipName = t.Name,
                         PlotNo = p.PlotNo,
-                        PlotSize = p.PlotSize, 
+                        PlotSize =p.PlotSize , 
                         BookingDate = p.BookingDate,
                         ClientName = p.ClientName,
                         ClientEmail = p.ClientEmail,
@@ -127,9 +128,8 @@ namespace navsaar.api.Repositories
                          IsJDAPattaRegistered = p.IsJDAPattaRegistered,
                           JDAPattaAppliedOn= p.JDAPattaAppliedOn,
                            JDAPattaNotes= p.JDAPattaNotes,
-                        JDAPattaRegisteredOn = p.JDAPattaRegisteredOn 
-                         
-
+                        JDAPattaRegisteredOn = p.JDAPattaRegisteredOn ,
+                     
 
                     }).ToList();
 
@@ -524,7 +524,7 @@ namespace navsaar.api.Repositories
                         Id = p.Id,
                         TownshipName = t.Name,
                         PlotNo = p.PlotNo,
-                        PlotSize = p.PlotSize,
+                        PlotSize = p.PlotSize     ,
                         BookingDate = p.BookingDate,
                         ClientName = p.ClientName,
                         ClientEmail = p.ClientEmail,

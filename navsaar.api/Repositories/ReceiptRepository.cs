@@ -1,6 +1,7 @@
 ﻿
 
 using navsaar.api.Infrastructure;
+using navsaar.api.Models;
 using navsaar.api.ViewModels;
 
 namespace navsaar.api.Repositories
@@ -14,7 +15,7 @@ namespace navsaar.api.Repositories
         }
         public List<ReceiptInfo> List()
         {
-            return (from p in _context.Receipts
+            List<ReceiptInfo> receipts=  (from p in _context.Receipts
                     select new ReceiptInfo
                     {
                         Id = p.Id,
@@ -28,12 +29,18 @@ namespace navsaar.api.Repositories
                         Status = p.Status,
                         Notes = p.Notes
 
-                    }).ToList(); 
+                    }).ToList();
+
+
+           
+
+            return receipts;
+
         }
 
         public List<ReceiptInfo> ListByBookingId(int bookingId)
         {
-            return (from p in _context.Receipts
+            List<ReceiptInfo> receipts = (from p in _context.Receipts
                     where p.BookingId == bookingId
                     select new ReceiptInfo
                     {
@@ -49,6 +56,30 @@ namespace navsaar.api.Repositories
                         Notes = p.Notes
 
                     }).ToList();
+
+            //Initial Payment
+
+            var booking=  _context.Bookings.FirstOrDefault(p=> p.Id == bookingId);    
+
+          
+            receipts.Add(new ReceiptInfo
+            {
+                Amount = booking.Amount_2.GetValueOrDefault (),
+                Notes = "Initial Payment",
+                 ReceiptDate = booking.DateOfTransfer 
+            }
+            );
+            //Bank DD
+            
+            receipts.Add(new ReceiptInfo
+            {
+                Amount = booking.DDAmount.GetValueOrDefault(),
+                Notes = "Bank DD",
+                ReceiptDate = booking.DDClearedOn 
+            }
+            );
+
+            return receipts;
         }
 
         public bool Save(CreateUpdateReceiptModel model)

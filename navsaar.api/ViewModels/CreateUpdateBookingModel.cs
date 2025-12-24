@@ -5,8 +5,10 @@
         public int Id { get; set; }
         public DateTime BookingDate { get; set; }
         public int TownshipId { get; set; }
+        public int PlotId { get; set; } 
         public string PlotNo { get; set; }
-        public string PlotSize { get; set; }
+        public decimal AgreementValue { get; set; }
+        public decimal PlotSize { get; set; }
         public string ClientName { get; set; }
         public string ClientContactNo { get; set; }
         public string ClientEmail { get; set; }
