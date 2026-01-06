@@ -16,6 +16,7 @@
         public string AssociateReraNo { get; set; }
         public string AssociateContactNo { get; set; }
         public string LeaderName { get; set; } 
+        public int WorkflowTypeId { get; set; }
         public  IFormFile?  File { get; set; }
     }
 }

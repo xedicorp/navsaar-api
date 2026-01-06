@@ -30,5 +30,29 @@ namespace navsaar.api.Controllers
         {
             return _repository.Login(request);
         }
+        [HttpGet]
+        [Route("RoleList")]
+        public IEnumerable<RoleInfo> RoleList()
+        {
+            return _repository.RoleList();
+        }
+        [HttpGet]
+        [Route("RolePermissions")]
+        public IEnumerable<PermissionInfo> RolePermissions(int roleId)
+        {
+            return _repository.RolePermissions(roleId);
+        }
+        [HttpGet]
+        [Route("UserTownships")]
+        public IEnumerable<UserTownshipInfo> UserTownships(int userId)
+        {
+            return _repository.UserTownships(userId);
+        }
+        [HttpPost]
+        [Route("AssignUserTownships")]
+        public bool AssignUserTownships(AssignUserTownshipsRequest request)
+        {
+            return _repository.AssignTownships(request);
+        }
     }
 }

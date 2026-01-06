@@ -35,7 +35,8 @@ namespace navsaar.api.Repositories.Reminders
                 Notes = request.Notes,
                 IsCompleted = false,
                 CreatedBy = request.CreatedBy,
-                CreatedOn = DateTime.UtcNow
+                CreatedOn = DateTime.UtcNow,
+                 BookingId=request.BookingId
             };
             _context.Reminders.Add(entity);
             _context.SaveChanges();

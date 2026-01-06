@@ -9,5 +9,9 @@ namespace navsaar.api.Repositories
     {
         List<UserInfo> List();
         LoginResponse Login(LoginRequest request);
+        List<RoleInfo> RoleList();
+        List<PermissionInfo> RolePermissions(int roleId);
+        List<UserTownshipInfo> UserTownships(int userId);
+        bool AssignTownships(AssignUserTownshipsRequest request);
     }
 }

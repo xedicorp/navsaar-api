@@ -4,7 +4,7 @@
     {
         public string? Token { get; set; }
         public UserInfo? User { get; set; }
-        public List<string>? Permissions { get; set; }
+        public List<PermissionInfo>? Permissions { get; set; }
         public bool IsSuccessful { get; set; }
     }
 }

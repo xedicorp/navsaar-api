@@ -3,6 +3,7 @@
 using Microsoft.EntityFrameworkCore;
 using navsaar.api.Infrastructure;
 using navsaar.api.Models;
+using navsaar.api.Repositories.Identity;
 using navsaar.api.ViewModels;
 using navsaar.api.ViewModels.Identity;
 
@@ -11,9 +12,11 @@ namespace navsaar.api.Repositories
     public class IdentityRepository : IIdentityRepository
     {
         private readonly AppDbContext _context;
-        public IdentityRepository(AppDbContext context)
+        private readonly IPermissionRepository _permissionRepository;
+        public IdentityRepository(AppDbContext context, IPermissionRepository permissionRepository)
         {
             _context = context;
+            _permissionRepository = permissionRepository;
         }
         public List<UserInfo> List()
         {
@@ -29,11 +32,44 @@ namespace navsaar.api.Repositories
                      }).ToList();
 
         }
+        public List<RoleInfo> RoleList()
+        {
+            return (from p in _context.Roles
+                    
+                    select new RoleInfo
+                    {
+                        Id = p.Id,
+                        Name = p.Name
+                    }).ToList();
+
+        }
         public LoginResponse Login(LoginRequest request)
         {
-            List<string> q = new List<string>();
+          
             bool isValid = _context.Users.Any(p => p.UserName == request.UserName && p.Password == request.Password && p.IsActive);
-            if (!isValid)
+            if (isValid)
+            {
+                var usr = _context.Users.FirstOrDefault(p => p.UserName == request.UserName
+                        && p.Password == request.Password && p.IsActive);
+
+                List<PermissionInfo> permissions = _permissionRepository.GetRolePermissions(usr.RoleId);
+                string roleName = _context.Roles.FirstOrDefault(r => r.Id == usr.RoleId)?.Name;
+
+                return new LoginResponse
+                {
+                    IsSuccessful = true,
+                    User = new UserInfo
+                    {
+                        Id = usr.Id,
+                        IsActive = usr.IsActive,
+                        RoleId = usr.RoleId,
+                        RoleName = roleName,
+                        UserName = usr.UserName
+                    },
+                    Permissions = permissions
+                };
+            }
+            else
             {
                 return new LoginResponse
                 {
@@ -42,38 +78,22 @@ namespace navsaar.api.Repositories
                     Permissions = null
                 };
             }
-            var usr = _context.Users.FirstOrDefault(p => p.UserName == request.UserName 
-            && p.Password == request.Password && p.IsActive);
-          
-            var userInfo = new UserInfo
-            {
-                Id = usr.Id,
-                UserName = usr.UserName,
-                IsActive = usr.IsActive,
-                RoleId = usr.RoleId,
-                 RoleName = _context.Roles.FirstOrDefault(r => r.Id == usr.RoleId)?.Name
-            };
-            if (usr.RoleId == 1)
-            {
-                _context.Permissions.Select(p => p.Name).ToList().ForEach(p => q.Add(p));
-            }
-            else
-            {
-                q = (from u in _context.Users
-                     join r in _context.RolePermissions on u.RoleId equals r.RoleId
-                     join p in _context.Permissions on r.PermissionId equals p.Id
-                     where u.Id == usr.Id
-                     select p.Name
-                       ).ToList();
-            }
+        }
 
-            return new LoginResponse
-            {
-                IsSuccessful = true,
-                User = userInfo,
-                Permissions = q.ToList()
-            };
+        public List<PermissionInfo> RolePermissions(int roleId)
+        {
+            return _permissionRepository.GetRolePermissions(roleId);
 
-        } 
+        }
+
+        public List<UserTownshipInfo> UserTownships(int userId)
+        {
+            return _permissionRepository.GetUserTownships (userId);
+        }
+
+        public bool AssignTownships(AssignUserTownshipsRequest request)
+        {
+            return _permissionRepository.AssignTownships(request.UserId,request.UserTownships );
+        }
     }
 }

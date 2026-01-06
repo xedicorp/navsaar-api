@@ -13,9 +13,9 @@
     {
         public int BookingId { get; set; }
         public bool IsDraftPrepared { get; set; }
-        public DateTime DraftPreparedOn { get; set; }
+        public DateTime? DraftPreparedOn { get; set; }
         public bool IsDraftGivenToBank { get; set; }
-        public DateTime DraftGivenToBankOn { get; set; }
+        public DateTime? DraftGivenToBankOn { get; set; }
         public string Notes { get; set; }
     }
     public class UploadDocumentRequest

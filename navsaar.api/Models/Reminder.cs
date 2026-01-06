@@ -6,7 +6,7 @@ namespace navsaar.api.Models
     public class Reminder
     {
         public int Id { get; set; }
-         
+        public int? BookingId { get; set; }
         public DateOnly  ReminderDate { get; set; }
         public TimeOnly ReminderTime { get; set; }
         public bool IsCompleted { get; set; }   

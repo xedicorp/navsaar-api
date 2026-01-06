@@ -3,7 +3,7 @@
     public class CreateEditReminderRequest
     {
         public int Id { get; set; }
-
+        public int? BookingId { get; set; }
         public DateOnly ReminderDate { get; set; }
         public TimeOnly ReminderTime { get; set; }
         

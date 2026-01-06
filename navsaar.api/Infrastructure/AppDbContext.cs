@@ -25,6 +25,7 @@ namespace navsaar.api.Infrastructure
         public DbSet<Followup> Followups { get; set; }
         public DbSet<FollowupType> FollowupTypes { get; set; }
         public DbSet<Reminder> Reminders { get; set; }
+        public DbSet<UserTownship> UserTownships { get; set; }
 
     }
 }

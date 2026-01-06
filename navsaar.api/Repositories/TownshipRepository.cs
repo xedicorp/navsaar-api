@@ -19,7 +19,8 @@ namespace navsaar.api.Repositories
                     select new TownshipInfo
                     {
                         Id = p.Id,
-                        Name = p.Name
+                        Name = p.Name,
+                        Address= p.Address
                     }).ToList();
 
         }
@@ -28,6 +29,7 @@ namespace navsaar.api.Repositories
         {
             var entity = new Models.Township();
             entity.Name = request.Name;
+            entity.Address = request.Address;
             if (request.Id>0)
             {
                 entity = _context.Townships.Find(request.Id);
@@ -36,6 +38,7 @@ namespace navsaar.api.Repositories
                     return false;
                 }
                 entity.Name  = request.Name;
+                entity.Address=request.Address;
             }
             if (request.Id == 0)
                 _context.Townships.Add(entity);

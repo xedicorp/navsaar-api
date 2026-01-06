@@ -53,7 +53,7 @@ namespace navsaar.api.Repositories
             entity.AssociateReraNo = booking.AssociateReraNo;
             entity.AssociateContactNo = booking.AssociateContactNo;
             entity.LeaderName = booking.LeaderName;
-            entity.WorkflowTypeId = 1; // Booking Workflow
+            entity.WorkflowTypeId = booking.WorkflowTypeId; // Booking Workflow
             entity.PlotId = booking.PlotId; 
             entity.AgreementValue = booking.AgreementValue; 
             if (booking.Id == 0)
@@ -581,7 +581,9 @@ namespace navsaar.api.Repositories
                         IsJDAPattaRegistered = p.IsJDAPattaRegistered,
                         JDAPattaAppliedOn = p.JDAPattaAppliedOn,
                         JDAPattaNotes = p.JDAPattaNotes,
-                        JDAPattaRegisteredOn = p.JDAPattaRegisteredOn 
+                        JDAPattaRegisteredOn = p.JDAPattaRegisteredOn ,
+                        AgreementValue=p.AgreementValue,
+                        PlotId = p.PlotId
                     }).FirstOrDefault();
         }
     }
