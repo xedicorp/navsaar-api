@@ -11,6 +11,7 @@ namespace navsaar.api.Repositories
         LoginResponse Login(LoginRequest request);
         List<RoleInfo> RoleList();
         List<PermissionInfo> RolePermissions(int roleId);
+        bool SaveRolePermissions(SaveRolePermissionRequest request);
         List<UserTownshipInfo> UserTownships(int userId);
         bool AssignTownships(AssignUserTownshipsRequest request);
     }

@@ -1,5 +1,6 @@
 ﻿
 
+using Azure.Core;
 using Microsoft.EntityFrameworkCore;
 using navsaar.api.Infrastructure;
 using navsaar.api.Models;
@@ -85,7 +86,7 @@ namespace navsaar.api.Repositories
             return _permissionRepository.GetRolePermissions(roleId);
 
         }
-
+       
         public List<UserTownshipInfo> UserTownships(int userId)
         {
             return _permissionRepository.GetUserTownships (userId);
@@ -94,6 +95,11 @@ namespace navsaar.api.Repositories
         public bool AssignTownships(AssignUserTownshipsRequest request)
         {
             return _permissionRepository.AssignTownships(request.UserId,request.UserTownships );
+        }
+
+        public bool SaveRolePermissions(SaveRolePermissionRequest request)
+        {
+            return _permissionRepository.AssignRolePermissions(request.RoleId, request.Permissions);
         }
     }
 }

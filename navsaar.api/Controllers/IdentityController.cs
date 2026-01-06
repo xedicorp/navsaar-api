@@ -42,6 +42,12 @@ namespace navsaar.api.Controllers
         {
             return _repository.RolePermissions(roleId);
         }
+        [HttpPost]
+        [Route("SaveRolePermissions")]
+        public bool SaveRolePermissions(SaveRolePermissionRequest request)
+        {
+            return _repository.SaveRolePermissions(request);
+        }
         [HttpGet]
         [Route("UserTownships")]
         public IEnumerable<UserTownshipInfo> UserTownships(int userId)

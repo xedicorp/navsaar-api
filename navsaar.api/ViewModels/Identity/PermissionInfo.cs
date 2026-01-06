@@ -6,4 +6,9 @@
         public string Name { get; set; }
         public bool IsAssigned { get; set; }
     }
-}
+        public class PermissionModel
+    {
+            public int PermissionId { get; set; }          
+            public bool IsAssigned { get; set; }
+        }
+    }

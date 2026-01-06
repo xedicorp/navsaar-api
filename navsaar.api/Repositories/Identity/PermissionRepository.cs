@@ -13,6 +13,32 @@ namespace navsaar.api.Repositories.Identity
             _context = context;
         }
 
+        public bool AssignRolePermissions(int roleId, List<PermissionModel> permissions)
+        {
+            List<RolePermission> rolePerms = _context.RolePermissions.Where(p => p.RoleId == roleId).ToList();
+            if (rolePerms.Count > 0)
+            {
+                _context.RolePermissions.RemoveRange(rolePerms);
+                _context.SaveChanges();
+            }
+
+
+            foreach (var permission in permissions)
+            {
+                if (permission.IsAssigned)
+                {
+                    RolePermission rolePermission = new RolePermission
+                    {
+                        RoleId = roleId,
+                        PermissionId = permission.PermissionId 
+                    };
+                    _context.RolePermissions.Add(rolePermission);
+                }
+                _context.SaveChanges();
+            }
+            return true;
+        }
+
         public bool AssignTownships(int userId, List<UserTownshipModel> userTownships)
         {
             List<UserTownship> townships = _context.UserTownships.Where(p => p.UserId == userId).ToList();
