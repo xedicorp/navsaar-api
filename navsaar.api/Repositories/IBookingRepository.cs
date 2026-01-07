@@ -1,6 +1,7 @@
 ﻿
 
 using navsaar.api.ViewModels;
+using navsaar.api.ViewModels.Booking;
 
 namespace navsaar.api.Repositories
 {
@@ -28,6 +29,6 @@ namespace navsaar.api.Repositories
         bool UpdateJDAPattaStatus(UpdateJDAPattaStatusRequest request);
 
         bool UpdateBankDDStatus(UpdateBankDDStatusRequest request);
-
+        bool ChangePlot(ChangePlotRequest request);
     }
 }

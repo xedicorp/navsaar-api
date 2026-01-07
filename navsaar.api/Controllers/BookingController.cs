@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using navsaar.api.Repositories;
 using navsaar.api.ViewModels;
+using navsaar.api.ViewModels.Booking;
 
 namespace navsaar.api.Controllers
 {
@@ -106,6 +107,12 @@ namespace navsaar.api.Controllers
         public void UpdateBankDDStatus( UpdateBankDDStatusRequest request)
         {
             _bookingRepository.UpdateBankDDStatus(request);
+        }
+        [HttpPost]
+        [Route("ChangePlot")]
+        public bool ChangePlot(ChangePlotRequest request)
+        {
+           return  _bookingRepository.ChangePlot(request);
         }
     }
 }

@@ -4,6 +4,7 @@ using Azure.Core;
 using navsaar.api.Infrastructure;
 using navsaar.api.Models;
 using navsaar.api.ViewModels;
+using navsaar.api.ViewModels.Booking;
 
 namespace navsaar.api.Repositories
 {
@@ -585,6 +586,35 @@ namespace navsaar.api.Repositories
                         AgreementValue=p.AgreementValue,
                         PlotId = p.PlotId
                     }).FirstOrDefault();
+        }
+
+        public bool ChangePlot(ChangePlotRequest request)
+        {
+            Booking existing = _context.Bookings.Find(request.BookingId);
+            if (existing == null)
+            {
+                return false;
+            }
+            //Log the plot change
+            PlotChangeLog log = new PlotChangeLog
+            {
+                BookingId = request.BookingId,
+                NewPlotId = request.NewPlotId,
+                NewAgreementValue = request.NewAgreementValue,
+                OldPlotId = existing.PlotId,
+                OldAgreementValue = existing.AgreementValue,
+                PlotChangedBy = request.PlotChangedBy,
+                PlotChangedOn = request.PlotChangedOn
+            };
+            _context.PlotChangeLogs.Add(log);
+            _context.SaveChanges();
+
+            //Update the booking with new plot details
+            existing.PlotId = request.NewPlotId;
+            existing.AgreementValue = request.NewAgreementValue;
+            _context.SaveChanges();
+
+            return true;
         }
     }
 }
