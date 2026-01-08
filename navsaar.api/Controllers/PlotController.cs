@@ -22,9 +22,9 @@ namespace navsaar.api.Controllers
 
         [HttpGet]
         [Route("List")]
-        public IEnumerable<PlotInfo> List(int townshipId)
+        public IEnumerable<PlotInfo> List(int townshipId, int status=0) //0: all 1:available 2: booked
         {
-            return _repository.List(townshipId);
+            return _repository.List(townshipId, status);
         }
         [HttpGet]
         [Route("GetById")]

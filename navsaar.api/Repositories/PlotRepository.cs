@@ -12,12 +12,13 @@ namespace navsaar.api.Repositories
         {
             _context = context;
         }
-        public List<PlotInfo> List(int townshipId)
+        public List<PlotInfo> List(int townshipId, int status = 0)
         {
             return (from p in _context.Plots
                     join t in _context.Townships on p.TownshipId equals t.Id
                     join pt in _context.PlotTypes on p.PlotTypeId equals pt.Id
                     where p.TownshipId == townshipId
+                    && (status == 0 || p.Status == status)  
                     select new PlotInfo
                     {
                         Id = p.Id,
@@ -32,8 +33,25 @@ namespace navsaar.api.Repositories
                         TownshipName = t.Name,
                         PlotTypeName = pt.Name,
                         FacingName = p.Facing == 1 ? "East": (p.Facing==2? "West": (p.Facing==3?"North":"South")),
+                         Status=GetStatus(p.Status ?? 0)
                     }).ToList();
 
+        }
+        private static string GetStatus(int status)
+        {
+            switch (status)
+            {
+                case 1:
+                    return "Available";
+                case 2:
+                    return "Booked";
+                case 3:
+                    return "Hold";
+                case 9:
+                    return "Not for Sale";
+                default:
+                    return "Unknown";
+            }
         }
         public  PlotInfo  GetById(int plotId)
         {
@@ -76,7 +94,9 @@ namespace navsaar.api.Repositories
           
             if(request.Id == 0)
             {
+                plot.Status = 1; // Available
                 _context.Plots.Add(plot);
+
             }
             _context.SaveChanges();
             return plot.Id;

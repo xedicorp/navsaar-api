@@ -11,9 +11,11 @@ namespace navsaar.api.Repositories
     public class BookingRepository : IBookingRepository
     {
         private readonly AppDbContext _context;
-        public BookingRepository(AppDbContext context)
+        private readonly IReceiptRepository _receiptRepository;
+        public BookingRepository(AppDbContext context, IReceiptRepository receiptRepository)
         {
             _context = context;
+            _receiptRepository = receiptRepository;
         }
         public async Task Save(CreateUpdateBookingModel booking)
         {
@@ -57,6 +59,9 @@ namespace navsaar.api.Repositories
             entity.WorkflowTypeId = booking.WorkflowTypeId; // Booking Workflow
             entity.PlotId = booking.PlotId; 
             entity.AgreementValue = booking.AgreementValue; 
+            entity.Status=1; // Active
+            entity.LastStatusChangedBy = 1;
+            entity.LastStatusChangedOn = DateTime.Now;
             if (booking.Id == 0)
             {
                 _context.Bookings.Add(entity);
@@ -72,7 +77,7 @@ namespace navsaar.api.Repositories
                         Id = p.Id,
                         TownshipName = t.Name,
                         PlotNo = p.PlotNo,
-                        PlotSize =p.PlotSize , 
+                        PlotSize = p.PlotSize,
                         BookingDate = p.BookingDate,
                         ClientName = p.ClientName,
                         ClientEmail = p.ClientEmail,
@@ -81,37 +86,37 @@ namespace navsaar.api.Repositories
                         AssociateReraNo = p.AssociateReraNo,
                         AssociateContactNo = p.AssociateContactNo,
                         LeaderName = p.LeaderName,
-                         DDClearedOn = p.DDClearedOn,
+                        DDClearedOn = p.DDClearedOn,
                         DraftPreparedOn = p.DraftPreparedOn,
                         TownshipId = p.TownshipId,
                         ChequeFilePath = p.ChequeFilePath,
                         IsDDSubmittedToBank = p.IsDDSubmittedToBank,
                         WorkflowTypeId = p.WorkflowTypeId,
-                         DDReceivedFromBankOn = p.DDReceivedFromBankOn,
+                        DDReceivedFromBankOn = p.DDReceivedFromBankOn,
                         CurrentStage = p.CurrentStage,
                         IsDDReceivedFromBank = p.IsDDReceivedFromBank,
                         PaymentMode = p.PaymentMode,
                         JDAPattaGivenToBankOn = p.JDAPattaGivenToBankOn,
-                         IsJDAPattaGivenToBank = p.IsJDAPattaGivenToBank,
-                          Amount_2 = p.Amount_2,    
-                           BankDDPath = p.BankDDPath,
+                        IsJDAPattaGivenToBank = p.IsJDAPattaGivenToBank,
+                        Amount_2 = p.Amount_2,
+                        BankDDPath = p.BankDDPath,
                         TransNo = p.TransNo,
-                         BankName = p.BankName,
+                        BankName = p.BankName,
                         BranchName = p.BranchName,
-                        CompletionDate = p.CompletionDate,  
-                         DateOfLogin = p.DateOfLogin,
-                          DateOfTransfer = p.DateOfTransfer ,
-                        DDAmount = p.DDAmount,  
-                         DDNo = p.DDNo ,
-                          DDNotes = p.DDNotes,
-                           DDUpdateNotes= p.DDUpdateNotes,
-                            DokitSigingNotes = p.DokitSigingNotes,
-                             DokitSignDate = p.DokitSignDate,
+                        CompletionDate = p.CompletionDate,
+                        DateOfLogin = p.DateOfLogin,
+                        DateOfTransfer = p.DateOfTransfer,
+                        DDAmount = p.DDAmount,
+                        DDNo = p.DDNo,
+                        DDNotes = p.DDNotes,
+                        DDUpdateNotes = p.DDUpdateNotes,
+                        DokitSigingNotes = p.DokitSigingNotes,
+                        DokitSignDate = p.DokitSignDate,
                         IsDokitSigned = p.IsDokitSigned,
                         IsJDAFileSigned = p.IsJDAFileSigned,
                         JDAFileSignDate = p.JDAFileSignDate,
                         DraftGivenToBankOn = p.DraftGivenToBankOn,
-                         IsCompletedOnAllSides = p.IsCompletedOnAllSides,
+                        IsCompletedOnAllSides = p.IsCompletedOnAllSides,
                         IsDraftGivenToBank = p.IsDraftGivenToBank,
                         IsDraftPrepared = p.IsDraftPrepared,
                         IsLoanSanctioned = p.IsLoanSanctioned,
@@ -126,16 +131,32 @@ namespace navsaar.api.Repositories
                         IsPaymentVerified = p.IsPaymentVerified,
                         Notes_2 = p.Notes_2,
                         IsJDAPattaApplied = p.IsJDAPattaApplied,
-                         IsJDAPattaRegistered = p.IsJDAPattaRegistered,
-                          JDAPattaAppliedOn= p.JDAPattaAppliedOn,
-                           JDAPattaNotes= p.JDAPattaNotes,
-                        JDAPattaRegisteredOn = p.JDAPattaRegisteredOn ,
-                     
+                        IsJDAPattaRegistered = p.IsJDAPattaRegistered,
+                        JDAPattaAppliedOn = p.JDAPattaAppliedOn,
+                        JDAPattaNotes = p.JDAPattaNotes,
+                        JDAPattaRegisteredOn = p.JDAPattaRegisteredOn,
+                        Status = GetStatus(p.Status.GetValueOrDefault()),
 
                     }).ToList();
 
         }
 
+        private static string GetStatus(int status)
+        {
+            switch (status)
+            {
+                case 1:
+                    return "Active";
+                case 2:
+                    return "Inactive";
+                case 8:
+                    return "Hold";
+                case 9:
+                    return "Cancelled";
+                default:
+                    return "Unknown";
+            }
+        }
         public bool UpdateInitialPayment(UpdateInitialPaymentRequest request)
         {
             var entity = _context.Bookings.Find(request.BookingId);
@@ -612,6 +633,65 @@ namespace navsaar.api.Repositories
             //Update the booking with new plot details
             existing.PlotId = request.NewPlotId;
             existing.AgreementValue = request.NewAgreementValue;
+            _context.SaveChanges();
+
+            return true;
+        }
+
+        public bool Cancel(BookingCancelRequest request)
+        {
+            Booking existing = _context.Bookings.Find(request.BookingId);
+            if (existing == null)
+            {
+                return false;
+            }
+            //Log the plot change
+            BookingCancelLog log = new BookingCancelLog
+            {
+                BookingId = request.BookingId,
+                CancelledBy = request.CancelledBy,
+                 CancelledOn =DateTime.Now,
+                CancelReason = request.CancelReason  
+                 
+                 
+            };
+            _context.BookingCancelLogs.Add(log);
+            _context.SaveChanges();
+
+            //Update the booking with new plot details
+            existing.Status = 9; // Cancelled
+            existing.LastStatusChangedBy = request.CancelledBy;
+            existing.LastStatusChangedOn = DateTime.Now;
+            _context.SaveChanges();
+
+            //check if amount is pending to refund
+            //if any then create refund request with pending status
+            decimal RefundAmount = 0;
+            _receiptRepository.ListByBookingId(request.BookingId).ForEach(r =>
+            {
+                RefundAmount += r.Amount;
+            });
+            if (RefundAmount > 0)
+            { 
+                RefundRequest refund = new RefundRequest
+                {
+                    BookingId = request.BookingId,
+                    Status = 1, // Pending
+                    RefundAmount = RefundAmount,
+                    Notes = "Refund initiated on booking cancellation",
+                    LastStatusChangedBy = request.CancelledBy,
+                    LastStatusChangedOn = DateTime.Now
+                };
+                _context.RefundRequests.Add(refund);
+            }
+            _context.SaveChanges();
+
+            Plot plot = _context.Plots.Find(existing.PlotId);
+            if(plot == null)
+            {
+                return false;
+            }
+            plot.Status = 1; // Available
             _context.SaveChanges();
 
             return true;

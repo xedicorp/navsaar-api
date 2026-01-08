@@ -30,5 +30,6 @@ namespace navsaar.api.Repositories
 
         bool UpdateBankDDStatus(UpdateBankDDStatusRequest request);
         bool ChangePlot(ChangePlotRequest request);
+        bool Cancel(BookingCancelRequest request);
     }
 }

@@ -15,6 +15,7 @@
      
         public decimal TotalBookedValue { get; set; }
         public decimal TotalAmountReceived { get; set; }
-        public decimal TotalAmountPending { get; set; }
+        public decimal  TotalAmountPending { get; set; }
+        public decimal  TotalAmountRefunded { get; set; } 
     }
 }

@@ -114,5 +114,11 @@ namespace navsaar.api.Controllers
         {
            return  _bookingRepository.ChangePlot(request);
         }
+        [HttpPost]
+        [Route("Cancel")]
+        public bool Cancel(BookingCancelRequest request)
+        {
+            return _bookingRepository.Cancel(request);
+        }
     }
 }

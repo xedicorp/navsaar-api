@@ -82,5 +82,9 @@ namespace navsaar.api.Models
         public DateTime? DDClearedOn { get; set; }
         public string? DDUpdateNotes { get; set; }
 
+        public int? Status { get; set; }
+        public DateTime? LastStatusChangedOn { get; set; }
+        public int? LastStatusChangedBy { get; set; }
+
     }
 }

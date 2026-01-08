@@ -150,19 +150,19 @@ namespace navsaar.api.Repositories
                 reportModel.TotalUnbookedArea = reportModel.TotalArea - reportModel.TotalBookedArea;
 
                 List<Booking> bookings = (from b in _context.Bookings
-                                          join t in _context.Townships on b.TownshipId equals t.Id                                         
+                                          join t in _context.Townships on b.TownshipId equals t.Id
                                           where t.Id == townshipId
                                           select b).ToList();
 
-                List<Receipt> receipts = (from b in bookings                                           
-                                          join r in _context.Receipts on b.Id equals r.BookingId                                          
+                List<Receipt> receipts = (from b in bookings
+                                          join r in _context.Receipts on b.Id equals r.BookingId
                                           select r).ToList();
                 //Initial Payment
-                decimal initialPayment= bookings.Sum(p => p.Amount_2 ).GetValueOrDefault();
-                receipts.Add(new Receipt 
-                { 
-                    Amount = initialPayment  
-                } 
+                decimal initialPayment = bookings.Sum(p => p.Amount_2).GetValueOrDefault();
+                receipts.Add(new Receipt
+                {
+                    Amount = initialPayment
+                }
                 );
                 //Bank DD
                 decimal bankDD = bookings.Sum(p => p.DDAmount).GetValueOrDefault();
@@ -174,7 +174,13 @@ namespace navsaar.api.Repositories
                 reportModel.TotalBookedValue = _context.Bookings.Where(p => p.TownshipId == townshipId).Sum(p => (p.PlotSize * p.AgreementValue));
                 reportModel.TotalAmountReceived = receipts.Sum(p => p.Amount);
                 reportModel.TotalAmountPending = reportModel.TotalBookedValue - reportModel.TotalAmountReceived;
-
+                reportModel.TotalAmountRefunded = 0;
+               var requests = from r in _context.RefundRequests
+                               join b in _context.Bookings on r.BookingId equals b.Id
+                               where (b.TownshipId == townshipId && r.Status == 2)
+                               select r;
+                if(requests!=null && requests.Count() > 0)
+                    reportModel.TotalAmountRefunded = requests.Sum(p => p.RefundAmount);
 
             }
             return reportModel;

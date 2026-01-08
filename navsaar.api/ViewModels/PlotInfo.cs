@@ -14,5 +14,6 @@
         public bool IsTapper { get; set; }
         public int PlotTypeId { get; set; }
         public string PlotTypeName { get; set; }
+        public string Status { get; set; } 
     }
 }
