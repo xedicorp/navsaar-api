@@ -109,7 +109,7 @@ namespace navsaar.api.Repositories
             {
                 var bookings =  _context.Bookings.Where(p => p.TownshipId == item.Id).ToList();
                 var ttlInitialPayment=  bookings.Sum(p => p.Amount_2.GetValueOrDefault());
-                var ttlDDAmount = bookings.Sum(p => p.DDAmount.GetValueOrDefault());
+                var ttlDDAmount = bookings.Where(s=>s.DDClearedOn!=null).Sum(p => p.DDAmount.GetValueOrDefault());
                 item.TotalCollection += ttlInitialPayment + ttlDDAmount;
 
 

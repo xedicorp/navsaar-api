@@ -21,9 +21,9 @@ namespace navsaar.api.Controllers
 
         [HttpGet]
         [Route("List")]
-        public IEnumerable<TownshipInfo> List()
+        public IEnumerable<TownshipInfo> List(int userId=0)
         {
-            return _repository.List();
+            return _repository.List(userId);
         }
         [HttpPost]
         [Route("Save")]

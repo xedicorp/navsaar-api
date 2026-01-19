@@ -66,7 +66,8 @@ namespace navsaar.api.Repositories
             {
                 Amount = booking.Amount_2.GetValueOrDefault (),
                 Notes = "Initial Payment",
-                 ReceiptDate = booking.DateOfTransfer 
+                 ReceiptDate = booking.DateOfTransfer ,
+                ReceiptMethod = booking.PaymentMode.GetValueOrDefault()
             }
             );
             //Bank DD

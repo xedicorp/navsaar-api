@@ -52,6 +52,7 @@ namespace navsaar.api.Repositories
             entity.ClientName = booking.ClientName;
             entity.ClientEmail = booking.ClientEmail;
             entity.ClientContactNo = booking.ClientContactNo;
+            entity.ClientAddress = booking.ClientAddress;
             entity.AssociateName = booking.AssociateName;
             entity.AssociateReraNo = booking.AssociateReraNo;
             entity.AssociateContactNo = booking.AssociateContactNo;
@@ -82,6 +83,7 @@ namespace navsaar.api.Repositories
                         ClientName = p.ClientName,
                         ClientEmail = p.ClientEmail,
                         ContactNo = p.ClientContactNo,
+                        ClientAddress=p.ClientAddress,
                         AssociateName = p.AssociateName,
                         AssociateReraNo = p.AssociateReraNo,
                         AssociateContactNo = p.AssociateContactNo,
@@ -551,6 +553,7 @@ namespace navsaar.api.Repositories
                         ClientName = p.ClientName,
                         ClientEmail = p.ClientEmail,
                         ContactNo = p.ClientContactNo,
+                        ClientAddress=p.ClientAddress,
                         AssociateName = p.AssociateName,
                         AssociateReraNo = p.AssociateReraNo,
                         AssociateContactNo = p.AssociateContactNo,

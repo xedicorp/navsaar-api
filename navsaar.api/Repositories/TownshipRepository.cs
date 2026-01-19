@@ -13,16 +13,22 @@ namespace navsaar.api.Repositories
         {
             _context = context;
         }
-        public List<TownshipInfo> List()
+        public List<TownshipInfo> List(int userId = 0)
         {
-             return( from p in _context.Townships
-                    select new TownshipInfo
-                    {
-                        Id = p.Id,
-                        Name = p.Name,
-                        Address= p.Address
-                    }).ToList();
+            List<int> allowedTownshipIds = new List<int>();
 
+             
+            allowedTownshipIds= _context.UserTownships.Where(p => p.UserId == userId).Select(p=>p.TownshipId)            .ToList();
+
+            return (from p in _context.Townships
+                    where userId == 0 || allowedTownshipIds.Contains(p.Id)
+                    select new TownshipInfo
+                        {
+                            Id = p.Id,
+                            Name = p.Name,
+                            Address = p.Address
+                        }).ToList();
+           
         }
 
         public bool Save(TownshipCreateUpdateRequest request)

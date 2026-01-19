@@ -11,7 +11,8 @@
         public decimal PlotSize { get; set; }
         public string ClientName { get; set; }
         public string ClientContactNo { get; set; }
-        public string ClientEmail { get; set; }
+        public string? ClientAddress { get; set; }
+        public string? ClientEmail { get; set; }
         public string AssociateName { get; set; }
         public string AssociateReraNo { get; set; }
         public string AssociateContactNo { get; set; }
