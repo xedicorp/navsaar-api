@@ -1,4 +1,5 @@
 ﻿using navsaar.api.Infrastructure;
+using navsaar.api.Models;
 using navsaar.api.ViewModels;
 using navsaar.api.ViewModels.Refund;
 
@@ -50,6 +51,54 @@ namespace navsaar.api.Repositories.Refunds
                 default:
                     return "Pending";
             }
+        }
+
+        public bool SaveStatus(SaveRefundStatusModel model)
+        {
+            bool result = true;
+            RefundStatusLog statusLog = new RefundStatusLog();
+            statusLog.RefundRequestId = model.RefundRequestId;
+            statusLog.ActualDate = model.ActualDate;
+            statusLog.NewStatus = model.NewStatus;
+            statusLog.StatusChangeDate = DateTime.Now;
+            statusLog.StatusChangedBy = model.UserId;
+            statusLog.Notes = model.Notes;
+            statusLog.Amount = model.Amount;
+
+            _context.RefundStatusLogs.Add(statusLog);
+            _context.SaveChanges();
+
+            var refundRequest = _context.RefundRequests.Find(model.RefundRequestId);
+            if (refundRequest != null)
+            {
+                refundRequest.Status = model.NewStatus;
+                _context.SaveChanges();
+            }
+
+
+            return result;
+        }
+
+        public List<RefundStatusInfo> StatusLogs(int refundRequestId)
+        {
+            List<RefundStatusInfo> logs = new List<RefundStatusInfo>();
+            var refundLogs = _context.RefundStatusLogs.Where(p=>p.RefundRequestId==refundRequestId).ToList();
+            if (refundLogs != null && refundLogs.Count > 0)
+            {
+                logs = (from log in refundLogs
+                        join user in _context.Users on log.StatusChangedBy equals user.Id
+                        select new RefundStatusInfo
+                        {
+
+                            ActualDate = log.ActualDate,
+                            Status = GetStatus(log.NewStatus),
+                            StatusChangedOn = log.StatusChangeDate,
+                            StatusChangedBy = user.UserName,
+                            Notes = log.Notes,
+                            Amount = log.Amount
+                        }).ToList();
+            }
+            return logs;
         }
     }
 }

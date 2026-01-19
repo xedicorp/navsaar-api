@@ -65,23 +65,24 @@ namespace navsaar.api.Repositories.Identity
             return true;
         }
 
-        public List<PermissionInfo> GetRolePermissions(int roleId=0)
+        public List<PermissionInfo> GetRolePermissions(int roleId = 0)
         {
             List<PermissionInfo> permissionInfos = new List<PermissionInfo>();
-           List<RolePermission> rolePermissions=  _context.RolePermissions.Where(p =>roleId==0 ||  p.RoleId == roleId).ToList();
+            List<RolePermission> rolePermissions = _context.RolePermissions.Where(p => roleId == 0 || p.RoleId == roleId).ToList();
             List<Permission> permissions = _context.Permissions.ToList();
             foreach (var permission in permissions)
             {
                 bool isAssigned = rolePermissions.Any(rp => rp.PermissionId == permission.Id);
-                if(roleId==1)
+                if (roleId == 1)
                     isAssigned = true;
                 permissionInfos.Add(new PermissionInfo
                 {
                     Id = permission.Id,
-                     Name = permission.Name,
-                     IsAssigned=isAssigned
+                    Name = permission.Name,
+                    DisplayName = permission.DisplayName,
+                    IsAssigned = isAssigned
                 });
-                 
+
             }
             return permissionInfos;
         }

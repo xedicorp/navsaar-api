@@ -24,6 +24,17 @@ namespace navsaar.api.Controllers
         {
             return _repository.List();
         }
-        
+        [HttpPost]
+        [Route("SaveStatus")]
+        public bool Save(SaveRefundStatusModel model)
+        {
+            return _repository.SaveStatus(model);
+        }
+        [HttpGet]
+        [Route("StatusLogs")]
+        public IEnumerable<RefundStatusInfo> StatusLogs(int refundRequestId)
+        {
+            return _repository.StatusLogs(refundRequestId);
+        }
     }
 }
