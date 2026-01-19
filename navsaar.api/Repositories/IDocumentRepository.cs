@@ -1,5 +1,6 @@
 ﻿
 
+using navsaar.api.Models;
 using navsaar.api.ViewModels;
 
 namespace navsaar.api.Repositories
@@ -7,6 +8,8 @@ namespace navsaar.api.Repositories
     public interface IDocumentRepository
     {
         Task<bool> Upload(UploadDocumentRequest request); //Stage 3 
-        List<DocumentModel> GetAllByBookingId(int bookingId); 
+        List<DocumentModel> GetAllByBookingId(int bookingId);
+
+        Document GetById(int id);
     }
 }

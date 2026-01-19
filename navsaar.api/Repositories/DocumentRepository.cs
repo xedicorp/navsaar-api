@@ -13,15 +13,15 @@ namespace navsaar.api.Repositories
         {
             _context = context;
         }
-       
-        
+
+
 
         public async Task<bool> Upload(UploadDocumentRequest request)
         {
-            if(request.File == null || request.File.Length == 0)
+            if (request.File == null || request.File.Length == 0)
             {
                 return false;
-            } 
+            }
 
             // Define the path where the file will be saved
             var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "Uploads");
@@ -55,8 +55,8 @@ namespace navsaar.api.Repositories
         public List<DocumentModel> GetAllByBookingId(int bookingId)
         {
             var q = from p in _context.Documents
-                    join d in _context.DocumentTypes on p.DocumentTypeId equals d.Id    
-                    join u in _context.Users on p.UploadedBy equals u.Id  
+                    join d in _context.DocumentTypes on p.DocumentTypeId equals d.Id
+                    join u in _context.Users on p.UploadedBy equals u.Id
                     where p.BookingId == bookingId
                     select new DocumentModel
                     {
@@ -64,11 +64,16 @@ namespace navsaar.api.Repositories
                         BookingId = p.BookingId,
                         DocumentTypeName = d.Name,
                         Notes = p.Notes,
-                        UploadedOn = p.UploadedOn,                      
+                        UploadedOn = p.UploadedOn,
                         Url = p.FilePath,
                         UploadedBy = u.UserName
                     };
             return q.ToList();
+        }
+
+        public Document GetById(int id)
+        {
+            return _context.Documents.Find(id);
         }
     }
 }

@@ -26,6 +26,18 @@ namespace navsaar.api.Controllers
             return await _repository.Upload(request);
         }
         [HttpGet]
+        [Route("Download")]
+        public async Task<IActionResult> Download(int id)
+        {
+            var doc = _repository.GetById(id);
+            var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "Uploads");
+            var fullFilePath = Path.Combine(uploadsFolder, doc.FilePath);
+            byte[] contents = System.IO.File.ReadAllBytes(fullFilePath);
+            return File(contents, "application/force-download", doc.FilePath);
+
+        }
+
+        [HttpGet]
         [Route("GetAllByBookingId")]
         public List<DocumentModel> GetAllByBookingId(int bookingId)
         {
