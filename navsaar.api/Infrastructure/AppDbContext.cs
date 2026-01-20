@@ -30,7 +30,7 @@ namespace navsaar.api.Infrastructure
         public DbSet<BookingCancelLog> BookingCancelLogs { get; set; }
         public DbSet<RefundRequest> RefundRequests { get; set; }
         public DbSet<RefundStatusLog> RefundStatusLogs { get; set; }
+        public DbSet<Associate> Associates { get; set; }
 
-        
     }
 }

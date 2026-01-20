@@ -12,6 +12,6 @@ namespace navsaar.api.Models
         public int OldPlotId { get; set; }
         public decimal OldAgreementValue { get; set; }
         public int PlotChangedBy { get; set; }
-        public int PlotChangedOn { get; set; }
+        public DateTime PlotChangedOn { get; set; }
     }
 }

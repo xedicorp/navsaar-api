@@ -31,5 +31,7 @@ namespace navsaar.api.Repositories
         bool UpdateBankDDStatus(UpdateBankDDStatusRequest request);
         bool ChangePlot(ChangePlotRequest request);
         bool Cancel(BookingCancelRequest request);
+
+        List<BookingInfo> Search(int? townshipId, int? bookingType, int? associateId, DateTime? fromDate);
     }
 }

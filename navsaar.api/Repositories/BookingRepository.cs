@@ -73,12 +73,13 @@ namespace navsaar.api.Repositories
         {
             return (from p in _context.Bookings
                     join t in _context.Townships on p.TownshipId equals t.Id
+                    join s in _context.Plots on p.PlotId equals s.Id
                     select new BookingInfo
                     {
                         Id = p.Id,
                         TownshipName = t.Name,
-                        PlotNo = p.PlotNo,
-                        PlotSize = p.PlotSize,
+                        PlotNo = s.PlotNo,
+                        PlotSize = s.PlotSize,
                         BookingDate = p.BookingDate,
                         ClientName = p.ClientName,
                         ClientEmail = p.ClientEmail,
@@ -542,13 +543,14 @@ namespace navsaar.api.Repositories
         {
             return (from p in _context.Bookings
                     join t in _context.Townships on p.TownshipId equals t.Id
+                    join s in _context.Plots on p.PlotId equals s.Id
                     where p.Id==bookingId
                     select new BookingInfo
                     {
                         Id = p.Id,
                         TownshipName = t.Name,
-                        PlotNo = p.PlotNo,
-                        PlotSize = p.PlotSize     ,
+                        PlotNo = s.PlotNo,
+                        PlotSize = s.PlotSize     ,
                         BookingDate = p.BookingDate,
                         ClientName = p.ClientName,
                         ClientEmail = p.ClientEmail,
@@ -628,7 +630,7 @@ namespace navsaar.api.Repositories
                 OldPlotId = existing.PlotId,
                 OldAgreementValue = existing.AgreementValue,
                 PlotChangedBy = request.PlotChangedBy,
-                PlotChangedOn = request.PlotChangedOn
+                PlotChangedOn = DateTime.Now
             };
             _context.PlotChangeLogs.Add(log);
             _context.SaveChanges();
@@ -698,6 +700,84 @@ namespace navsaar.api.Repositories
             _context.SaveChanges();
 
             return true;
+        }
+
+        public List<BookingInfo> Search(int? townshipId, int? bookingType, int? associateId, DateTime? fromDate)
+        {
+            return (from p in _context.Bookings
+                    join t in _context.Townships on p.TownshipId equals t.Id
+                    join s in _context.Plots on p.PlotId equals s.Id
+                    where (townshipId==null || townshipId==0 || p.TownshipId == townshipId)
+                    && (bookingType == null || bookingType == 0 || p.WorkflowTypeId == bookingType)
+                  //  && (associateId == null || associateId == 0 || p.AssociateId == associateId)
+                  &&(fromDate == null || p.BookingDate >= fromDate)
+                    select new BookingInfo
+                    {
+                        Id = p.Id,
+                        TownshipName = t.Name,
+                        PlotNo = s.PlotNo,
+                        PlotSize = s.PlotSize,
+                        BookingDate = p.BookingDate,
+                        ClientName = p.ClientName,
+                        ClientEmail = p.ClientEmail,
+                        ContactNo = p.ClientContactNo,
+                        ClientAddress = p.ClientAddress,
+                        AssociateName = p.AssociateName,
+                        AssociateReraNo = p.AssociateReraNo,
+                        AssociateContactNo = p.AssociateContactNo,
+                        LeaderName = p.LeaderName,
+                        DDClearedOn = p.DDClearedOn,
+                        DraftPreparedOn = p.DraftPreparedOn,
+                        TownshipId = p.TownshipId,
+                        ChequeFilePath = p.ChequeFilePath,
+                        IsDDSubmittedToBank = p.IsDDSubmittedToBank,
+                        WorkflowTypeId = p.WorkflowTypeId,
+                        DDReceivedFromBankOn = p.DDReceivedFromBankOn,
+                        CurrentStage = p.CurrentStage,
+                        IsDDReceivedFromBank = p.IsDDReceivedFromBank,
+                        PaymentMode = p.PaymentMode,
+                        JDAPattaGivenToBankOn = p.JDAPattaGivenToBankOn,
+                        IsJDAPattaGivenToBank = p.IsJDAPattaGivenToBank,
+                        Amount_2 = p.Amount_2,
+                        BankDDPath = p.BankDDPath,
+                        TransNo = p.TransNo,
+                        BankName = p.BankName,
+                        BranchName = p.BranchName,
+                        CompletionDate = p.CompletionDate,
+                        DateOfLogin = p.DateOfLogin,
+                        DateOfTransfer = p.DateOfTransfer,
+                        DDAmount = p.DDAmount,
+                        DDNo = p.DDNo,
+                        DDNotes = p.DDNotes,
+                        DDUpdateNotes = p.DDUpdateNotes,
+                        DokitSigingNotes = p.DokitSigingNotes,
+                        DokitSignDate = p.DokitSignDate,
+                        IsDokitSigned = p.IsDokitSigned,
+                        IsJDAFileSigned = p.IsJDAFileSigned,
+                        JDAFileSignDate = p.JDAFileSignDate,
+                        DraftGivenToBankOn = p.DraftGivenToBankOn,
+                        IsCompletedOnAllSides = p.IsCompletedOnAllSides,
+                        IsDraftGivenToBank = p.IsDraftGivenToBank,
+                        IsDraftPrepared = p.IsDraftPrepared,
+                        IsLoanSanctioned = p.IsLoanSanctioned,
+                        LoanSanctionDate = p.LoanSanctionDate,
+                        LoanSanctionNotes = p.LoanSanctionNotes,
+                        MarkFileCheckNotes = p.MarkFileCheckNotes,
+                        OriginalATTPath = p.OriginalATTPath,
+                        OriginalATTNotes = p.OriginalATTNotes,
+                        LoginRefNo = p.LoginRefNo,
+                        Notes_3 = p.Notes_3,
+                        Notes_4 = p.Notes_4,
+                        IsPaymentVerified = p.IsPaymentVerified,
+                        Notes_2 = p.Notes_2,
+                        IsJDAPattaApplied = p.IsJDAPattaApplied,
+                        IsJDAPattaRegistered = p.IsJDAPattaRegistered,
+                        JDAPattaAppliedOn = p.JDAPattaAppliedOn,
+                        JDAPattaNotes = p.JDAPattaNotes,
+                        JDAPattaRegisteredOn = p.JDAPattaRegisteredOn,
+                        Status = GetStatus(p.Status.GetValueOrDefault()),
+
+                    }).ToList();
         }
     }
 }

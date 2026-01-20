@@ -19,7 +19,12 @@ namespace navsaar.api.Controllers
             _logger = logger;
             _bookingRepository = bookingRepository;
         }
-
+        [HttpGet]
+        [Route("Search")]
+        public IEnumerable<BookingInfo> Search(int? townshipId,int? bookingType, int? associateId,DateTime? fromDate )
+        {
+            return _bookingRepository.Search( townshipId,   bookingType,   associateId,   fromDate);
+        }
         [HttpGet]
         [Route("List")]
         public IEnumerable<BookingInfo> List()
