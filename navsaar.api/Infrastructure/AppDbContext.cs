@@ -31,6 +31,7 @@ namespace navsaar.api.Infrastructure
         public DbSet<RefundRequest> RefundRequests { get; set; }
         public DbSet<RefundStatusLog> RefundStatusLogs { get; set; }
         public DbSet<Associate> Associates { get; set; }
+        public DbSet<ReceiptVerificationRequest> ReceiptVerificationRequests { get; set; }
 
     }
 }

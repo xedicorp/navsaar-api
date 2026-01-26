@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using navsaar.api.Repositories;
 using navsaar.api.ViewModels;
+using navsaar.api.ViewModels.Receipt;
 
 namespace navsaar.api.Controllers
 {
@@ -36,6 +37,24 @@ namespace navsaar.api.Controllers
         public bool Save(  CreateUpdateReceiptModel model)
         {
             return _receiptRepository.Save(model);
-        } 
+        }
+        [HttpPost]
+        [Route("SendVerifRequest")]
+        public bool SendVerificationRequest(VerifRequest model)
+        {
+            return _receiptRepository.SendVerificationRequest(model);
+        }
+        [HttpGet]
+        [Route("VerificationRequests")]
+        public IEnumerable<VerificationRequestInfo> VerificationRequests()
+        {
+            return _receiptRepository.VerificationRequests();
+        }
+        [HttpPost]
+        [Route("Verify")]
+        public bool Verify(VerifReceiptRequest model)
+        {
+            return _receiptRepository.Verify(model);
+        }
     }
 }

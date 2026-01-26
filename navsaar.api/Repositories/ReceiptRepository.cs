@@ -3,6 +3,7 @@
 using navsaar.api.Infrastructure;
 using navsaar.api.Models;
 using navsaar.api.ViewModels;
+using navsaar.api.ViewModels.Receipt;
 
 namespace navsaar.api.Repositories
 {
@@ -53,7 +54,8 @@ namespace navsaar.api.Repositories
                         BankName = p.BankName,
                         ChequeNo = p.ChequeNo,
                         Status = p.Status,
-                        Notes = p.Notes
+                        Notes = p.Notes,
+                        StatusText=p.Status==1? "Verification Pending" : (p.Status == 2 ? "Under Verification" : (p.Status == 3 ? "Verified" : "Rejected"))
 
                     }).ToList();
 
@@ -101,7 +103,7 @@ namespace navsaar.api.Repositories
             entity.TransactionId = model.TransactionId;
             entity.BankName = model.BankName;
             entity.ChequeNo = model.ChequeNo;
-            entity.Status = model.Status;
+            entity.Status = 1; // 1: Verification Pending, 2: Under Verification, 3: Verified, 4: Rejected
             entity.Notes = model.Notes;
 
             if (model.Id == 0)
@@ -109,6 +111,72 @@ namespace navsaar.api.Repositories
                 _context.Receipts.Add(entity);
             }
             _context.SaveChanges();
+            return true;
+        }
+
+        public bool SendVerificationRequest(VerifRequest model)
+        {
+            ReceiptVerificationRequest entity = new ReceiptVerificationRequest();
+            entity.ReceiptId = model.ReceiptId;
+            entity.RequestedBy = model.UserId;
+            entity.RequestedOn = DateTime.Now;
+            entity.Status = 1; // Pending
+            _context.ReceiptVerificationRequests.Add(entity);
+            _context.SaveChanges();
+
+           var recept= _context.Receipts.FirstOrDefault(p => p.Id == model.ReceiptId);
+            recept.Status = 2; // 2: Under Verification 1: Verification Pending, 2: Under Verification, 3: Verified, 4: Rejected
+            _context.SaveChanges();
+            return true;
+        }
+
+        public List<VerificationRequestInfo> VerificationRequests()
+        {
+             var q = from p in _context.ReceiptVerificationRequests
+                     join r in _context.Receipts on p.ReceiptId equals r.Id
+                     join b in _context.Bookings on r.BookingId equals b.Id
+                     join pl in _context.Plots on b.PlotId equals pl.Id
+                     join u in _context.Users on p.RequestedBy equals u.Id
+                     where p.Status == 1 // Pending
+                     select new VerificationRequestInfo
+                     {
+                         Id = r.Id,                       
+                         Amount = r.Amount,
+                         ReceiptDate = r.ReceiptDate,
+                         ReceiptMethod = r.ReceiptMethod,
+                         TransactionId = r.TransactionId,
+                         BankName = r.BankName,
+                         ChequeNo = r.ChequeNo,
+                         Status = r.Status,
+                         Notes = r.Notes,                        
+                         RequestedOn = p.RequestedOn,
+                         RequestedByName = u.UserName,
+                         BookingId = b.Id,
+                         CustomerName = b.ClientName, 
+                          PlotNo = pl.PlotNo
+                     };
+            return q.ToList();
+        }
+
+        public bool Verify(VerifReceiptRequest model)
+        {
+            if(model.Status==1) //1 Approved
+            {
+                var receipt = _context.Receipts.FirstOrDefault(p => p.Id == model.ReceiptId);
+                receipt.Status = 3; // Verified
+                _context.SaveChanges();
+            }
+            else if (model.Status == 2) //2 Rejected
+            {
+                var receipt = _context.Receipts.FirstOrDefault(p => p.Id == model.ReceiptId);
+                receipt.Status = 4; // Rejected
+                _context.SaveChanges();
+            }
+
+            var verifRequest = _context.ReceiptVerificationRequests.FirstOrDefault(p => p.ReceiptId == model.ReceiptId  );
+            verifRequest.Status = 2; //2: Verification Done
+            _context.SaveChanges();
+
             return true;
         }
     }

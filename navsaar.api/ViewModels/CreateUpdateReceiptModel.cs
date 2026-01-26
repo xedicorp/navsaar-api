@@ -7,7 +7,7 @@
         public decimal Amount { get; set; }
         public DateTime ReceiptDate { get; set; }
         public int ReceiptMethod { get; set; }
-        public string TransactionId { get; set; }
+        public string? TransactionId { get; set; }
         public string? BankName { get; set; }
         public string? ChequeNo { get; set; }
         public int? Status { get; set; }
