@@ -28,7 +28,8 @@ namespace navsaar.api.Repositories
                         BankName = p.BankName,
                         ChequeNo = p.ChequeNo,
                         Status = p.Status,
-                        Notes = p.Notes
+                        Notes = p.Notes,
+                        StatusText = GetStatus(p.Status.GetValueOrDefault())
 
                     }).ToList();
 
@@ -38,7 +39,22 @@ namespace navsaar.api.Repositories
             return receipts;
 
         }
-
+        public string GetStatus(int statusId)
+        {
+            switch (statusId)
+            {
+                case 1:
+                    return "Verification Pending";
+                case 2:
+                    return "Under Verification";
+                case 3:
+                    return "Verified";
+                case 4:
+                    return "Rejected";
+                default:
+                    return "Unknown Status";
+            }
+        }
         public List<ReceiptInfo> ListByBookingId(int bookingId)
         {
             List<ReceiptInfo> receipts = (from p in _context.Receipts

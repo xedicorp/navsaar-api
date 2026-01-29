@@ -152,9 +152,13 @@ namespace navsaar.api.Repositories
                     return "Active";
                 case 2:
                     return "Inactive";
+                case 7:
+                    return "On Hold for Intital Payment Confirmation";
                 case 8:
-                    return "Hold";
+                    return "On Hold for Draft Preparation";
                 case 9:
+                    return " Draft Prepared";
+                case 99:
                     return "Cancelled";
                 default:
                     return "Unknown";
@@ -664,7 +668,7 @@ namespace navsaar.api.Repositories
             _context.SaveChanges();
 
             //Update the booking with new plot details
-            existing.Status = 9; // Cancelled
+            existing.Status = 99; // Cancelled
             existing.LastStatusChangedBy = request.CancelledBy;
             existing.LastStatusChangedOn = DateTime.Now;
             _context.SaveChanges();
@@ -778,6 +782,60 @@ namespace navsaar.api.Repositories
                         Status = GetStatus(p.Status.GetValueOrDefault()),
 
                     }).ToList();
+        }
+
+        public bool SendToDraft(SendToDraftRequest request)
+        {
+            DraftRequest draftRequest = new DraftRequest(); 
+            draftRequest.BookingId = request.BookingId;
+            draftRequest.RequestedBy = request.UserId;
+            draftRequest.Notes=request.Notes;
+            draftRequest.RequestedDate = DateTime.Now;
+            draftRequest.Status = 1;
+            draftRequest.IsOriginalAgreement=request.IsOriginalAgreement;
+
+            _context.DraftRequests.Add(draftRequest);
+            _context.SaveChanges();
+
+            var booking=  _context.Bookings.FirstOrDefault(p => p.Id == request.BookingId) ;
+            booking.Status = 8; // On Hold for Draft Preparation
+            _context.SaveChanges();
+
+            return true;
+        }
+        public List<DraftRequestInfo> GetDraftRequests()
+        {
+            var q = from p in _context.DraftRequests                 
+                    join b in _context.Bookings on p.BookingId equals b.Id
+                    join pl in _context.Plots on b.PlotId equals pl.Id
+                    join u in _context.Users on p.RequestedBy equals u.Id
+                    where p.Status == 1 // Pending
+                    select new DraftRequestInfo
+                    {
+                        Id = p.Id,                       
+                        Status = p.Status,
+                        Notes = p.Notes,
+                        RequestedOn = p.RequestedDate,
+                        RequestedByName = u.UserName,
+                        BookingId = b.Id,
+                        CustomerName = b.ClientName,
+                        PlotNo = pl.PlotNo
+                    };
+            return q.ToList();
+        }
+
+        public bool MarkDraftComplete(MarkDraftCompleteRequest request)
+        {
+            DraftRequest draftRequest = _context.DraftRequests.FirstOrDefault(p => p.Id == request.Id);
+
+            draftRequest.Status = 2; //Completed
+            _context.SaveChanges();
+
+            var booking = _context.Bookings.FirstOrDefault(p => p.Id == draftRequest.BookingId);
+            booking.Status = 9; //  Draft Prepared
+            _context.SaveChanges();
+
+            return true;
         }
     }
 }

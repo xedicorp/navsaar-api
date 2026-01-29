@@ -125,5 +125,24 @@ namespace navsaar.api.Controllers
         {
             return _bookingRepository.Cancel(request);
         }
+
+        [HttpPost]
+        [Route("SendToDraft")]
+        public bool SendToDraft(SendToDraftRequest request)
+        {
+            return _bookingRepository.SendToDraft(request);
+        }
+        [HttpGet]
+        [Route("GetDraftRequests")]
+        public List<DraftRequestInfo> GetDraftRequests()
+        {
+            return _bookingRepository.GetDraftRequests();
+        }
+        [HttpPost]
+        [Route("MarkDraftComplete")]
+        public bool MarkDraftComplete(MarkDraftCompleteRequest request)
+        {
+            return _bookingRepository.MarkDraftComplete(request);
+        }
     }
 }
