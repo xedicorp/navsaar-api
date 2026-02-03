@@ -17,6 +17,7 @@ namespace navsaar.api.Repositories
             return (from p in _context.Plots
                     join t in _context.Townships on p.TownshipId equals t.Id
                     join pt in _context.PlotTypes on p.PlotTypeId equals pt.Id
+                    join f in _context.FacingTypes on p.Facing equals f.Id 
                     where p.TownshipId == townshipId
                     && (status == 0 || p.Status == status)  
                     select new PlotInfo
@@ -32,7 +33,7 @@ namespace navsaar.api.Repositories
                         PlotTypeId = p.PlotTypeId,
                         TownshipName = t.Name,
                         PlotTypeName = pt.Name,
-                        FacingName = p.Facing == 1 ? "East": (p.Facing==2? "West": (p.Facing==3?"North":"South")),
+                        FacingName = f.FacingName,
                          Status=GetStatus(p.Status ?? 0)
                     }).ToList();
 

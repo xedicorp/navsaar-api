@@ -31,5 +31,11 @@ namespace navsaar.api.Controllers
         {
           return  _repository.Save(request);
         }
+        [HttpPost]
+        [Route("UploadInventory")]
+        public async Task<bool> UploadInventory([FromForm] UploadInventoryRequestModel model)
+        {
+            return await _repository.UploadInventory(model);
+        }
     }
 }

@@ -106,7 +106,7 @@ namespace navsaar.api.Repositories.Identity
             var user=  _context.Users.FirstOrDefault(p => p.Id == userId); 
 
             List<UserTownshipInfo> userTownshipInfos = new List<UserTownshipInfo>();
-            List<UserTownship> userTownships = _context.UserTownships.Where(p => p.UserId==userId).ToList();
+            List<UserTownship> userTownships = _context.UserTownships.Where(p => p.UserId==userId || user.RoleId == 1).ToList();
             List<Township> townships = _context.Townships.ToList();
             foreach (var township in townships)
             {

@@ -19,5 +19,6 @@
         public string LeaderName { get; set; } 
         public int WorkflowTypeId { get; set; }
         public  IFormFile?  File { get; set; }
+        public int DocumentTypeId { get; set; }
     }
 }

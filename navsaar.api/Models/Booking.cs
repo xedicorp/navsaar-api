@@ -86,6 +86,7 @@ namespace navsaar.api.Models
         public int? Status { get; set; }
         public DateTime? LastStatusChangedOn { get; set; }
         public int? LastStatusChangedBy { get; set; }
+     
 
     }
 }

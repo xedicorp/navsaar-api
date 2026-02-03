@@ -39,9 +39,9 @@ namespace navsaar.api.Controllers
         }
         [HttpPost]
         [Route("Save")]
-        public void Save([FromForm] CreateUpdateBookingModel model)
+        public async Task<int> Save([FromForm] CreateUpdateBookingModel model)
         {
-              _bookingRepository.Save(model);
+            return  await _bookingRepository.Save(model);
         }
         [HttpGet]
         [Route("GetBookingProgress")]
@@ -143,6 +143,24 @@ namespace navsaar.api.Controllers
         public bool MarkDraftComplete(MarkDraftCompleteRequest request)
         {
             return _bookingRepository.MarkDraftComplete(request);
+        }
+        [HttpPost]
+        [Route("SendForAllotmentLetter")]
+        public bool SendForAllotmentLetter(SendForAllotmentLetterRequestModel request)
+        {
+            return _bookingRepository.SendForAllotmentLetter(request);
+        }
+        [HttpGet]
+        [Route("GetAllotmentLetterRequests")]
+        public List<AllotmentLetterRequestInfo> GetAllotmentLetterRequests()
+        {
+            return _bookingRepository.GetAllotmentLetterRequests();
+        }
+        [HttpPost]
+        [Route("MarkAllotmentLetterComplete")]
+        public bool MarkAllotmentLetterComplete(MarkAllotmentLetterCompleteRequest request)
+        {
+            return _bookingRepository.MarkAllotmentLetterComplete(request);
         }
     }
 }

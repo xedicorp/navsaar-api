@@ -12,31 +12,36 @@ namespace navsaar.api.Repositories
     {
         private readonly AppDbContext _context;
         private readonly IReceiptRepository _receiptRepository;
-        public BookingRepository(AppDbContext context, IReceiptRepository receiptRepository)
+        private readonly IDocumentRepository _documentRepository;
+        public BookingRepository(AppDbContext context, IReceiptRepository receiptRepository,
+                IDocumentRepository documentRepository)
         {
             _context = context;
             _receiptRepository = receiptRepository;
+            _documentRepository = documentRepository;
         }
-        public async Task Save(CreateUpdateBookingModel booking)
+        public async Task<int> Save(CreateUpdateBookingModel booking)
         {
             var entity = new Models.Booking();
 
-            if (booking.File != null)
-            {
-                // Define the path where the file will be saved
-                var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "Uploads");
-                if (!Directory.Exists(uploadsFolder))
-                {
-                    Directory.CreateDirectory(uploadsFolder);
-                }
-                string fileName = Guid.NewGuid().ToString() + "_" + booking.File.FileName;
-                var filePath = Path.Combine(uploadsFolder, fileName);
+            //if (booking.File != null)
+            //{
+            //    // Define the path where the file will be saved
+            //    var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "Uploads");
+            //    if (!Directory.Exists(uploadsFolder))
+            //    {
+            //        Directory.CreateDirectory(uploadsFolder);
+            //    }
+            //    string fileName = Guid.NewGuid().ToString() + "_" + booking.File.FileName;
+            //    var filePath = Path.Combine(uploadsFolder, fileName);
 
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                {
-                      booking.File.CopyTo(stream);
-                }
-            }
+            //    using (var stream = new FileStream(filePath, FileMode.Create))
+            //    {
+            //          booking.File.CopyTo(stream);
+            //    }
+            //}
+           
+             
 
             if (booking.Id != 0)
             {
@@ -44,7 +49,7 @@ namespace navsaar.api.Repositories
                 entity.CurrentStage = 1;
             }
 
-            entity.ChequeFilePath = booking.File != null ? entity.ChequeFilePath : entity.ChequeFilePath;
+           // entity.ChequeFilePath = booking.File != null ? entity.ChequeFilePath : entity.ChequeFilePath;
             entity.TownshipId = booking.TownshipId;
             entity.PlotNo = booking.PlotNo;
             entity.PlotSize = booking.PlotSize ;
@@ -63,11 +68,22 @@ namespace navsaar.api.Repositories
             entity.Status=1; // Active
             entity.LastStatusChangedBy = 1;
             entity.LastStatusChangedOn = DateTime.Now;
+           
             if (booking.Id == 0)
             {
                 _context.Bookings.Add(entity);
             }
             _context.SaveChanges();
+
+           // //Upload ID Proof
+           //await  this._documentRepository.Upload(new UploadDocumentRequest
+           // {
+           //     BookingId = entity.Id,
+           //     DocumentTypeId = booking.DocumentTypeId, // Cheque Copy
+           //     File = booking.File,
+           //     Notes = "Id proof"
+           // });
+           return entity.Id;
         }
         public List<BookingInfo> List()
         {
@@ -158,6 +174,10 @@ namespace navsaar.api.Repositories
                     return "On Hold for Draft Preparation";
                 case 9:
                     return " Draft Prepared";
+                case 10:
+                    return "On Hold for Allotment Letter Preparation";
+                case 11:
+                    return "Allotment Letter prepared";                    
                 case 99:
                     return "Cancelled";
                 default:
@@ -545,6 +565,7 @@ namespace navsaar.api.Repositories
 
         public BookingInfo GetById(int bookingId)
         {
+             
             return (from p in _context.Bookings
                     join t in _context.Townships on p.TownshipId equals t.Id
                     join s in _context.Plots on p.PlotId equals s.Id
@@ -567,7 +588,7 @@ namespace navsaar.api.Repositories
                         DDClearedOn = p.DDClearedOn,
                         DraftPreparedOn = p.DraftPreparedOn,
                         TownshipId = p.TownshipId,
-                        ChequeFilePath = p.ChequeFilePath,
+                       // ChequeFilePath = p.ChequeFilePath,
                         IsDDSubmittedToBank = p.IsDDSubmittedToBank,
                         WorkflowTypeId = p.WorkflowTypeId,
                         DDReceivedFromBankOn = p.DDReceivedFromBankOn,
@@ -615,6 +636,7 @@ namespace navsaar.api.Repositories
                         JDAPattaRegisteredOn = p.JDAPattaRegisteredOn ,
                         AgreementValue=p.AgreementValue,
                         PlotId = p.PlotId
+                      
                     }).FirstOrDefault();
         }
 
@@ -833,6 +855,61 @@ namespace navsaar.api.Repositories
 
             var booking = _context.Bookings.FirstOrDefault(p => p.Id == draftRequest.BookingId);
             booking.Status = 9; //  Draft Prepared
+            _context.SaveChanges();
+
+            return true;
+        }
+
+        public bool SendForAllotmentLetter(SendForAllotmentLetterRequestModel request)
+        {
+            AllotmentLetterRequest allotmentLetterRequest = new AllotmentLetterRequest();
+            allotmentLetterRequest.BookingId = request.BookingId;
+            allotmentLetterRequest.RequestedBy = request.UserId;
+            allotmentLetterRequest.Notes = request.Notes;
+            allotmentLetterRequest.RequestedDate = DateTime.Now;
+            allotmentLetterRequest.Status = 1;
+          
+
+            _context.AllotmentLetterRequests.Add(allotmentLetterRequest);
+            _context.SaveChanges();
+
+            var booking = _context.Bookings.FirstOrDefault(p => p.Id == request.BookingId);
+            booking.Status = 10; // On Hold for Alloment Letter Preparation
+            _context.SaveChanges();
+
+            return true;
+        }
+
+        public List<AllotmentLetterRequestInfo> GetAllotmentLetterRequests()
+        {
+            var q = from p in _context.AllotmentLetterRequests
+                    join b in _context.Bookings on p.BookingId equals b.Id
+                    join pl in _context.Plots on b.PlotId equals pl.Id
+                    join u in _context.Users on p.RequestedBy equals u.Id
+                    where p.Status == 1 // Pending
+                    select new AllotmentLetterRequestInfo
+                    {
+                        Id = p.Id,
+                        Status = p.Status,
+                        Notes = p.Notes,
+                        RequestedOn = p.RequestedDate,
+                        RequestedByName = u.UserName,
+                        BookingId = b.Id,
+                        CustomerName = b.ClientName,
+                        PlotNo = pl.PlotNo
+                    };
+            return q.ToList();
+        }
+
+        public bool MarkAllotmentLetterComplete(MarkAllotmentLetterCompleteRequest request)
+        {
+            AllotmentLetterRequest allotmentLetterRequest = _context.AllotmentLetterRequests.FirstOrDefault(p => p.Id == request.Id);
+
+            allotmentLetterRequest.Status = 2; //Completed
+            _context.SaveChanges();
+
+            var booking = _context.Bookings.FirstOrDefault(p => p.Id == allotmentLetterRequest.BookingId);
+            booking.Status = 11; //  Allotment Letter prepared
             _context.SaveChanges();
 
             return true;

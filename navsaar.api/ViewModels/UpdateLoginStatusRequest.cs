@@ -28,8 +28,10 @@
     public class  DocumentModel
     {
         public int DocumentId { get; set; }
-        public int? BookingId { get; set; } 
+        public int? BookingId { get; set; }
+        public int DocumentTypeId { get; set; }
         public string? DocumentTypeName { get; set; }
+        public string? FileName { get; set; }
         public string? Url { get; set; }
         public DateTime? UploadedOn { get; set; }
         public string? Notes { get; set; }

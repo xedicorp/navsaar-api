@@ -34,5 +34,11 @@ namespace navsaar.api.Controllers
         {
             return _masterRepository.PlotTypeList();
         }
+        [HttpGet]
+        [Route("FacingTypes")]
+        public IEnumerable<FacingType> FacingTypes()
+        {
+            return _masterRepository.FacingTypeList();
+        }
     }
 }

@@ -14,11 +14,15 @@ namespace navsaar.api.Repositories
         {
             _context = context;
         }
+
+        public List<FacingType> FacingTypeList()
+        {
+            return _context.FacingTypes.ToList();
+        }
+
         public List<PlotType> PlotTypeList()
         {
-            return _context.PlotTypes.ToList();
-                    
-
+            return _context.PlotTypes.ToList(); 
         }
     }
 }

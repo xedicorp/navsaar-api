@@ -10,7 +10,7 @@ namespace navsaar.api.Repositories
         List<BookingInfo> List();
          BookingInfo  GetById(int bookingId);
         List<BookingProgressModel> GetBookingProgress(int bookingId);
-        Task Save(CreateUpdateBookingModel booking);
+        Task<int> Save(CreateUpdateBookingModel booking);
         bool UpdateInitialPayment(UpdateInitialPaymentRequest request); //Stage2
        
 
@@ -34,6 +34,12 @@ namespace navsaar.api.Repositories
         bool SendToDraft(SendToDraftRequest request);
         List<DraftRequestInfo> GetDraftRequests();
         bool MarkDraftComplete(MarkDraftCompleteRequest request);
+
+
+        bool SendForAllotmentLetter(SendForAllotmentLetterRequestModel request);
+        List<AllotmentLetterRequestInfo> GetAllotmentLetterRequests();
+        bool MarkAllotmentLetterComplete(MarkAllotmentLetterCompleteRequest request);
+
         List<BookingInfo> Search(int? townshipId, int? bookingType, int? associateId, DateTime? fromDate);
     }
 }

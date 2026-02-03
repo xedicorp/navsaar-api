@@ -9,6 +9,7 @@ namespace navsaar.api.Models
         public int? BookingId { get; set; }
         public int? DocumentTypeId { get; set; }
         public string? FilePath { get; set; }
+        public string? FileName { get; set; }
         public DateTime UploadedOn { get; set; }
         public int? UploadedBy { get; set; }
         public string? Notes { get; set; }
