@@ -17,6 +17,8 @@ namespace navsaar.api.Services
         {
             _bookingRepository = bookingRepository;
             _configuration = configuration;
+            accountSid = _configuration["Twilio:AccountSID"];
+            authToken = _configuration["Twilio:AuthToken"];
         }
 
 
