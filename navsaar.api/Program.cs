@@ -6,6 +6,7 @@ using navsaar.api.Repositories.Followups;
 using navsaar.api.Repositories.Identity;
 using navsaar.api.Repositories.Refunds;
 using navsaar.api.Repositories.Reminders;
+using navsaar.api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,6 +26,7 @@ builder.Services.AddScoped<IFollowupRepository, FollowupRepository>();
 builder.Services.AddScoped<IReminderRepository, ReminderRepository>();
 builder.Services.AddScoped<IPermissionRepository, PermissionRepository>();
 builder.Services.AddScoped<IRefundRepository, RefundRepository>();
+builder.Services.AddScoped<IWhatsAppService, WhatsAppService>();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 //builder.Services.AddSwaggerGen();

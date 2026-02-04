@@ -3,6 +3,7 @@
 using Azure.Core;
 using navsaar.api.Infrastructure;
 using navsaar.api.Models;
+using navsaar.api.Services;
 using navsaar.api.ViewModels;
 using navsaar.api.ViewModels.Booking;
 
@@ -13,15 +14,18 @@ namespace navsaar.api.Repositories
         private readonly AppDbContext _context;
         private readonly IReceiptRepository _receiptRepository;
         private readonly IDocumentRepository _documentRepository;
+        IWhatsAppService _whatsAppService;
         public BookingRepository(AppDbContext context, IReceiptRepository receiptRepository,
-                IDocumentRepository documentRepository)
+                IDocumentRepository documentRepository, IWhatsAppService whatsAppService)
         {
             _context = context;
             _receiptRepository = receiptRepository;
             _documentRepository = documentRepository;
+            _whatsAppService = whatsAppService;
         }
         public async Task<int> Save(CreateUpdateBookingModel booking)
         {
+            bool isNew = false;
             var entity = new Models.Booking();
 
             //if (booking.File != null)
@@ -72,6 +76,7 @@ namespace navsaar.api.Repositories
             if (booking.Id == 0)
             {
                 _context.Bookings.Add(entity);
+                isNew = true;
             }
             _context.SaveChanges();
 
@@ -83,6 +88,10 @@ namespace navsaar.api.Repositories
            //     File = booking.File,
            //     Notes = "Id proof"
            // });
+           if(isNew)
+            {
+                _whatsAppService.SendMessage(BookingUpdate.New, entity.Id);
+            }
            return entity.Id;
         }
         public List<BookingInfo> List()
