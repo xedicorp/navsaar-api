@@ -41,5 +41,6 @@ namespace navsaar.api.Repositories
         bool MarkAllotmentLetterComplete(MarkAllotmentLetterCompleteRequest request);
 
         List<BookingInfo> Search(int? townshipId, int? bookingType, int? associateId, DateTime? fromDate);
+        List<DocumentModel> GetCheckList(int bookingId);
     }
 }

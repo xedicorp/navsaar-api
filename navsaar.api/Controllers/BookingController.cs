@@ -11,12 +11,11 @@ namespace navsaar.api.Controllers
     {
         IBookingRepository _bookingRepository;
 
-        private readonly ILogger<WeatherForecastController> _logger;
-
-        public BookingController(ILogger<WeatherForecastController> logger,
+      
+        public BookingController( 
              IBookingRepository bookingRepository)
         {
-            _logger = logger;
+           
             _bookingRepository = bookingRepository;
         }
         [HttpGet]
@@ -128,7 +127,7 @@ namespace navsaar.api.Controllers
 
         [HttpPost]
         [Route("SendToDraft")]
-        public bool SendToDraft(SendToDraftRequest request)
+        public bool SendToDraft(  SendToDraftRequest request)
         {
             return _bookingRepository.SendToDraft(request);
         }
@@ -146,7 +145,7 @@ namespace navsaar.api.Controllers
         }
         [HttpPost]
         [Route("SendForAllotmentLetter")]
-        public bool SendForAllotmentLetter(SendForAllotmentLetterRequestModel request)
+        public bool SendForAllotmentLetter(  SendForAllotmentLetterRequestModel request)
         {
             return _bookingRepository.SendForAllotmentLetter(request);
         }
@@ -161,6 +160,13 @@ namespace navsaar.api.Controllers
         public bool MarkAllotmentLetterComplete(MarkAllotmentLetterCompleteRequest request)
         {
             return _bookingRepository.MarkAllotmentLetterComplete(request);
+        }
+        [HttpGet]
+        [Route("GetCheckList")]
+        public List<DocumentModel> GetCheckList(int bookingId)
+        {
+           
+            return _bookingRepository.GetCheckList(bookingId);
         }
     }
 }

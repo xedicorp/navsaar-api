@@ -10,12 +10,12 @@ namespace navsaar.api.Controllers
     {
         IDocumentRepository _repository;
 
-        private readonly ILogger<WeatherForecastController> _logger;
+         
 
-        public DocumentController(ILogger<WeatherForecastController> logger,
+        public DocumentController( 
              IDocumentRepository repository)
         {
-            _logger = logger;
+            
             _repository = repository;
         } 
 
@@ -42,7 +42,8 @@ namespace navsaar.api.Controllers
         public List<DocumentModel> GetAllByBookingId(int bookingId)
         {
             return _repository.GetAllByBookingId(bookingId);
-        } 
-        
+        }
+      
+
     }
 }

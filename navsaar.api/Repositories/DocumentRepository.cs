@@ -78,5 +78,17 @@ namespace navsaar.api.Repositories
         {
             return _context.Documents.Find(id);
         }
+
+        public List<WorkflowDocType> GetDocTypesByWorkflow(int workflowTypeId)
+        {
+         return( from p in _context.WorkflowDocTypes                    
+                     where p.WorkflowTypeId == workflowTypeId
+                     select new WorkflowDocType
+                     {
+                         Id = p.Id,
+                         WorkflowTypeId = p.WorkflowTypeId,
+                         DocumentTypeId = p.DocumentTypeId  
+                     }).ToList();
+        }
     }
 }

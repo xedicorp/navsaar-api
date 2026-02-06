@@ -6,6 +6,7 @@ using navsaar.api.Models;
 using navsaar.api.Services;
 using navsaar.api.ViewModels;
 using navsaar.api.ViewModels.Booking;
+using Twilio.Rest.Taskrouter.V1.Workspace.TaskQueue;
 
 namespace navsaar.api.Repositories
 {
@@ -90,7 +91,7 @@ namespace navsaar.api.Repositories
            // });
            if(isNew)
             {
-                _whatsAppService.SendMessage(BookingUpdate.New, entity.Id);
+                _whatsAppService.SendMessage(BookingUpdate.New, entity );
             }
            return entity.Id;
         }
@@ -186,7 +187,9 @@ namespace navsaar.api.Repositories
                 case 10:
                     return "On Hold for Allotment Letter Preparation";
                 case 11:
-                    return "Allotment Letter prepared";                    
+                    return "Allotment Letter prepared";
+                case 12:
+                    return "Booking Confirmed, Payment Clearance Under-Process";
                 case 99:
                     return "Cancelled";
                 default:
@@ -824,6 +827,10 @@ namespace navsaar.api.Repositories
             draftRequest.RequestedDate = DateTime.Now;
             draftRequest.Status = 1;
             draftRequest.IsOriginalAgreement=request.IsOriginalAgreement;
+            draftRequest.ApplicantName = request.ApplicantName;
+            draftRequest.RelativeName = request.RelativeName;
+            draftRequest.Address = request.Address;
+            draftRequest.ContactNo = request.ContactNo;
 
             _context.DraftRequests.Add(draftRequest);
             _context.SaveChanges();
@@ -850,7 +857,11 @@ namespace navsaar.api.Repositories
                         RequestedByName = u.UserName,
                         BookingId = b.Id,
                         CustomerName = b.ClientName,
-                        PlotNo = pl.PlotNo
+                        PlotNo = pl.PlotNo,
+                        ApplicantName = p.ApplicantName,
+                        RelativeName = p.RelativeName,
+                        ContactNo=p.ContactNo,
+                        Address = p.Address,
                     };
             return q.ToList();
         }
@@ -876,6 +887,11 @@ namespace navsaar.api.Repositories
             allotmentLetterRequest.RequestedBy = request.UserId;
             allotmentLetterRequest.Notes = request.Notes;
             allotmentLetterRequest.RequestedDate = DateTime.Now;
+            allotmentLetterRequest.ApplicantName = request.ApplicantName;
+            allotmentLetterRequest.RelativeName = request.RelativeName;
+            allotmentLetterRequest.Address = request.Address;
+            allotmentLetterRequest.ContactNo = request.ContactNo;
+
             allotmentLetterRequest.Status = 1;
           
 
@@ -905,7 +921,11 @@ namespace navsaar.api.Repositories
                         RequestedByName = u.UserName,
                         BookingId = b.Id,
                         CustomerName = b.ClientName,
-                        PlotNo = pl.PlotNo
+                        PlotNo = pl.PlotNo,
+                        ApplicantName = p.ApplicantName,
+                        RelativeName = p.RelativeName,
+                        ContactNo = p.ContactNo,
+                        Address = p.Address,
                     };
             return q.ToList();
         }
@@ -922,6 +942,16 @@ namespace navsaar.api.Repositories
             _context.SaveChanges();
 
             return true;
+        }
+
+        public List<DocumentModel> GetCheckList(int bookingId)
+        {
+            List<DocumentModel> model = new List<DocumentModel>();
+            //Required Documents for a Booking type
+            var booking = this.GetById(bookingId);
+            var docTypes = _documentRepository.GetDocTypesByWorkflow(booking.WorkflowTypeId.GetValueOrDefault());
+            return model;  
+
         }
     }
 }

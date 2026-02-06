@@ -9,7 +9,7 @@ namespace navsaar.api.Repositories
     {
         Task<bool> Upload(UploadDocumentRequest request); //Stage 3 
         List<DocumentModel> GetAllByBookingId(int bookingId);
-
+        List<WorkflowDocType> GetDocTypesByWorkflow(int workflowTypeId);
         Document GetById(int id);
     }
 }

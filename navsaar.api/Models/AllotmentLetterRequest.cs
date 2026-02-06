@@ -11,5 +11,9 @@ namespace navsaar.api.Models
         public int RequestedBy { get; set; }
         public DateTime RequestedDate { get; set; }
         public int Status { get; set; }
+        public string? ApplicantName { get; set; }
+        public string? RelativeName { get; set; }
+        public string? Address { get; set; }
+        public string? ContactNo { get; set; }
     }
 }

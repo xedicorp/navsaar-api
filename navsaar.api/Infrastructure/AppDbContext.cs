@@ -35,6 +35,7 @@ namespace navsaar.api.Infrastructure
         public DbSet<DraftRequest> DraftRequests { get; set; }
         public DbSet<AllotmentLetterRequest> AllotmentLetterRequests { get; set; }
         public DbSet<FacingType> FacingTypes { get; set; }
+        public DbSet<WorkflowDocType> WorkflowDocTypes { get; set; }
 
     }
 }

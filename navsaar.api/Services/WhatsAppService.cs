@@ -1,4 +1,6 @@
-﻿using navsaar.api.Repositories;
+﻿using navsaar.api.Models;
+using navsaar.api.Repositories;
+using navsaar.api.ViewModels;
 using Newtonsoft.Json;
 using Twilio;
 using Twilio.Rest.Api.V2010.Account;
@@ -11,11 +13,11 @@ namespace navsaar.api.Services
         string accountSid = "";// Environment.GetEnvironmentVariable("TWILIO_ACCOUNT_SID");
         string authToken = ""; // Environment.GetEnvironmentVariable("TWILIO_AUTH_TOKEN");
 
-        IBookingRepository _bookingRepository;
+        
         private readonly IConfiguration _configuration;
-        public WhatsAppService(IBookingRepository bookingRepository, IConfiguration configuration)
+        public WhatsAppService(  IConfiguration configuration)
         {
-            _bookingRepository = bookingRepository;
+           
             _configuration = configuration;
             accountSid = _configuration["Twilio:AccountSID"];
             authToken = _configuration["Twilio:AuthToken"];
@@ -23,11 +25,11 @@ namespace navsaar.api.Services
 
 
         public void SendMessage(  
-            BookingUpdate update, int bookingId)
+            BookingUpdate update, Booking  booking)
         {
            
             string message = string.Empty;
-            var booking = _bookingRepository.GetById(bookingId);
+            
           
 
             switch(update)
@@ -41,7 +43,7 @@ namespace navsaar.api.Services
 
             TwilioClient.Init(accountSid, authToken);
             //Send To client
-            this.Send(booking.ContactNo,  update, message);
+            this.Send(booking.ClientContactNo,  update, message);
             //Send To Associate
             this.Send(booking.AssociateContactNo, update, message);
 
