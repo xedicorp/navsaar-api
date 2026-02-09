@@ -75,18 +75,26 @@ namespace navsaar.api.Repositories
 
         public List<TownshipCollectionModel> TownshipCollectionSummaryReport(int townshipId = 0)
         {
-           
-            var query = from b in _context.Bookings
-                        join t in _context.Townships on b.TownshipId equals t.Id
-                        join r in _context.Receipts on b.Id equals r.BookingId into br
-                        from receipt in br.DefaultIfEmpty()
-                        select new
-                        {
-                            TownshipId = t.Id,
-                            TownshipName = t.Name,                            
-                            ReceiptAmount = receipt != null ? receipt.Amount : 0,
-                            ReceiptDate = receipt != null ? receipt.ReceiptDate : (DateTime?)null
-                        };
+
+            var query =
+                    from t in _context.Townships
+
+                    join b in _context.Bookings
+                        on t.Id equals b.TownshipId into tb
+                    from booking in tb.DefaultIfEmpty()
+
+                    join r in _context.Receipts
+                        on booking.Id equals r.BookingId into br
+                    from receipt in br.DefaultIfEmpty()
+
+                    select new
+                    {
+                        TownshipId = t.Id,
+                        TownshipName = t.Name,
+                        ReceiptAmount = receipt != null ? receipt.Amount : 0,
+                        ReceiptDate = receipt != null ? receipt.ReceiptDate : (DateTime?)null
+                    };
+
 
             if (townshipId > 0)
             {

@@ -788,6 +788,7 @@ namespace navsaar.api.Repositories
             return (from p in _context.Bookings
                     join t in _context.Townships on p.TownshipId equals t.Id
                     join s in _context.Plots on p.PlotId equals s.Id
+                    join bs in _context.BookingStatusTypes on p.Status equals bs.Id
                     where (townshipId==null || townshipId==0 || p.TownshipId == townshipId)
                     && (bookingType == null || bookingType == 0 || p.WorkflowTypeId == bookingType)
                     && ( statusTypeId==0 || p.Status==statusTypeId)
@@ -857,7 +858,7 @@ namespace navsaar.api.Repositories
                         JDAPattaAppliedOn = p.JDAPattaAppliedOn,
                         JDAPattaNotes = p.JDAPattaNotes,
                         JDAPattaRegisteredOn = p.JDAPattaRegisteredOn,
-                        Status = GetStatus(p.Status.GetValueOrDefault()),
+                        Status = bs.Name,
 
                     }).ToList();
         }
