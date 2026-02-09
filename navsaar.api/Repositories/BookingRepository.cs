@@ -216,6 +216,13 @@ namespace navsaar.api.Repositories
             entity.CurrentStage = 3;
             entity.Status = 13; //Bank Login Done
             _context.SaveChanges();
+
+            if(!string.IsNullOrEmpty(request.LoginRefNo))
+            {
+                _whatsAppService.SendMessage(BookingUpdate.BankLoginDone, entity);
+            }
+            
+
             return true;
         }
 
@@ -737,6 +744,7 @@ namespace navsaar.api.Repositories
                     join s in _context.Plots on p.PlotId equals s.Id
                     where (townshipId==null || townshipId==0 || p.TownshipId == townshipId)
                     && (bookingType == null || bookingType == 0 || p.WorkflowTypeId == bookingType)
+                    && ( statusTypeId==0 || p.Status==statusTypeId)
                   //  && (associateId == null || associateId == 0 || p.AssociateId == associateId)
                   &&(fromDate == null || p.BookingDate >= fromDate)
                     select new BookingInfo

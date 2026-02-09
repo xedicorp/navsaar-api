@@ -13,7 +13,8 @@
         PaymentConfirmed,
         LoanSanctioned,
         SentForJDAPatta,
-        BankDDReceived
+        BankDDReceived,
+        BankLoginDone
     }
 
 }
