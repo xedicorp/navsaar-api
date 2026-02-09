@@ -14,7 +14,9 @@
         LoanSanctioned,
         SentForJDAPatta,
         BankDDReceived,
-        BankLoginDone
+        BankLoginDone,
+        DokitSigned,
+        RefundInitiated
     }
 
 }

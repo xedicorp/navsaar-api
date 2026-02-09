@@ -197,6 +197,22 @@ namespace navsaar.api.Repositories
             entity.Notes_2 = request.Notes;
             entity.CurrentStage = 2;
             _context.SaveChanges();
+
+            //Payment details received
+            _whatsAppService.SendMessage(
+                BookingUpdate.PaymentReceived,
+                entity
+            );
+
+            // Payment confirmed (only if verified)
+            if (request.IsPaymentVerified == true)
+            {
+                _whatsAppService.SendMessage(
+                    BookingUpdate.PaymentConfirmed,
+                    entity
+                );
+            }
+
             return true;
         }
 
@@ -257,6 +273,12 @@ namespace navsaar.api.Repositories
             entity.CurrentStage = 5;
             entity.Status = 14; //Loan Sanction Done
             _context.SaveChanges();
+
+            if (request.IsLoanSanctioned == true)
+            {
+                _whatsAppService.SendMessage(BookingUpdate.LoanSanctioned, entity);
+            }
+
             return true;
         }
         public bool UpdateMarkFileCheckStatus(UpdateMarkFileCheckStatusRequest request)
@@ -323,6 +345,13 @@ namespace navsaar.api.Repositories
             entity.CurrentStage = 8;
             entity.Status = 16; //Dokit Signed
             _context.SaveChanges();
+            if (request.IsDokitSigned == true)
+            {
+                _whatsAppService.SendMessage(
+                    BookingUpdate.DokitSigned,
+                    entity
+                );
+            }
             return true;
         }
         public async Task UploadBankDD(UploadBankDDRequest request)
@@ -376,6 +405,12 @@ namespace navsaar.api.Repositories
             entity.JDAPattaNotes = request.Notes;
             entity.CurrentStage = 8;
             _context.SaveChanges();
+
+            if (request.IsJDAPattaApplied == true)
+            {
+                _whatsAppService.SendMessage(BookingUpdate.SentForJDAPatta, entity);
+            }
+
             return true;
         }
         public bool UpdateBankDDStatus(UpdateBankDDStatusRequest request)
@@ -390,6 +425,12 @@ namespace navsaar.api.Repositories
             entity.DDUpdateNotes = request.Notes;
             entity.CurrentStage = 8;
             _context.SaveChanges();
+
+            if (request.IsDDSubmittedToBank == true)
+            {
+                _whatsAppService.SendMessage(BookingUpdate.BankDDReceived, entity);
+            }
+
             return true;
         }
 
@@ -725,6 +766,11 @@ namespace navsaar.api.Repositories
                 _context.RefundRequests.Add(refund);
             }
             _context.SaveChanges();
+            //Send Refund Initiated WhatsApp
+            _whatsAppService.SendMessage(
+                BookingUpdate.RefundInitiated,
+                existing
+            );
 
             Plot plot = _context.Plots.Find(existing.PlotId);
             if(plot == null)
@@ -837,6 +883,7 @@ namespace navsaar.api.Repositories
             booking.Status = 8; // On Hold for Draft Preparation
             _context.SaveChanges();
 
+            _whatsAppService.SendMessage(BookingUpdate.SentToDraft,booking);
             return true;
         }
         public List<DraftRequestInfo> GetDraftRequests()
@@ -900,6 +947,8 @@ namespace navsaar.api.Repositories
             booking.Status = 10; // On Hold for Alloment Letter Preparation
             _context.SaveChanges();
 
+            _whatsAppService.SendMessage(BookingUpdate.SentToAllotmentLetter, booking);
+
             return true;
         }
 
@@ -938,7 +987,7 @@ namespace navsaar.api.Repositories
             var booking = _context.Bookings.FirstOrDefault(p => p.Id == allotmentLetterRequest.BookingId);
             booking.Status = 11; //  Allotment Letter prepared
             _context.SaveChanges();
-
+            _whatsAppService.SendMessage(BookingUpdate.AllotmentLetterReceived,booking);
             return true;
         }
 
