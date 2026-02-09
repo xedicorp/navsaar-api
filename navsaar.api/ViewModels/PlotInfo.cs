@@ -6,7 +6,9 @@
         public int TownshipId { get; set; }
         public string TownshipName { get; set; }
         public string PlotNo { get; set; }
-        public decimal PlotSize { get; set; }
+        public decimal  PlotSize { get; set; }
+        public decimal? SaleableSize{ get; set; }
+        public decimal? PlotSizeInSqrmtr { get; set; }
         public int Facing { get; set; }
         public string FacingName { get; set; }
         public bool IsCorner { get; set; }

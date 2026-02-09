@@ -14,6 +14,8 @@ namespace navsaar.api.Models
         public bool IsTPoint { get; set; }
         public bool IsTapper { get; set; }
         public int PlotTypeId { get; set; }
-        public int? Status { get; set; } 
+        public int? Status { get; set; }
+        public decimal? SaleableSize { get; set; }
+        public decimal? PlotSizeInSqrmtr { get; set; }
     }
 }

@@ -40,5 +40,11 @@ namespace navsaar.api.Controllers
         {
             return _masterRepository.FacingTypeList();
         }
+        [HttpGet]
+        [Route("BookingStatusTypes")]
+        public IEnumerable<BookingStatusType> BookingStatusTypes()
+        {
+            return _masterRepository.BookingStatusTypeList();
+        }
     }
 }

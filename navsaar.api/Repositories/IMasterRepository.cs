@@ -9,7 +9,8 @@ namespace navsaar.api.Repositories
     public interface IMasterRepository
     {
         List<PlotType> PlotTypeList();
-            List<FacingType> FacingTypeList();
+        List<FacingType> FacingTypeList();
+        List<BookingStatusType> BookingStatusTypeList();
 
     }
 }

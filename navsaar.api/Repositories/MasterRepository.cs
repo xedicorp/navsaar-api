@@ -24,5 +24,9 @@ namespace navsaar.api.Repositories
         {
             return _context.PlotTypes.ToList(); 
         }
+        public List<BookingStatusType> BookingStatusTypeList()
+        {
+            return _context.BookingStatusTypes.ToList();
+        }
     }
 }

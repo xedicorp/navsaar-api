@@ -34,7 +34,9 @@ namespace navsaar.api.Repositories
                         TownshipName = t.Name,
                         PlotTypeName = pt.Name,
                         FacingName = f.FacingName,
-                         Status=GetStatus(p.Status ?? 0)
+                         Status=GetStatus(p.Status ?? 0),
+                        SaleableSize = p.SaleableSize,
+                        PlotSizeInSqrmtr = p.PlotSizeInSqrmtr
                     }).ToList();
 
         }
@@ -74,6 +76,8 @@ namespace navsaar.api.Repositories
                         TownshipName = t.Name,
                         PlotTypeName = pt.Name,
                         FacingName = p.Facing == 1 ? "East" : (p.Facing == 2 ? "West" : (p.Facing == 3 ? "North" : "South")),
+                        SaleableSize = p.SaleableSize,
+                        PlotSizeInSqrmtr = p.PlotSizeInSqrmtr,
                     }).FirstOrDefault();
 
         }
@@ -92,8 +96,10 @@ namespace navsaar.api.Repositories
             plot.IsCorner = request.IsCorner;   
             plot.IsTPoint = request.IsTPoint;   
             plot.IsTapper = request.IsTapper;
-          
-            if(request.Id == 0)
+            plot.SaleableSize=request.SaleableSize;
+            plot.PlotSizeInSqrmtr = request.PlotSizeInSqrmtr;   
+
+            if (request.Id == 0)
             {
                 plot.Status = 1; // Available
                 _context.Plots.Add(plot);

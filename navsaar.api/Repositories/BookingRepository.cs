@@ -81,25 +81,36 @@ namespace navsaar.api.Repositories
             }
             _context.SaveChanges();
 
-           // //Upload ID Proof
-           //await  this._documentRepository.Upload(new UploadDocumentRequest
-           // {
-           //     BookingId = entity.Id,
-           //     DocumentTypeId = booking.DocumentTypeId, // Cheque Copy
-           //     File = booking.File,
-           //     Notes = "Id proof"
-           // });
-           if(isNew)
+            // //Upload ID Proof
+            //await  this._documentRepository.Upload(new UploadDocumentRequest
+            // {
+            //     BookingId = entity.Id,
+            //     DocumentTypeId = booking.DocumentTypeId, // Cheque Copy
+            //     File = booking.File,
+            //     Notes = "Id proof"
+            // });
+            try
             {
-                _whatsAppService.SendMessage(BookingUpdate.New, entity );
+
+
+                if (isNew)
+                {
+                    _whatsAppService.SendMessage(BookingUpdate.New, entity);
+                }
             }
-           return entity.Id;
+            catch (Exception)
+            {
+
+                //throw;
+            }
+            return entity.Id;
         }
         public List<BookingInfo> List()
         {
             return (from p in _context.Bookings
                     join t in _context.Townships on p.TownshipId equals t.Id
                     join s in _context.Plots on p.PlotId equals s.Id
+                    join bs in _context.BookingStatusTypes on p.Status equals bs.Id  
                     select new BookingInfo
                     {
                         Id = p.Id,
@@ -164,38 +175,13 @@ namespace navsaar.api.Repositories
                         JDAPattaAppliedOn = p.JDAPattaAppliedOn,
                         JDAPattaNotes = p.JDAPattaNotes,
                         JDAPattaRegisteredOn = p.JDAPattaRegisteredOn,
-                        Status = GetStatus(p.Status.GetValueOrDefault()),
+                        Status = bs.Name
 
                     }).ToList();
 
         }
 
-        private static string GetStatus(int status)
-        {
-            switch (status)
-            {
-                case 1:
-                    return "Active";
-                case 2:
-                    return "Inactive";
-                case 7:
-                    return "On Hold for Intital Payment Confirmation";
-                case 8:
-                    return "On Hold for Draft Preparation";
-                case 9:
-                    return " Draft Prepared";
-                case 10:
-                    return "On Hold for Allotment Letter Preparation";
-                case 11:
-                    return "Allotment Letter prepared";
-                case 12:
-                    return "Booking Confirmed, Payment Clearance Under-Process";
-                case 99:
-                    return "Cancelled";
-                default:
-                    return "Unknown";
-            }
-        }
+    
         public bool UpdateInitialPayment(UpdateInitialPaymentRequest request)
         {
             var entity = _context.Bookings.Find(request.BookingId);
@@ -228,6 +214,7 @@ namespace navsaar.api.Repositories
             entity.LoginRefNo = request.LoginRefNo;           
             entity.Notes_3 = request.Notes;
             entity.CurrentStage = 3;
+            entity.Status = 13; //Bank Login Done
             _context.SaveChanges();
             return true;
         }
@@ -261,6 +248,7 @@ namespace navsaar.api.Repositories
             entity.LoanSanctionDate = request.LoanSanctionDate;  
             entity.LoanSanctionNotes = request.Notes;
             entity.CurrentStage = 5;
+            entity.Status = 14; //Loan Sanction Done
             _context.SaveChanges();
             return true;
         }
@@ -276,6 +264,7 @@ namespace navsaar.api.Repositories
             entity.CompletionDate = request.CompletionDate;
             entity.MarkFileCheckNotes = request.Notes;
             entity.CurrentStage = 6;
+            entity.Status = 15; //File Marked Completed
             _context.SaveChanges();
             return true;
         }
@@ -325,6 +314,7 @@ namespace navsaar.api.Repositories
             entity.JDAFileSignDate = request.JDAFileSignDate;
             entity.DokitSigingNotes = request.Notes;
             entity.CurrentStage = 8;
+            entity.Status = 16; //Dokit Signed
             _context.SaveChanges();
             return true;
         }
@@ -740,7 +730,7 @@ namespace navsaar.api.Repositories
             return true;
         }
 
-        public List<BookingInfo> Search(int? townshipId, int? bookingType, int? associateId, DateTime? fromDate)
+        public List<BookingInfo> Search(int? statusTypeId, int? townshipId, int? bookingType, int? associateId, DateTime? fromDate)
         {
             return (from p in _context.Bookings
                     join t in _context.Townships on p.TownshipId equals t.Id
