@@ -791,7 +791,7 @@ namespace navsaar.api.Repositories
                     join bs in _context.BookingStatusTypes on p.Status equals bs.Id
                     where (townshipId==null || townshipId==0 || p.TownshipId == townshipId)
                     && (bookingType == null || bookingType == 0 || p.WorkflowTypeId == bookingType)
-                    && ( statusTypeId==0 || p.Status==statusTypeId)
+                    && ( statusTypeId==0 || statusTypeId == null|| p.Status==statusTypeId)
                   //  && (associateId == null || associateId == 0 || p.AssociateId == associateId)
                   &&(fromDate == null || p.BookingDate >= fromDate)
                     select new BookingInfo
