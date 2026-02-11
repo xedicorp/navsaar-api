@@ -34,10 +34,11 @@ namespace navsaar.api.Controllers
         }
         [HttpPost]
         [Route("Save")]
-        public bool Save(  CreateUpdateReceiptModel model)
+        public async Task<bool> Save([FromForm] CreateUpdateReceiptModel model)
         {
-            return _receiptRepository.Save(model);
+            return await _receiptRepository.Save(model);
         }
+
         [HttpPost]
         [Route("SendVerifRequest")]
         public bool SendVerificationRequest(VerifRequest model)

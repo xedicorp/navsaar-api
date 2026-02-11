@@ -13,5 +13,7 @@
         public int? Status { get; set; }
         public string? StatusText { get; set; }
         public string? Notes { get; set; }
+        public string? ReceiptImage { get; set; }
+
     }
 }

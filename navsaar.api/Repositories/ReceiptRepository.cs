@@ -30,7 +30,6 @@ namespace navsaar.api.Repositories
                         Status = p.Status,
                         Notes = p.Notes,
                         StatusText = GetStatus(p.Status.GetValueOrDefault())
-
                     }).ToList();
 
 
@@ -71,7 +70,8 @@ namespace navsaar.api.Repositories
                         ChequeNo = p.ChequeNo,
                         Status = p.Status,
                         Notes = p.Notes,
-                        StatusText=p.Status==1? "Verification Pending" : (p.Status == 2 ? "Under Verification" : (p.Status == 3 ? "Verified" : "Rejected"))
+                        StatusText=p.Status==1? "Verification Pending" : (p.Status == 2 ? "Under Verification" : (p.Status == 3 ? "Verified" : "Rejected")),
+                        ReceiptImage = p.receiptImage
 
                     }).ToList();
 
@@ -101,7 +101,7 @@ namespace navsaar.api.Repositories
             return receipts;
         }
 
-        public bool Save(CreateUpdateReceiptModel model)
+        public async Task<bool> Save(CreateUpdateReceiptModel model)
         {
             var entity = new Models.Receipt();
             if (model.Id > 0)
@@ -126,6 +126,24 @@ namespace navsaar.api.Repositories
             {
                 _context.Receipts.Add(entity);
             }
+            // Handle receiptImage upload 
+            if (model.receiptImage != null && model.receiptImage.Length > 0)
+            {
+                var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "Uploads");
+                if (!Directory.Exists(uploadsFolder))
+                    Directory.CreateDirectory(uploadsFolder);
+
+                var fileName = Guid.NewGuid() + "_" + model.receiptImage.FileName;
+                var filePath = Path.Combine(uploadsFolder, fileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await model.receiptImage.CopyToAsync(stream);
+                }
+
+                entity.receiptImage = fileName; 
+            }
+
             _context.SaveChanges();
             return true;
         }
