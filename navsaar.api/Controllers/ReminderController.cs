@@ -38,5 +38,12 @@ namespace navsaar.api.Controllers
         {
             return _repository.Dismiss(reminderId);
         }
+        [HttpGet]
+        [Route("GetByBookingId")]
+        public IEnumerable<Reminder> GetByBookingId(int bookingId, bool isPending = true)
+        {
+            return _repository.GetByBookingId(bookingId, isPending);
+        }
+
     }
 }

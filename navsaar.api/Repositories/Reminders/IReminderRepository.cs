@@ -9,5 +9,7 @@ namespace navsaar.api.Repositories.Reminders
      
         int Save(CreateEditReminderRequest request);
         bool Dismiss(int reminderId);
+        List<Reminder> GetByBookingId(int bookingId, bool isPending = true);
+
     }
 }

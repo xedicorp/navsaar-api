@@ -42,5 +42,13 @@ namespace navsaar.api.Repositories.Reminders
             _context.SaveChanges();
             return entity.Id;
         }
+        public List<Reminder> GetByBookingId(int bookingId, bool isPending = true)
+        {
+            return _context.Reminders
+                .Where(r => r.BookingId == bookingId
+                         && r.IsCompleted != isPending)
+                .ToList();
+        }
+
     }
 }
