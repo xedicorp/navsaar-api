@@ -17,23 +17,32 @@ namespace navsaar.api.Repositories.Refunds
         public List<RefundInfo> List()
         {
             List<RefundInfo> refunds = new List<RefundInfo>();
+
             var refundRequests = _context.RefundRequests.ToList();
+
             foreach (var refund in refundRequests)
             {
-                var booking = _context.Bookings.Find(refund.BookingId);
-               
+                var cancelledOn = _context.BookingCancelLogs
+                    .Where(x => x.BookingId == refund.BookingId)
+                    .OrderByDescending(x => x.CancelledOn)
+                    .Select(x => x.CancelledOn)
+                    .FirstOrDefault();
+
                 refunds.Add(new RefundInfo
                 {
                     Id = refund.Id,
-                    BookingId = refund.BookingId, 
+                    BookingId = refund.BookingId,
+                    CancelledOn = cancelledOn,   // ✅ now safe
                     Status = GetStatus(refund.Status),
                     BookingInfo = _bookingRepository.GetById(refund.BookingId),
-                     Notes= refund.Notes,
-                      RefundAmount=refund.RefundAmount
+                    Notes = refund.Notes,
+                    RefundAmount = refund.RefundAmount
                 });
             }
+
             return refunds;
         }
+
         private static string GetStatus(int status)
         { //1:Pending 2:Approved 3:Rejected 4:Processed 5:Completed
             switch (status)

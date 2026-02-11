@@ -1,9 +1,15 @@
-﻿namespace navsaar.api.ViewModels.Refund
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace navsaar.api.ViewModels.Refund
 {
     public class RefundInfo
     {
         public int Id { get; set; }
         public int BookingId { get; set; }
+
+        [NotMapped]                     
+        public DateTime? CancelledOn { get; set; }
+
         public string Status { get; set; } //1:Pending 2:Approved 3:Rejected 4:Processed 5:Completed
         public decimal RefundAmount { get; set; }
         public string Notes { get; set; }
