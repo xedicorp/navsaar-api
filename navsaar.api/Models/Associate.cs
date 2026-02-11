@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace navsaar.api.Models
 {
     [Table("tblAssociates")]
-    public class Associate
+    public class AssociateInfo
     {
         [Key]
         public long ID { get; set; }
@@ -33,12 +33,12 @@ namespace navsaar.api.Models
         public string BankPassbookImage { get; set; }
 
         public string SponsorID { get; set; }
-        public string RERA { get; set; }
+        public string? RERA { get; set; }
 
-        public bool IsActive { get; set; } = false;
+        public bool? IsActive { get; set; } = false;
 
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
-        public DateTime UpdatedAt { get; set; } = DateTime.Now;
+        public DateTime? CreatedAt { get; set; } = DateTime.Now;
+        public DateTime? UpdatedAt { get; set; } = DateTime.Now;
 
         [StringLength(50)]
         public string AccountNumber { get; set; }
@@ -63,5 +63,12 @@ namespace navsaar.api.Models
         public string NomineeContactNo { get; set; }
         [StringLength(100)]
         public string NomineeRelation { get; set; }
+
+        [StringLength(20)]
+        public string? ContactNo { get; set; }
+
+        [StringLength(100)]
+        public string? LeaderName { get; set; }
+
     }
 }

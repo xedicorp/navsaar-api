@@ -783,7 +783,7 @@ namespace navsaar.api.Repositories
             return true;
         }
 
-        public List<BookingInfo> Search(int? statusTypeId, int? townshipId, int? bookingType, int? associateId, DateTime? fromDate)
+        public List<BookingInfo> Search(int? statusTypeId, int? townshipId, int? bookingType, string? reraNo, DateTime? fromDate)
         {
             return (from p in _context.Bookings
                     join t in _context.Townships on p.TownshipId equals t.Id
@@ -792,8 +792,9 @@ namespace navsaar.api.Repositories
                     where (townshipId==null || townshipId==0 || p.TownshipId == townshipId)
                     && (bookingType == null || bookingType == 0 || p.WorkflowTypeId == bookingType)
                     && ( statusTypeId==0 || statusTypeId == null|| p.Status==statusTypeId)
+                    && (string.IsNullOrEmpty(reraNo) || p.AssociateReraNo == reraNo)
                   //  && (associateId == null || associateId == 0 || p.AssociateId == associateId)
-                  &&(fromDate == null || p.BookingDate >= fromDate)
+                  && (fromDate == null || p.BookingDate >= fromDate)
                     select new BookingInfo
                     {
                         Id = p.Id,

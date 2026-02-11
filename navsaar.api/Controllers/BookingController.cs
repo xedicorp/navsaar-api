@@ -20,9 +20,9 @@ namespace navsaar.api.Controllers
         }
         [HttpGet]
         [Route("Search")]
-        public IEnumerable<BookingInfo> Search(int? statusTypeId , int? townshipId,int? bookingType, int? associateId,DateTime? fromDate )
+        public IEnumerable<BookingInfo> Search(int? statusTypeId , int? townshipId,int? bookingType, string? reraNo, DateTime? fromDate )
         {
-            return _bookingRepository.Search(statusTypeId, townshipId,   bookingType,   associateId,   fromDate);
+            return _bookingRepository.Search(statusTypeId, townshipId,   bookingType, reraNo,   fromDate);
         }
         [HttpGet]
         [Route("List")]
