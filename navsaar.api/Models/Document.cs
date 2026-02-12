@@ -13,5 +13,8 @@ namespace navsaar.api.Models
         public DateTime UploadedOn { get; set; }
         public int? UploadedBy { get; set; }
         public string? Notes { get; set; }
+        public bool IsDraft { get; set; }
+        public bool IsATT { get; set; }
+        public bool IsAllotment { get; set; }
     }
 }

@@ -24,6 +24,9 @@
         public int DocumentTypeId { get; set; }    
         public IFormFile File { get; set; }
         public string Notes { get; set; }
+        public bool IsDraft { get; set; }
+        public bool IsATT { get; set; }
+        public bool IsAllotment { get; set; }
     }
     public class  DocumentModel
     {
@@ -36,5 +39,8 @@
         public DateTime? UploadedOn { get; set; }
         public string? Notes { get; set; }
         public string? UploadedBy { get; set; }
+        public bool IsDraft { get; set; }
+        public bool IsATT { get; set; }
+        public bool IsAllotment { get; set; }
     }
 }

@@ -71,7 +71,9 @@ namespace navsaar.api.Repositories
                         Status = p.Status,
                         Notes = p.Notes,
                         StatusText=p.Status==1? "Verification Pending" : (p.Status == 2 ? "Under Verification" : (p.Status == 3 ? "Verified" : "Rejected")),
-                        ReceiptImage = p.receiptImage
+                        ReceiptImage = string.IsNullOrEmpty(p.receiptImage)
+                        ? null
+                        : "https://api.navsaargroup.com/Uploads/" + p.receiptImage
 
                     }).ToList();
 

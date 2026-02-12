@@ -81,6 +81,17 @@ namespace navsaar.api.Repositories
             }
             _context.SaveChanges();
 
+            //Update Plot Status to 2 (Booked)
+            if (isNew && booking.PlotId > 0)
+            {
+                var plot = _context.Plots.Find(booking.PlotId);
+
+                if (plot != null)
+                {
+                    plot.Status = 2; // Booked
+                    _context.SaveChanges();
+                }
+            }
             // //Upload ID Proof
             //await  this._documentRepository.Upload(new UploadDocumentRequest
             // {

@@ -7,6 +7,7 @@ using navsaar.api.Repositories.Identity;
 using navsaar.api.Repositories.Refunds;
 using navsaar.api.Repositories.Reminders;
 using navsaar.api.Services;
+using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -63,6 +64,14 @@ var app = builder.Build();
 app.UseHttpsRedirection();
 app.UseCors("AllowAll");
 app.UseAuthorization();
+app.UseStaticFiles(); // enable wwwroot (if any)
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(
+        Path.Combine(Directory.GetCurrentDirectory(), "Uploads")),
+    RequestPath = "/Uploads"
+});
 
 app.MapControllers();
 

@@ -48,6 +48,9 @@ namespace navsaar.api.Repositories
             document.UploadedBy = 1; //TODO: Change to logged in user
             document.FilePath = uniqueFileName;
             document.FileName = request.File.FileName;
+            document.IsDraft = request.IsDraft;
+            document.IsATT = request.IsATT;
+            document.IsAllotment = request.IsAllotment;
             _context.Documents.Add(document);
             _context.SaveChanges();
             return true;
@@ -69,7 +72,10 @@ namespace navsaar.api.Repositories
                         Url = p.FilePath,
                         UploadedBy = u.UserName,
                         DocumentTypeId = d.Id,
-                        FileName = p.FileName
+                        FileName = p.FileName,
+                        IsDraft = p.IsDraft,
+                        IsATT = p.IsATT,
+                        IsAllotment = p.IsAllotment
                     };
             return q.ToList();
         }
