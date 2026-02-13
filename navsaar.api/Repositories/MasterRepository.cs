@@ -28,5 +28,19 @@ namespace navsaar.api.Repositories
         {
             return _context.BookingStatusTypes.ToList();
         }
+        public AppSettingInfo GetAppSetting()
+        {
+            var setting = (from s in _context.AppSettings
+                           select new AppSettingInfo
+                           {
+                               Id = s.Id,
+                               LogoUrl = s.LogoUrl,
+                               ApiUrl = s.ApiUrl,
+                               ColorTheme = s.ColorTheme,
+                               CompanyName = s.CompanyName,
+                           }).FirstOrDefault();
+
+            return setting;
+        }
     }
 }

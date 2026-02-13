@@ -38,6 +38,7 @@ namespace navsaar.api.Infrastructure
         public DbSet<WorkflowDocType> WorkflowDocTypes { get; set; }
         public DbSet<BookingStatusType> BookingStatusTypes { get; set; }
         public DbSet<FileTimeline> FileTimelines { get; set; }
+        public DbSet<AppSetting> AppSettings{ get; set;}
 
-    }
+        }
 }

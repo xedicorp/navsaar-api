@@ -11,6 +11,7 @@ namespace navsaar.api.Repositories
         List<PlotType> PlotTypeList();
         List<FacingType> FacingTypeList();
         List<BookingStatusType> BookingStatusTypeList();
+        AppSettingInfo GetAppSetting();
 
     }
 }
