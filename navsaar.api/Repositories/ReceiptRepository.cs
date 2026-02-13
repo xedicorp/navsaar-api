@@ -79,26 +79,27 @@ namespace navsaar.api.Repositories
 
             //Initial Payment
 
-            var booking=  _context.Bookings.FirstOrDefault(p=> p.Id == bookingId);    
+            //var booking=  _context.Bookings.FirstOrDefault(p=> p.Id == bookingId);    
 
           
-            receipts.Add(new ReceiptInfo
-            {
-                Amount = booking.Amount_2.GetValueOrDefault (),
-                Notes = "Initial Payment",
-                 ReceiptDate = booking.DateOfTransfer ,
-                ReceiptMethod = booking.PaymentMode.GetValueOrDefault()
-            }
-            );
+            //receipts.Add(new ReceiptInfo
+            //{
+            //    Amount = booking.Amount_2.GetValueOrDefault (),
+            //    Notes = "Initial Payment",
+            //     ReceiptDate = booking.DateOfTransfer ,
+            //    ReceiptMethod = booking.PaymentMode.GetValueOrDefault()
+            //}
+            //);
+
             //Bank DD
             
-            receipts.Add(new ReceiptInfo
-            {
-                Amount = booking.DDAmount.GetValueOrDefault(),
-                Notes = "Bank DD",
-                ReceiptDate = booking.DDClearedOn 
-            }
-            );
+            //receipts.Add(new ReceiptInfo
+            //{
+            //    Amount = booking.DDAmount.GetValueOrDefault(),
+            //    Notes = "Bank DD",
+            //    ReceiptDate = booking.DDClearedOn 
+            //}
+            //);
 
             return receipts;
         }

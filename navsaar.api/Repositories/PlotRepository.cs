@@ -36,7 +36,9 @@ namespace navsaar.api.Repositories
                         FacingName = f.FacingName,
                          Status=GetStatus(p.Status ?? 0),
                         SaleableSize = p.SaleableSize,
-                        PlotSizeInSqrmtr = p.PlotSizeInSqrmtr
+                        PlotSizeInSqrmtr = p.PlotSizeInSqrmtr,
+                        RoadSize = p.RoadSize,
+                        PLC = p.PLC
                     }).ToList();
 
         }
@@ -78,6 +80,8 @@ namespace navsaar.api.Repositories
                         FacingName = p.Facing == 1 ? "East" : (p.Facing == 2 ? "West" : (p.Facing == 3 ? "North" : "South")),
                         SaleableSize = p.SaleableSize,
                         PlotSizeInSqrmtr = p.PlotSizeInSqrmtr,
+                        RoadSize = p.RoadSize,
+                        PLC = p.PLC
                     }).FirstOrDefault();
 
         }
@@ -97,7 +101,10 @@ namespace navsaar.api.Repositories
             plot.IsTPoint = request.IsTPoint;   
             plot.IsTapper = request.IsTapper;
             plot.SaleableSize=request.SaleableSize;
-            plot.PlotSizeInSqrmtr = request.PlotSizeInSqrmtr;   
+            plot.PlotSizeInSqrmtr = request.PlotSizeInSqrmtr;
+            plot.RoadSize = request.RoadSize;
+            plot.PLC = request.PLC;
+
 
             if (request.Id == 0)
             {

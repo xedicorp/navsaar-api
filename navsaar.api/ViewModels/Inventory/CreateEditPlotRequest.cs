@@ -13,6 +13,9 @@
         public int PlotTypeId { get; set; }
         public decimal? SaleableSize { get; set; }
         public decimal? PlotSizeInSqrmtr { get; set; }
+        public decimal? RoadSize { get; set; }
+        public decimal? PLC { get; set; }  
+
 
     }
 }
