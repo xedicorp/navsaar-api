@@ -7,5 +7,9 @@ namespace navsaar.api.Repositories
         List<AssociateInfo> GetList();
         AssociateInfo GetByRera(string reraNo);
 
+        long Create(CreateUpdateAssociateModel model);
+        bool Update(CreateUpdateAssociateModel model);
+        bool Delete(long id);
+
     }
 }

@@ -45,5 +45,62 @@ namespace navsaar.api.Repositories
                 })
                 .FirstOrDefault();
         }
-    }
+        //CREATE
+        public long Create(CreateUpdateAssociateModel model)
+        {
+            var associate = new navsaar.api.Models.AssociateInfo
+            {
+                FirstName = model.FirstName,
+                ContactNo = model.ContactNo,
+                LeaderName = model.LeaderName,
+                RERA = model.ReraNo,
+                IsActive = true,
+                CreatedAt = DateTime.Now
+            };
+
+            _context.Associates.Add(associate);
+            _context.SaveChanges();
+
+            return associate.ID;
+        }
+
+        //UPDATE
+        public bool Update(CreateUpdateAssociateModel model)
+        {
+            var associate = _context.Associates.FirstOrDefault(x => x.ID == model.Id);
+            if (associate == null)
+                return false;
+
+            if (model.FirstName != null)
+                associate.FirstName = model.FirstName;
+
+            if (model.ContactNo != null)
+                associate.ContactNo = model.ContactNo;
+
+            if (model.LeaderName != null)
+                associate.LeaderName = model.LeaderName;
+
+            if (model.ReraNo != null)
+            associate.RERA = model.ReraNo;
+
+            associate.IsActive = true;
+            associate.UpdatedAt = DateTime.Now;
+
+            _context.SaveChanges();
+            return true;
+        }
+
+        //DELETE
+        public bool Delete(long id)
+        {
+            var associate = _context.Associates.FirstOrDefault(x => x.ID == id);
+            if (associate == null)
+                return false;
+
+            _context.Associates.Remove(associate);
+            _context.SaveChanges();
+
+            return true;
+        }
+}
 }

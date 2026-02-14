@@ -33,5 +33,37 @@ namespace navsaar.api.Controllers
 
             return Ok(result);
         }
+
+        //Create
+        [HttpPost("Create")]
+        public ActionResult Create(CreateUpdateAssociateModel model)
+        {
+            var id = _associateRepository.Create(model);
+            return Ok(new { Id = id, Message = "Associate created successfully" });
+        }
+
+        //UPDATE
+        [HttpPut("Update")]
+        public ActionResult Update(CreateUpdateAssociateModel model)
+        {
+            var updated = _associateRepository.Update(model);
+
+            if (!updated)
+                return NotFound("Associate not found");
+
+            return Ok("Associate updated successfully");
+        }
+
+        //DELETE
+        [HttpDelete("Delete/{id}")]
+        public ActionResult Delete(long id)
+        {
+            var deleted = _associateRepository.Delete(id);
+
+            if (!deleted)
+                return NotFound("Associate not found");
+
+            return Ok("Associate deleted successfully");
+        }
     }
 }
