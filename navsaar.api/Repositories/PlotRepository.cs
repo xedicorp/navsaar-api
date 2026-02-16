@@ -81,7 +81,8 @@ namespace navsaar.api.Repositories
                         SaleableSize = p.SaleableSize,
                         PlotSizeInSqrmtr = p.PlotSizeInSqrmtr,
                         RoadSize = p.RoadSize,
-                        PLC = p.PLC
+                        PLC = p.PLC,
+                        Status = GetStatus(p.Status ?? 0)
                     }).FirstOrDefault();
 
         }
@@ -116,5 +117,52 @@ namespace navsaar.api.Repositories
             return plot.Id;
 
         }
+        public bool HoldPlot(int plotId, int associateId)
+        {
+            var plot = _context.Plots.FirstOrDefault(x => x.Id == plotId);
+
+            if (plot == null || plot.Status != 1)
+                return false;
+
+            var existingHold = _context.PlotHoldRequests
+                .Any(x => x.PlotId == plotId && !x.IsDelete);
+
+            if (existingHold)
+                return false;
+
+            plot.Status = 3; // Hold
+
+            _context.PlotHoldRequests.Add(new PlotHoldRequest
+            {
+                PlotId = plotId,
+                AssociateId = associateId,
+                HoldDateTime = DateTime.Now,
+                IsDelete = false
+            });
+
+            _context.SaveChanges();
+            return true;
+        }
+
+        public void ReleaseExpiredHolds()
+        {
+            var expiryTime = DateTime.Now.AddHours(-24);
+
+            var expiredHolds = (from h in _context.PlotHoldRequests
+                                join p in _context.Plots on h.PlotId equals p.Id
+                                where !h.IsDelete
+                                && h.HoldDateTime <= expiryTime
+                                && p.Status == 3 // Still on hold
+                                select new { h, p }).ToList();
+
+            foreach (var item in expiredHolds)
+            {
+                item.p.Status = 1; // Available
+                item.h.IsDelete = true;
+            }
+
+            _context.SaveChanges();
+        }
+
     }
 }

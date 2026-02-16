@@ -39,6 +39,8 @@ namespace navsaar.api.Infrastructure
         public DbSet<BookingStatusType> BookingStatusTypes { get; set; }
         public DbSet<FileTimeline> FileTimelines { get; set; }
         public DbSet<AppSetting> AppSettings{ get; set;}
+        public DbSet<PlotHoldRequest> PlotHoldRequests { get; set; }
 
-        }
+
+    }
 }

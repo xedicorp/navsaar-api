@@ -89,6 +89,14 @@ namespace navsaar.api.Repositories
                 if (plot != null)
                 {
                     plot.Status = 2; // Booked
+                    // Release Hold (if exists)
+                    var hold = _context.PlotHoldRequests
+                        .FirstOrDefault(x => x.PlotId == booking.PlotId && !x.IsDelete);
+
+                    if (hold != null)
+                    {
+                        hold.IsDelete = true;
+                    }
                     _context.SaveChanges();
                 }
             }

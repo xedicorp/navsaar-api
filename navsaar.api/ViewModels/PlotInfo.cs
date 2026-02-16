@@ -21,4 +21,9 @@
         public decimal? PLC { get; set; }   
 
     }
+    public class PlotHoldRequestModel
+    {
+        public int PlotId { get; set; }
+        public int AssociateId { get; set; }
+    }
 }
