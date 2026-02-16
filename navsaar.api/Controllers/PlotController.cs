@@ -44,12 +44,12 @@ namespace navsaar.api.Controllers
         [Route("Hold")]
         public IActionResult HoldPlot(PlotHoldRequestModel model)
         {
-            var result = _repository.HoldPlot(model.PlotId, model.AssociateId);
+            var result = _repository.HoldPlot(model);
 
             if (!result)
                 return BadRequest("Plot is not available for hold");
 
-            return Ok("Plot put on hold for 24 hours");
+            return Ok("Plot put on hold successfully");
         }
 
     }

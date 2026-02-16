@@ -117,15 +117,15 @@ namespace navsaar.api.Repositories
             return plot.Id;
 
         }
-        public bool HoldPlot(int plotId, int associateId)
+        public bool HoldPlot(PlotHoldRequestModel model)
         {
-            var plot = _context.Plots.FirstOrDefault(x => x.Id == plotId);
+            var plot = _context.Plots.FirstOrDefault(x => x.Id == model.PlotId);
 
             if (plot == null || plot.Status != 1)
                 return false;
 
             var existingHold = _context.PlotHoldRequests
-                .Any(x => x.PlotId == plotId && !x.IsDelete);
+                .Any(x => x.PlotId == model.PlotId && !x.IsDelete);
 
             if (existingHold)
                 return false;
@@ -134,10 +134,16 @@ namespace navsaar.api.Repositories
 
             _context.PlotHoldRequests.Add(new PlotHoldRequest
             {
-                PlotId = plotId,
-                AssociateId = associateId,
+                PlotId = model.PlotId,
+                AssociateId = model.AssociateId,
                 HoldDateTime = DateTime.Now,
-                IsDelete = false
+                IsDelete = false,
+
+                WorkflowTypeId = model.WorkflowTypeId,
+                TownshipId = model.TownshipId,
+                PlotSize = model.PlotSize,
+                AgreementRate = model.AgreementRate,
+                TotalAgreementValue = model.TotalAgreementValue
             });
 
             _context.SaveChanges();
