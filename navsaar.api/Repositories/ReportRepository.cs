@@ -68,8 +68,10 @@ namespace navsaar.api.Repositories
                     });
                 }
             }
-            
-            
+            collections = collections
+            .OrderByDescending(x => x.ReceiptDate)
+            .ToList();
+
             return collections;
         }
 
