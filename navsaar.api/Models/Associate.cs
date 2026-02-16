@@ -69,6 +69,27 @@ namespace navsaar.api.Models
 
         [StringLength(100)]
         public string? LeaderName { get; set; }
+        public DateTime? DOB { get; set; }
+        public DateTime? AnniversaryDate { get; set; }
+
+        [StringLength(255)]
+        public string? RERACertificateFile { get; set; }
+
+        [StringLength(255)]
+        public string? PhotoFile { get; set; }
+
+        [StringLength(50)]
+        public string? PassportNo { get; set; }
+
+        [StringLength(255)]
+        public string? PassportFile { get; set; }
+
+        [StringLength(255)]
+        public string? BankDocumentFile { get; set; }
+
+        [StringLength(20)]
+        public string? LeaderContactNo { get; set; }
+
 
     }
 }

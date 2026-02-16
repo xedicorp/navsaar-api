@@ -7,6 +7,8 @@
         public string? FirstName { get; set; }
         public string? ContactNo { get; set; }
         public string? LeaderName { get; set; }
+        public string? LeaderContactNo { get; set; }
+
         public string? ReraNo { get; set; }   
         public bool? IsActive { get; set; }
         public bool? IsApproved { get; set; }

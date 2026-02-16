@@ -22,6 +22,7 @@ namespace navsaar.api.Repositories
                     FirstName = a.FirstName,
                     ContactNo = a.ContactNo,     // can be NULL
                     LeaderName = a.LeaderName,   // can be NULL
+                    LeaderContactNo = a.LeaderContactNo,
                     ReraNo = a.RERA,
                     IsActive = a.IsActive,
                     IsApproved = a.IsApproved
@@ -39,56 +40,80 @@ namespace navsaar.api.Repositories
                     FirstName = a.FirstName,
                     ContactNo = a.ContactNo,
                     LeaderName = a.LeaderName,
+                    LeaderContactNo = a.LeaderContactNo,
                     ReraNo = a.RERA,
                     IsActive = a.IsActive,
                     IsApproved = a.IsApproved
                 })
                 .FirstOrDefault();
         }
-        //CREATE
-        public long Create(CreateUpdateAssociateModel model)
+        public async Task<bool> Save(CreateUpdateAssociateModel model)
         {
-            var associate = new navsaar.api.Models.AssociateInfo
+            Models.AssociateInfo entity;
+
+            if (model.Id > 0)
             {
-                FirstName = model.FirstName,
-                ContactNo = model.ContactNo,
-                LeaderName = model.LeaderName,
-                RERA = model.ReraNo,
-                IsActive = true,
-                CreatedAt = DateTime.Now
-            };
+                entity = _context.Associates.FirstOrDefault(x => x.ID == model.Id);
+                if (entity == null)
+                    return false;
+            }
+            else
+            {
+                entity = new Models.AssociateInfo
+                {
+                    IsActive = true,
+                    CreatedAt = DateTime.Now
+                };
+                _context.Associates.Add(entity);
+            }
 
-            _context.Associates.Add(associate);
-            _context.SaveChanges();
+            entity.FirstName = model.FirstName;
+            entity.DOB = model.DOB;
+            entity.AnniversaryDate = model.AnniversaryDate;
+            entity.ContactNo = model.ContactNo;
+            entity.PANCardNo = model.PANNo;
+            entity.AadhaarNo = model.AadhaarNo;
+            entity.RERA = model.ReraNo;
+            entity.PassportNo = model.PassportNo;
+            entity.LeaderName = model.LeaderName;
+            entity.LeaderContactNo = model.LeaderContactNo;
+            entity.UpdatedAt = DateTime.Now;
 
-            return associate.ID;
-        }
+            var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "Uploads", "Associates");
 
-        //UPDATE
-        public bool Update(CreateUpdateAssociateModel model)
-        {
-            var associate = _context.Associates.FirstOrDefault(x => x.ID == model.Id);
-            if (associate == null)
-                return false;
+            if (!Directory.Exists(uploadsFolder))
+                Directory.CreateDirectory(uploadsFolder);
 
-            if (model.FirstName != null)
-                associate.FirstName = model.FirstName;
+            // Upload Files
+            if (model.ReraCertificateFile != null)
+                entity.RERACertificateFile = await SaveFile(model.ReraCertificateFile, uploadsFolder);
 
-            if (model.ContactNo != null)
-                associate.ContactNo = model.ContactNo;
+            if (model.PhotoFile != null)
+                entity.PhotoFile = await SaveFile(model.PhotoFile, uploadsFolder);
 
-            if (model.LeaderName != null)
-                associate.LeaderName = model.LeaderName;
+            if (model.PassportFile != null)
+                entity.PassportFile = await SaveFile(model.PassportFile, uploadsFolder);
 
-            if (model.ReraNo != null)
-            associate.RERA = model.ReraNo;
+            if (model.BankDocumentFile != null)
+                entity.BankDocumentFile = await SaveFile(model.BankDocumentFile, uploadsFolder);
 
-            associate.IsActive = true;
-            associate.UpdatedAt = DateTime.Now;
-
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
             return true;
         }
+
+        private async Task<string> SaveFile(IFormFile file, string folderPath)
+        {
+            var fileName = Guid.NewGuid() + "_" + Path.GetFileName(file.FileName);
+            var filePath = Path.Combine(folderPath, fileName);
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
+
+            return fileName;
+        }
+
 
         //DELETE
         public bool Delete(long id)
