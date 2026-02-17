@@ -12,7 +12,7 @@ namespace navsaar.api.Services
     {
         string accountSid = "";// Environment.GetEnvironmentVariable("TWILIO_ACCOUNT_SID");
         string authToken = ""; // Environment.GetEnvironmentVariable("TWILIO_AUTH_TOKEN");
-
+        string contentSID = "";
         
         private readonly IConfiguration _configuration;
         public WhatsAppService(  IConfiguration configuration)
@@ -38,8 +38,7 @@ namespace navsaar.api.Services
                 switch (update)
                 {
                     case BookingUpdate.New:
-                        message = string.Format("Mr./Ms. {1}, your booking has been confirmed, for Plot No {0}",
-                            booking.PlotNo, booking.ClientName);
+                        contentSID = "HXa17e8ccbee579e8c050d3d87b6fac57a";
                         break;
 
                     case BookingUpdate.BankLoginDone:
