@@ -181,13 +181,18 @@ namespace navsaar.api.Services
 
         private async  void Send(string to,   Booking update, string message)
         {
+            var contentVariables = new Dictionary<string, string>
+        {
+            { "1", update.ClientName },
+            { "2", update.PlotNo }
+        };
+
             await MessageResource.CreateAsync(
-            from: new Twilio.Types.PhoneNumber("whatsapp:"+from),
-            to: new Twilio.Types.PhoneNumber("whatsapp:"+ to),            
+            from: new Twilio.Types.PhoneNumber("whatsapp:" + from),
+            to: new Twilio.Types.PhoneNumber("whatsapp:" + to),
             contentSid: contentSID,
-            contentVariables: JsonConvert.SerializeObject(
-                new Dictionary<string, Object>() { { "name",  update.ClientName }, { "plotno", update.PlotNo } },
-                Formatting.Indented));
+            contentVariables: Newtonsoft.Json.JsonConvert.SerializeObject(contentVariables)
+            );
         } 
     }
 }
