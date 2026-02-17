@@ -22,10 +22,11 @@ namespace navsaar.api.Controllers
 
         [HttpGet]
         [Route("List")]
-        public IEnumerable<PlotInfo> List(int townshipId, int status=0) //0: all 1:available 2: booked
+        public IEnumerable<PlotInfo> List(int townshipId)
         {
-            return _repository.List(townshipId, status);
+            return _repository.List(townshipId);
         }
+
         [HttpGet]
         [Route("GetById")]
         public  PlotInfo  GetById(int plotId)
@@ -50,6 +51,13 @@ namespace navsaar.api.Controllers
                 return BadRequest("Plot is not available for hold");
 
             return Ok("Plot put on hold successfully");
+        }
+        [HttpGet]
+        [Route("Hold/List")]
+        public IActionResult GetHoldPlots(int townshipId)
+        {
+            var result = _repository.GetHoldPlots(townshipId);
+            return Ok(result); // returns [] if no data
         }
 
     }

@@ -12,14 +12,14 @@ namespace navsaar.api.Repositories
         {
             _context = context;
         }
-        public List<PlotInfo> List(int townshipId, int status = 0)
+        public List<PlotInfo> List(int townshipId)
         {
             return (from p in _context.Plots
                     join t in _context.Townships on p.TownshipId equals t.Id
                     join pt in _context.PlotTypes on p.PlotTypeId equals pt.Id
-                    join f in _context.FacingTypes on p.Facing equals f.Id 
+                    join f in _context.FacingTypes on p.Facing equals f.Id
                     where p.TownshipId == townshipId
-                    && (status == 0 || p.Status == status)  
+                          && p.Status == 1     // ✅ ONLY AVAILABLE
                     select new PlotInfo
                     {
                         Id = p.Id,
@@ -34,13 +34,12 @@ namespace navsaar.api.Repositories
                         TownshipName = t.Name,
                         PlotTypeName = pt.Name,
                         FacingName = f.FacingName,
-                         Status=GetStatus(p.Status ?? 0),
+                        Status = GetStatus(p.Status ?? 0),
                         SaleableSize = p.SaleableSize,
                         PlotSizeInSqrmtr = p.PlotSizeInSqrmtr,
                         RoadSize = p.RoadSize,
                         PLC = p.PLC
                     }).ToList();
-
         }
         private static string GetStatus(int status)
         {
@@ -169,6 +168,33 @@ namespace navsaar.api.Repositories
 
             _context.SaveChanges();
         }
+
+        public List<HoldPlotInfo> GetHoldPlots(int townshipId)
+        {
+            var result = (from h in _context.PlotHoldRequests
+                          join p in _context.Plots on h.PlotId equals p.Id
+                          where !h.IsDelete
+                                && p.Status == 3                 // ✅ HOLD
+                                && p.TownshipId == townshipId    // ✅ FILTER
+                          select new HoldPlotInfo
+                          {
+                              PlotId = h.PlotId,
+                              AssociateId = h.AssociateId,
+                              HoldDateTime = h.HoldDateTime,
+
+                              WorkflowTypeId = h.WorkflowTypeId ?? 0,
+                              TownshipId = p.TownshipId,
+                              PlotSize = h.PlotSize ?? 0,
+                              AgreementRate = h.AgreementRate ?? 0,
+                              TotalAgreementValue = h.TotalAgreementValue ?? 0,
+
+                              Status = "Hold"
+                          }).ToList();
+
+            return result;
+        }
+
+
 
     }
 }

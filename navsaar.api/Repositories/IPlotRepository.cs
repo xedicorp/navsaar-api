@@ -5,10 +5,12 @@ namespace navsaar.api.Repositories
 {
     public interface IPlotRepository
     {
-        public List<PlotInfo> List(int townshipId, int status = 0);
-        PlotInfo  GetById(int plotId);
+        List<PlotInfo> List(int townshipId);
+        PlotInfo GetById(int plotId);
         int Save(CreateEditPlotRequest request);
         bool HoldPlot(PlotHoldRequestModel model);
         void ReleaseExpiredHolds();
+        List<HoldPlotInfo> GetHoldPlots(int townshipId);
+
     }
 }
