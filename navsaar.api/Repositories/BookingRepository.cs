@@ -145,6 +145,17 @@ namespace navsaar.api.Repositories
 
                     await _context.Receipts.AddAsync(receipt);
                     await _context.SaveChangesAsync();
+
+
+                    _whatsAppService.SendMessage(
+                      BookingUpdate.New,
+                      entity
+                  );
+
+                    _whatsAppService.SendMessage(
+                        BookingUpdate.BookingAmountReceived,
+                        entity
+                    );
                 }
 
                 await transaction.CommitAsync();
@@ -820,7 +831,7 @@ namespace navsaar.api.Repositories
             _context.SaveChanges();
             //Send Refund Initiated WhatsApp
             _whatsAppService.SendMessage(
-                BookingUpdate.RefundInitiated,
+                BookingUpdate.Cancelled,
                 existing
             );
 
