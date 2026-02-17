@@ -71,6 +71,10 @@ namespace navsaar.api.Repositories
                 entity.Status = 1;
                 entity.LastStatusChangedBy = 1;
                 entity.LastStatusChangedOn = DateTime.Now;
+                entity.LeaderContactNo = booking.LeaderContactNo;   
+                entity.RelationType = booking.RelationType;         
+                entity.RelationName = booking.RelationName;         
+
 
                 await _context.SaveChangesAsync(); // BookingId generated here
 
@@ -112,7 +116,7 @@ namespace navsaar.api.Repositories
                         BankName = booking.InitialBankName,
                         ChequeNo = booking.InitialChequeNo,
                         Notes = booking.InitialNotes,
-                        Status = 1 // Verification Pending
+                        Status = booking.InitialReceiptStatus ?? 1
                     };
 
                     // ========================
@@ -189,6 +193,9 @@ namespace navsaar.api.Repositories
                         AssociateReraNo = p.AssociateReraNo,
                         AssociateContactNo = p.AssociateContactNo,
                         LeaderName = p.LeaderName,
+                        LeaderContactNo = p.LeaderContactNo,   
+                        RelationType = p.RelationType,         
+                        RelationName = p.RelationName,
                         DDClearedOn = p.DDClearedOn,
                         DraftPreparedOn = p.DraftPreparedOn,
                         TownshipId = p.TownshipId,
@@ -698,6 +705,9 @@ namespace navsaar.api.Repositories
                         AssociateReraNo = p.AssociateReraNo,
                         AssociateContactNo = p.AssociateContactNo,
                         LeaderName = p.LeaderName,
+                        LeaderContactNo = p.LeaderContactNo,   
+                        RelationType = p.RelationType,         
+                        RelationName = p.RelationName,
                         DDClearedOn = p.DDClearedOn,
                         DraftPreparedOn = p.DraftPreparedOn,
                         TownshipId = p.TownshipId,

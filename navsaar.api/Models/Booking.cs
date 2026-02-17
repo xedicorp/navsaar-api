@@ -20,6 +20,10 @@ namespace navsaar.api.Models
         public string AssociateReraNo { get; set; }
         public string? AssociateContactNo { get; set; }
         public string? LeaderName { get; set; }
+
+        public string? LeaderContactNo { get; set; }
+        public string? RelationType { get; set; }
+        public string? RelationName { get; set; }
         public string? ChequeFilePath { get; set; }
         public int? WorkflowTypeId { get; set; }
         public int? CurrentStage { get; set; }
