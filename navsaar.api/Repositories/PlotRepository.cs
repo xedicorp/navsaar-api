@@ -12,14 +12,14 @@ namespace navsaar.api.Repositories
         {
             _context = context;
         }
-        public List<PlotInfo> List(int townshipId)
+        public List<PlotInfo> List(int townshipId, int status = 0)
         {
             return (from p in _context.Plots
                     join t in _context.Townships on p.TownshipId equals t.Id
                     join pt in _context.PlotTypes on p.PlotTypeId equals pt.Id
                     join f in _context.FacingTypes on p.Facing equals f.Id
                     where p.TownshipId == townshipId
-                          && p.Status == 1     // ✅ ONLY AVAILABLE
+                    && (status == 0 || p.Status == status)
                     select new PlotInfo
                     {
                         Id = p.Id,
@@ -40,6 +40,7 @@ namespace navsaar.api.Repositories
                         RoadSize = p.RoadSize,
                         PLC = p.PLC
                     }).ToList();
+
         }
         private static string GetStatus(int status)
         {
