@@ -20,5 +20,17 @@
         public int WorkflowTypeId { get; set; }
         public  IFormFile?  File { get; set; }
         public int DocumentTypeId { get; set; }
+
+
+
+        // Initial payment fields
+        public decimal? InitialAmount { get; set; }
+        public DateTime? InitialPaymentDate { get; set; }
+        public int? InitialReceiptMethod { get; set; }
+        public string? InitialTransactionId { get; set; }
+        public string? InitialBankName { get; set; }
+        public string? InitialChequeNo { get; set; }
+        public string? InitialNotes { get; set; }
+        public IFormFile? InitialReceiptImage { get; set; }
     }
 }

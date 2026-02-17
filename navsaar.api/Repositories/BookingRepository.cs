@@ -1,6 +1,7 @@
 ﻿
 
 using Azure.Core;
+using Microsoft.EntityFrameworkCore;
 using navsaar.api.Infrastructure;
 using navsaar.api.Models;
 using navsaar.api.Services;
@@ -26,103 +27,135 @@ namespace navsaar.api.Repositories
         }
         public async Task<int> Save(CreateUpdateBookingModel booking)
         {
-            bool isNew = false;
-            var entity = new Models.Booking();
+            using var transaction = await _context.Database.BeginTransactionAsync();
 
-            //if (booking.File != null)
-            //{
-            //    // Define the path where the file will be saved
-            //    var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "Uploads");
-            //    if (!Directory.Exists(uploadsFolder))
-            //    {
-            //        Directory.CreateDirectory(uploadsFolder);
-            //    }
-            //    string fileName = Guid.NewGuid().ToString() + "_" + booking.File.FileName;
-            //    var filePath = Path.Combine(uploadsFolder, fileName);
-
-            //    using (var stream = new FileStream(filePath, FileMode.Create))
-            //    {
-            //          booking.File.CopyTo(stream);
-            //    }
-            //}
-           
-             
-
-            if (booking.Id != 0)
-            {
-                entity = _context.Bookings.Find(booking.Id);
-                entity.CurrentStage = 1;
-            }
-
-           // entity.ChequeFilePath = booking.File != null ? entity.ChequeFilePath : entity.ChequeFilePath;
-            entity.TownshipId = booking.TownshipId;
-            entity.PlotNo = booking.PlotNo;
-            entity.PlotSize = booking.PlotSize ;
-            entity.BookingDate = booking.BookingDate;
-            entity.ClientName = booking.ClientName;
-            entity.ClientEmail = booking.ClientEmail;
-            entity.ClientContactNo = booking.ClientContactNo;
-            entity.ClientAddress = booking.ClientAddress;
-            entity.AssociateName = booking.AssociateName;
-            entity.AssociateReraNo = booking.AssociateReraNo;
-            entity.AssociateContactNo = booking.AssociateContactNo;
-            entity.LeaderName = booking.LeaderName;
-            entity.WorkflowTypeId = booking.WorkflowTypeId; // Booking Workflow
-            entity.PlotId = booking.PlotId; 
-            entity.AgreementValue = booking.AgreementValue; 
-            entity.Status=1; // Active
-            entity.LastStatusChangedBy = 1;
-            entity.LastStatusChangedOn = DateTime.Now;
-           
-            if (booking.Id == 0)
-            {
-                _context.Bookings.Add(entity);
-                isNew = true;
-            }
-            _context.SaveChanges();
-
-            //Update Plot Status to 2 (Booked)
-            if (isNew && booking.PlotId > 0)
-            {
-                var plot = _context.Plots.Find(booking.PlotId);
-
-                if (plot != null)
-                {
-                    plot.Status = 2; // Booked
-                    // Release Hold (if exists)
-                    var hold = _context.PlotHoldRequests
-                        .FirstOrDefault(x => x.PlotId == booking.PlotId && !x.IsDelete);
-
-                    if (hold != null)
-                    {
-                        hold.IsDelete = true;
-                    }
-                    _context.SaveChanges();
-                }
-            }
-            // //Upload ID Proof
-            //await  this._documentRepository.Upload(new UploadDocumentRequest
-            // {
-            //     BookingId = entity.Id,
-            //     DocumentTypeId = booking.DocumentTypeId, // Cheque Copy
-            //     File = booking.File,
-            //     Notes = "Id proof"
-            // });
             try
             {
+                bool isNew = false;
+                Booking entity;
 
-
-                if (isNew)
+                if (booking.Id > 0)
                 {
-                    _whatsAppService.SendMessage(BookingUpdate.New, entity);
-                }
-            }
-            catch (Exception)
-            {
+                    entity = await _context.Bookings.FindAsync(booking.Id);
+                    if (entity == null)
+                        return 0;
 
-                //throw;
+                    entity.CurrentStage = 1;
+                }
+                else
+                {
+                    entity = new Booking();
+                    isNew = true;
+                    await _context.Bookings.AddAsync(entity);
+                }
+
+                // ========================
+                // BOOKING DATA
+                // ========================
+
+                entity.TownshipId = booking.TownshipId;
+                entity.PlotNo = booking.PlotNo;
+                entity.PlotSize = booking.PlotSize;
+                entity.BookingDate = booking.BookingDate;
+                entity.ClientName = booking.ClientName;
+                entity.ClientEmail = booking.ClientEmail;
+                entity.ClientContactNo = booking.ClientContactNo;
+                entity.ClientAddress = booking.ClientAddress;
+                entity.AssociateName = booking.AssociateName;
+                entity.AssociateReraNo = booking.AssociateReraNo;
+                entity.AssociateContactNo = booking.AssociateContactNo;
+                entity.LeaderName = booking.LeaderName;
+                entity.WorkflowTypeId = booking.WorkflowTypeId;
+                entity.PlotId = booking.PlotId;
+                entity.AgreementValue = booking.AgreementValue;
+                entity.Status = 1;
+                entity.LastStatusChangedBy = 1;
+                entity.LastStatusChangedOn = DateTime.Now;
+
+                await _context.SaveChangesAsync(); // BookingId generated here
+
+                // ========================
+                // UPDATE PLOT STATUS
+                // ========================
+
+                if (isNew && booking.PlotId > 0)
+                {
+                    var plot = await _context.Plots.FindAsync(booking.PlotId);
+
+                    if (plot != null)
+                    {
+                        plot.Status = 2; // Booked
+
+                        var hold = await _context.PlotHoldRequests
+                            .FirstOrDefaultAsync(x => x.PlotId == booking.PlotId && !x.IsDelete);
+
+                        if (hold != null)
+                            hold.IsDelete = true;
+
+                        await _context.SaveChangesAsync();
+                    }
+                }
+
+                // ========================
+                // CREATE INITIAL RECEIPT
+                // ========================
+
+                if (isNew && booking.InitialAmount.HasValue && booking.InitialAmount > 0)
+                {
+                    var receipt = new Receipt
+                    {
+                        BookingId = entity.Id,
+                        Amount = booking.InitialAmount.Value,
+                        ReceiptDate = booking.InitialPaymentDate ?? DateTime.Now,
+                        ReceiptMethod = booking.InitialReceiptMethod ?? 1,
+                        TransactionId = booking.InitialTransactionId,
+                        BankName = booking.InitialBankName,
+                        ChequeNo = booking.InitialChequeNo,
+                        Notes = booking.InitialNotes,
+                        Status = 1 // Verification Pending
+                    };
+
+                    // ========================
+                    // SAVE RECEIPT IMAGE
+                    // ========================
+
+                    if (booking.InitialReceiptImage != null &&
+                        booking.InitialReceiptImage.Length > 0)
+                    {
+                        var uploadsFolder = Path.Combine(
+                            Directory.GetCurrentDirectory(),
+                            "Uploads",
+                            "Receipts");
+
+                        if (!Directory.Exists(uploadsFolder))
+                            Directory.CreateDirectory(uploadsFolder);
+
+                        var fileName = Guid.NewGuid() + "_" +
+                                       booking.InitialReceiptImage.FileName;
+
+                        var filePath = Path.Combine(uploadsFolder, fileName);
+
+                        using (var stream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await booking.InitialReceiptImage.CopyToAsync(stream);
+                        }
+
+                        receipt.receiptImage = fileName;
+                    }
+
+                    await _context.Receipts.AddAsync(receipt);
+                    await _context.SaveChangesAsync();
+                }
+
+                await transaction.CommitAsync();
+
+                return entity.Id;
             }
-            return entity.Id;
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
         }
         public List<BookingInfo> List()
         {
