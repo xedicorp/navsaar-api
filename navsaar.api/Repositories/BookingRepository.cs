@@ -177,84 +177,119 @@ namespace navsaar.api.Repositories
         }
         public List<BookingInfo> List()
         {
-            return (from p in _context.Bookings
-                    join t in _context.Townships on p.TownshipId equals t.Id
-                    join s in _context.Plots on p.PlotId equals s.Id
-                    join bs in _context.BookingStatusTypes on p.Status equals bs.Id  
-                    select new BookingInfo
-                    {
-                        Id = p.Id,
-                        TownshipName = t.Name,
-                        PlotNo = s.PlotNo,
-                        PlotSize = s.PlotSize,
-                        BookingDate = p.BookingDate,
-                        ClientName = p.ClientName,
-                        ClientEmail = p.ClientEmail,
-                        ContactNo = p.ClientContactNo,
-                        ClientAddress=p.ClientAddress,
-                        AssociateName = p.AssociateName,
-                        AssociateReraNo = p.AssociateReraNo,
-                        AssociateContactNo = p.AssociateContactNo,
-                        LeaderName = p.LeaderName,
-                        LeaderContactNo = p.LeaderContactNo,   
-                        RelationType = p.RelationType,         
-                        RelationName = p.RelationName,
-                        DDClearedOn = p.DDClearedOn,
-                        DraftPreparedOn = p.DraftPreparedOn,
-                        TownshipId = p.TownshipId,
-                        ChequeFilePath = p.ChequeFilePath,
-                        IsDDSubmittedToBank = p.IsDDSubmittedToBank,
-                        WorkflowTypeId = p.WorkflowTypeId,
-                        DDReceivedFromBankOn = p.DDReceivedFromBankOn,
-                        CurrentStage = p.CurrentStage,
-                        IsDDReceivedFromBank = p.IsDDReceivedFromBank,
-                        PaymentMode = p.PaymentMode,
-                        JDAPattaGivenToBankOn = p.JDAPattaGivenToBankOn,
-                        IsJDAPattaGivenToBank = p.IsJDAPattaGivenToBank,
-                        Amount_2 = p.Amount_2,
-                        BankDDPath = p.BankDDPath,
-                        TransNo = p.TransNo,
-                        BankName = p.BankName,
-                        BranchName = p.BranchName,
-                        CompletionDate = p.CompletionDate,
-                        DateOfLogin = p.DateOfLogin,
-                        DateOfTransfer = p.DateOfTransfer,
-                        DDAmount = p.DDAmount,
-                        DDNo = p.DDNo,
-                        DDNotes = p.DDNotes,
-                        DDUpdateNotes = p.DDUpdateNotes,
-                        DokitSigingNotes = p.DokitSigingNotes,
-                        DokitSignDate = p.DokitSignDate,
-                        IsDokitSigned = p.IsDokitSigned,
-                        IsJDAFileSigned = p.IsJDAFileSigned,
-                        JDAFileSignDate = p.JDAFileSignDate,
-                        DraftGivenToBankOn = p.DraftGivenToBankOn,
-                        IsCompletedOnAllSides = p.IsCompletedOnAllSides,
-                        IsDraftGivenToBank = p.IsDraftGivenToBank,
-                        IsDraftPrepared = p.IsDraftPrepared,
-                        IsLoanSanctioned = p.IsLoanSanctioned,
-                        LoanSanctionDate = p.LoanSanctionDate,
-                        LoanSanctionNotes = p.LoanSanctionNotes,
-                        MarkFileCheckNotes = p.MarkFileCheckNotes,
-                        OriginalATTPath = p.OriginalATTPath,
-                        OriginalATTNotes = p.OriginalATTNotes,
-                        LoginRefNo = p.LoginRefNo,
-                        Notes_3 = p.Notes_3,
-                        Notes_4 = p.Notes_4,
-                        IsPaymentVerified = p.IsPaymentVerified,
-                        Notes_2 = p.Notes_2,
-                        IsJDAPattaApplied = p.IsJDAPattaApplied,
-                        IsJDAPattaRegistered = p.IsJDAPattaRegistered,
-                        JDAPattaAppliedOn = p.JDAPattaAppliedOn,
-                        JDAPattaNotes = p.JDAPattaNotes,
-                        JDAPattaRegisteredOn = p.JDAPattaRegisteredOn,
-                        Status = bs.Name
+            return (
+                from p in _context.Bookings
+                join t in _context.Townships on p.TownshipId equals t.Id
+                join s in _context.Plots on p.PlotId equals s.Id
+                join bs in _context.BookingStatusTypes on p.Status equals bs.Id
+                join ft in _context.FileTimelines
+                on new { StatusId = p.Status, WorkflowTypeId = p.WorkflowTypeId }
+                equals new { ft.StatusId, ft.WorkflowTypeId }
+                into ftJoin
+                from ft in ftJoin.DefaultIfEmpty()
 
-                    }).ToList();
 
+                let elapsedDays = EF.Functions.DateDiffDay(
+                    p.LastStatusChangedOn,
+                    DateTime.Now
+                )
+
+                select new BookingInfo
+                {
+                    Id = p.Id,
+                    TownshipName = t.Name,
+                    PlotNo = s.PlotNo,
+                    PlotSize = s.PlotSize,
+                    BookingDate = p.BookingDate,
+                    ClientName = p.ClientName,
+                    ClientEmail = p.ClientEmail,
+                    ContactNo = p.ClientContactNo,
+                    ClientAddress = p.ClientAddress,
+                    AssociateName = p.AssociateName,
+                    AssociateReraNo = p.AssociateReraNo,
+                    AssociateContactNo = p.AssociateContactNo,
+                    LeaderName = p.LeaderName,
+                    LeaderContactNo = p.LeaderContactNo,
+                    RelationType = p.RelationType,
+                    RelationName = p.RelationName,
+                    DDClearedOn = p.DDClearedOn,
+                    DraftPreparedOn = p.DraftPreparedOn,
+                    TownshipId = p.TownshipId,
+                    ChequeFilePath = p.ChequeFilePath,
+                    IsDDSubmittedToBank = p.IsDDSubmittedToBank,
+                    WorkflowTypeId = p.WorkflowTypeId,
+                    DDReceivedFromBankOn = p.DDReceivedFromBankOn,
+                    CurrentStage = p.CurrentStage,
+                    IsDDReceivedFromBank = p.IsDDReceivedFromBank,
+                    PaymentMode = p.PaymentMode,
+                    JDAPattaGivenToBankOn = p.JDAPattaGivenToBankOn,
+                    IsJDAPattaGivenToBank = p.IsJDAPattaGivenToBank,
+                    Amount_2 = p.Amount_2,
+                    BankDDPath = p.BankDDPath,
+                    TransNo = p.TransNo,
+                    BankName = p.BankName,
+                    BranchName = p.BranchName,
+                    CompletionDate = p.CompletionDate,
+                    DateOfLogin = p.DateOfLogin,
+                    DateOfTransfer = p.DateOfTransfer,
+                    DDAmount = p.DDAmount,
+                    DDNo = p.DDNo,
+                    DDNotes = p.DDNotes,
+                    DDUpdateNotes = p.DDUpdateNotes,
+                    DokitSigingNotes = p.DokitSigingNotes,
+                    DokitSignDate = p.DokitSignDate,
+                    IsDokitSigned = p.IsDokitSigned,
+                    IsJDAFileSigned = p.IsJDAFileSigned,
+                    JDAFileSignDate = p.JDAFileSignDate,
+                    DraftGivenToBankOn = p.DraftGivenToBankOn,
+                    IsCompletedOnAllSides = p.IsCompletedOnAllSides,
+                    IsDraftGivenToBank = p.IsDraftGivenToBank,
+                    IsDraftPrepared = p.IsDraftPrepared,
+                    IsLoanSanctioned = p.IsLoanSanctioned,
+                    LoanSanctionDate = p.LoanSanctionDate,
+                    LoanSanctionNotes = p.LoanSanctionNotes,
+                    MarkFileCheckNotes = p.MarkFileCheckNotes,
+                    OriginalATTPath = p.OriginalATTPath,
+                    OriginalATTNotes = p.OriginalATTNotes,
+                    LoginRefNo = p.LoginRefNo,
+                    Notes_3 = p.Notes_3,
+                    Notes_4 = p.Notes_4,
+                    IsPaymentVerified = p.IsPaymentVerified,
+                    Notes_2 = p.Notes_2,
+                    IsJDAPattaApplied = p.IsJDAPattaApplied,
+                    IsJDAPattaRegistered = p.IsJDAPattaRegistered,
+                    JDAPattaAppliedOn = p.JDAPattaAppliedOn,
+                    JDAPattaNotes = p.JDAPattaNotes,
+                    JDAPattaRegisteredOn = p.JDAPattaRegisteredOn,
+                    StatusId = p.Status,
+                    Status = bs.Name,
+
+                    LastStatusChangedOn = p.LastStatusChangedOn,
+
+                    AllowedDays = ft != null ? ft.Days : 0,
+                    ElapsedDays = elapsedDays,
+                    RemainingDays = ft != null ? ft.Days - elapsedDays : 0,
+
+                    ProgressState =
+                        ft == null ? "NO_TIMELINE" :
+                        elapsedDays < ft.Days
+                            ? "IN_PROGRESS"
+                            : elapsedDays == ft.Days
+                                ? "ON_TIME"
+                                : "DELAYED",
+
+                    ProgressColor =
+                        ft == null ? "gray" :
+                        elapsedDays < ft.Days
+                            ? "orange"
+                            : elapsedDays == ft.Days
+                                ? "green"
+                                : "red"
+                }
+            ).ToList();
         }
 
-    
+
         public bool UpdateInitialPayment(UpdateInitialPaymentRequest request)
         {
             var entity = _context.Bookings.Find(request.BookingId);

@@ -88,7 +88,16 @@
         public bool? IsDDSubmittedToBank { get; set; }
         public DateTime? DDClearedOn { get; set; }
         public string? DDUpdateNotes { get; set; }
+        public int? StatusId { get; set; }
+
         public string? Status { get; set; }
-         
+        public DateTime? LastStatusChangedOn { get; set; }
+
+        public int? AllowedDays { get; set; }
+        public int? ElapsedDays { get; set; }
+        public int? RemainingDays { get; set; }
+
+        public string? ProgressState { get; set; }   // IN_PROGRESS | ON_TIME | DELAYED
+        public string? ProgressColor { get; set; }   // orange | green | red
     }
 }
