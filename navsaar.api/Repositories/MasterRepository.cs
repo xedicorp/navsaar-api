@@ -42,5 +42,25 @@ namespace navsaar.api.Repositories
 
             return setting;
         }
+        public List<AppSettingInfo> GetAllAppSettings()
+        {
+            var settings = (from s in _context.AppSettings
+                           select new AppSettingInfo
+                           {
+                               Id = s.Id,
+                               LogoUrl = s.LogoUrl,
+                               ApiUrl = s.ApiUrl,
+                               ColorTheme = s.ColorTheme,
+                               CompanyName = s.CompanyName,
+                               TenantName = s.TenantName
+
+                           }).ToList();
+
+            return settings;
+        }
+        public List<string> GetAllTenantNames()
+        {
+            return _context.AppSettings.Select(s => s.TenantName).ToList();
+        }
     }
 }

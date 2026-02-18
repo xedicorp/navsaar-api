@@ -11,15 +11,18 @@ namespace navsaar.api.Controllers
     {
         IDocumentTypeRepository _repository;
         IMasterRepository _masterRepository;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
         private readonly ILogger<WeatherForecastController> _logger;
 
         public MasterController(ILogger<WeatherForecastController> logger,
-               IDocumentTypeRepository repository, IMasterRepository masterRepository)
+               IDocumentTypeRepository repository, IMasterRepository masterRepository  ,
+               IHttpContextAccessor httpContextAccessor)
         {
             _logger = logger;
             _repository = repository;
             _masterRepository = masterRepository;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         [HttpGet]
@@ -50,12 +53,17 @@ namespace navsaar.api.Controllers
         [Route("AppSettings")]
         public ActionResult<IEnumerable<AppSettingInfo>> AppSettings()
         {
-            var setting = _masterRepository.GetAppSetting();
+            // Extract tenant ID from header "x-tenant-id"
+              var tenantname = _httpContextAccessor.HttpContext?.Request.Headers["Tenant-Host"].ToString();
 
-            if (setting == null)
+
+            var settings = _masterRepository.GetAllAppSettings();
+            settings = settings.Where(s => tenantname.Contains( s.TenantName.ToLower() )).ToList();
+
+            if (settings == null)
                 return Ok(new List<AppSettingInfo>()); 
 
-            return Ok(new List<AppSettingInfo> { setting });
+            return Ok(settings );
         }
     }
 }

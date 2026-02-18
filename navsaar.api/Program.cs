@@ -14,6 +14,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllers();
+//builder.Services.AddScoped<ITenantProvider, TenantProvider>();
 builder.Services.AddScoped<IBookingRepository, BookingRepository>();
 builder.Services.AddScoped<IPlotRepository, PlotRepository>();
 builder.Services.AddScoped<ITownshipRepository, TownshipRepository>();
@@ -29,7 +30,7 @@ builder.Services.AddScoped<IPermissionRepository, PermissionRepository>();
 builder.Services.AddScoped<IRefundRepository, RefundRepository>();
 builder.Services.AddScoped<IWhatsAppService, WhatsAppService>();
 builder.Services.AddScoped<IAssociateRepository, AssociateRepository>();
-
+builder.Services.AddHttpContextAccessor();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 //builder.Services.AddSwaggerGen();

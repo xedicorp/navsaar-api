@@ -10,6 +10,7 @@ namespace navsaar.api.Models
         public string? ApiUrl { get; set; }
         public string? ColorTheme { get; set; }
         public string? CompanyName { get; set; }
+        public string? TenantName { get; set; }
 
     }
 }
