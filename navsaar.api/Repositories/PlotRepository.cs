@@ -60,6 +60,7 @@ namespace navsaar.api.Repositories
         }
         public  PlotInfo  GetById(int plotId)
         {
+            ReleaseExpiredHolds();
             return (from p in _context.Plots
                     join t in _context.Townships on p.TownshipId equals t.Id
                     join pt in _context.PlotTypes on p.PlotTypeId equals pt.Id
@@ -136,9 +137,8 @@ namespace navsaar.api.Repositories
             {
                 PlotId = model.PlotId,
                 AssociateId = model.AssociateId,
-                HoldDateTime = DateTime.Now,
+                HoldDateTime = model.HoldDateTime,
                 IsDelete = false,
-
                 WorkflowTypeId = model.WorkflowTypeId,
                 TownshipId = model.TownshipId,
                 PlotSize = model.PlotSize,
@@ -172,11 +172,12 @@ namespace navsaar.api.Repositories
 
         public List<HoldPlotInfo> GetHoldPlots(int townshipId)
         {
+            ReleaseExpiredHolds();
             var result = (from h in _context.PlotHoldRequests
                           join p in _context.Plots on h.PlotId equals p.Id
                           where !h.IsDelete
-                                && p.Status == 3                 // ✅ HOLD
-                                && p.TownshipId == townshipId    // ✅ FILTER
+                                && p.Status == 3                 // HOLD
+                                && p.TownshipId == townshipId    // FILTER
                           select new HoldPlotInfo
                           {
                               PlotId = h.PlotId,
