@@ -151,19 +151,22 @@ namespace navsaar.api.Repositories
                     await _context.SaveChangesAsync();
 
 
+                 
+                }
+
+                await transaction.CommitAsync();
+                if(isNew)
+                {
                     _whatsAppService.SendMessage(
-                      BookingUpdate.New,
-                      entity
-                  );
+                   BookingUpdate.New,
+                   entity
+               );
 
                     _whatsAppService.SendMessage(
                         BookingUpdate.BookingAmountReceived,
                         entity
                     );
                 }
-
-                await transaction.CommitAsync();
-
                 return entity.Id;
             }
             catch
