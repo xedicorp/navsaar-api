@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using navsaar.api.Repositories;
 using navsaar.api.ViewModels.Associate;
+using ClosedXML.Excel;
 
 namespace navsaar.api.Controllers
 {
@@ -57,6 +58,49 @@ namespace navsaar.api.Controllers
                 return NotFound("Associate not found");
 
             return Ok("Associate deleted successfully");
+        }
+
+        [HttpGet]
+        [Route("ExportToExcel")]
+        public IActionResult ExportToExcel()
+        {
+            var associates = _associateRepository.GetList();
+
+            using var workbook = new XLWorkbook();
+            var worksheet = workbook.Worksheets.Add("Associates");
+
+            // ? Header
+            worksheet.Cell(1, 1).Value = "Id";
+            worksheet.Cell(1, 3).Value = "Name";
+            worksheet.Cell(1, 4).Value = "Contact No";
+            worksheet.Cell(1, 5).Value = "Leader Name";
+            worksheet.Cell(1, 6).Value = "Leader Contact No";
+            worksheet.Cell(1, 7).Value = "RERA No";
+
+            // ? Data
+            int row = 2;
+            foreach (var a in associates)
+            {
+                worksheet.Cell(row, 1).Value = a.Id;
+                worksheet.Cell(row, 3).Value = a.FirstName;
+                worksheet.Cell(row, 4).Value = a.ContactNo;
+                worksheet.Cell(row, 5).Value = a.LeaderName;
+                worksheet.Cell(row, 6).Value = a.LeaderContactNo;
+                worksheet.Cell(row, 7).Value = a.ReraNo;
+                row++;
+            }
+
+            worksheet.Columns().AdjustToContents();
+
+            using var stream = new MemoryStream();
+            workbook.SaveAs(stream);
+            stream.Position = 0;
+
+            return File(
+                stream.ToArray(),
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                "Associate_List.xlsx"
+            );
         }
     }
 }
