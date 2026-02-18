@@ -14,7 +14,9 @@ namespace navsaar.api.Models
         public int Status { get; set; }
 
         public string? ApplicantName { get; set; }  
-        public string? RelativeName { get; set; } 
+        public string? RelativeName { get; set; }
+        public string? RelationType { get; set; }
+
         public string? Address { get; set; }  
         public string? ContactNo { get; set; } 
     }

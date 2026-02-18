@@ -986,6 +986,7 @@ namespace navsaar.api.Repositories
             draftRequest.IsOriginalAgreement=request.IsOriginalAgreement;
             draftRequest.ApplicantName = request.ApplicantName;
             draftRequest.RelativeName = request.RelativeName;
+            draftRequest.RelationType = request.RelationType;
             draftRequest.Address = request.Address;
             draftRequest.ContactNo = request.ContactNo;
 
@@ -1018,8 +1019,10 @@ namespace navsaar.api.Repositories
                         PlotNo = pl.PlotNo,
                         ApplicantName = p.ApplicantName,
                         RelativeName = p.RelativeName,
-                        ContactNo=p.ContactNo,
+                        RelationType = p.RelationType,
+                        ContactNo =p.ContactNo,
                         Address = p.Address,
+                        Amount = b.AgreementValue
                     };
             return q.ToList();
         }
