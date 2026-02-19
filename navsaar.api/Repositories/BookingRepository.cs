@@ -1056,6 +1056,7 @@ namespace navsaar.api.Repositories
                         BookingId = b.Id,
                         CustomerName = b.ClientName,
                         PlotNo = pl.PlotNo,
+                        Amount = b.TotalAgreementValue,
                         ApplicantName = p.ApplicantName,
                         RelativeName = p.RelativeName,
                         RelativeType = p.RelativeType,

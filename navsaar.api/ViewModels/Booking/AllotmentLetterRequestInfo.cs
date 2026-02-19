@@ -3,7 +3,7 @@
     public class AllotmentLetterRequestInfo
     {
         public int Id { get; set; }
-        public decimal Amount { get; set; }
+        public decimal? Amount { get; set; }
       
         public int? Status { get; set; }
         public string? Notes { get; set; }
