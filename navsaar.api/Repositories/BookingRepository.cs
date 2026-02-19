@@ -1020,7 +1020,7 @@ namespace navsaar.api.Repositories
             allotmentLetterRequest.RequestedDate = DateTime.Now;
             allotmentLetterRequest.ApplicantName = request.ApplicantName;
             allotmentLetterRequest.RelativeName = request.RelativeName;
-            allotmentLetterRequest.RelativeType = request.RelativeType;
+            allotmentLetterRequest.RelationType = request.RelationType;
             allotmentLetterRequest.Address = request.Address;
             allotmentLetterRequest.ContactNo = request.ContactNo;
 
@@ -1059,7 +1059,7 @@ namespace navsaar.api.Repositories
                         Amount = b.TotalAgreementValue,
                         ApplicantName = p.ApplicantName,
                         RelativeName = p.RelativeName,
-                        RelativeType = p.RelativeType,
+                        RelationType = p.RelationType,
                         ContactNo = p.ContactNo,
                         Address = p.Address,
                     };
