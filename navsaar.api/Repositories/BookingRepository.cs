@@ -68,6 +68,7 @@ namespace navsaar.api.Repositories
                 entity.WorkflowTypeId = booking.WorkflowTypeId;
                 entity.PlotId = booking.PlotId;
                 entity.AgreementValue = booking.AgreementValue;
+                entity.TotalAgreementValue = booking.TotalAgreementValue;
                 entity.Status = 1;
                 entity.LastStatusChangedBy = 1;
                 entity.LastStatusChangedOn = DateTime.Now;
@@ -935,6 +936,7 @@ namespace navsaar.api.Repositories
                     RelationName = p.RelationName,
                     RelationType = p.RelationType,
                     AgreementValue = p.AgreementValue,
+                    TotalAgreementValue = p.TotalAgreementValue,
                     BankName = r != null ? r.BankName : null,
 
                     Status = bs.Name
@@ -990,7 +992,7 @@ namespace navsaar.api.Repositories
                         RelationType = p.RelationType,
                         ContactNo =p.ContactNo,
                         Address = p.Address,
-                        Amount = b.AgreementValue
+                        Amount = b.TotalAgreementValue
                     };
             return q.ToList();
         }

@@ -8,6 +8,7 @@
         public decimal PlotSize { get; set; }
        public int PlotId { get; set; }  
         public decimal AgreementValue { get; set; }
+        public decimal? TotalAgreementValue { get; set; }
 
         public DateTime BookingDate { get; set; }
         public string ClientName { get; set; }

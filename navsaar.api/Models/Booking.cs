@@ -10,6 +10,8 @@ namespace navsaar.api.Models
         public int TownshipId { get; set; }
         public int PlotId { get; set; }
         public decimal AgreementValue { get; set; }
+        public decimal? TotalAgreementValue { get; set; }
+
         public string? PlotNo { get; set; }
         public decimal  PlotSize { get; set; }
         public string? ClientName { get; set; }

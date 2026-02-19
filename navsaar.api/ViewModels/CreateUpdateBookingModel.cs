@@ -8,6 +8,7 @@
         public int PlotId { get; set; } 
         public string PlotNo { get; set; }
         public decimal AgreementValue { get; set; }
+        public decimal? TotalAgreementValue { get; set; }
         public decimal PlotSize { get; set; }
         public string ClientName { get; set; }
         public string ClientContactNo { get; set; }
