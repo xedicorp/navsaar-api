@@ -152,23 +152,24 @@ namespace navsaar.api.Repositories
 
         public void ReleaseExpiredHolds()
         {
-            var expiryTime = DateTime.Now.AddHours(-24);
+            var now = DateTime.Now;
 
             var expiredHolds = (from h in _context.PlotHoldRequests
                                 join p in _context.Plots on h.PlotId equals p.Id
                                 where !h.IsDelete
-                                && h.HoldDateTime <= expiryTime
-                                && p.Status == 3 // Still on hold
+                                && h.HoldDateTime.AddHours(24) <= now
+                                && p.Status == 3        // Still on hold
                                 select new { h, p }).ToList();
 
             foreach (var item in expiredHolds)
             {
-                item.p.Status = 1; // Available
+                item.p.Status = 1;   // Available
                 item.h.IsDelete = true;
             }
 
             _context.SaveChanges();
         }
+
 
         public List<HoldPlotInfo> GetHoldPlots(int townshipId)
         {
