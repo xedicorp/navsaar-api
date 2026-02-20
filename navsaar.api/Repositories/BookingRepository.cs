@@ -566,17 +566,15 @@ namespace navsaar.api.Repositories
             }
 
             //3. Loan Document Upload
-            var docs = _context.Documents.FirstOrDefault(d => d.BookingId == bookingId && d.DocumentTypeId == 1);
-            if (docs != null)
+            if (entity.IsReqDocsUploaded == true)
             {
                 progressModels.Add(new BookingProgressModel
                 {
-                    ProgressDate = docs.UploadedOn,
+                    ProgressDate = entity.ReqDocsUploadedOn.GetValueOrDefault(),
                     ProgressDetails = "Loan Document Uploaded",
-                    DaysFromBooking =  docs.UploadedOn.Subtract(entity.BookingDate).Days
+                    DaysFromBooking = entity.ReqDocsUploadedOn.GetValueOrDefault().Subtract(entity.BookingDate).Days
                 });
-            }
-            //4. Agreement Draft Created
+            }            //4. Agreement Draft Created
             if (entity.IsDraftPrepared.GetValueOrDefault())
             {
                

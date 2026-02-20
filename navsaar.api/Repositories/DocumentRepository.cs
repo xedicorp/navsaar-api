@@ -53,6 +53,32 @@ namespace navsaar.api.Repositories
             document.IsAllotment = request.IsAllotment;
             _context.Documents.Add(document);
             _context.SaveChanges();
+
+
+            //Get pending docs for Booking
+            var booking = _context.Bookings.Find(request.BookingId);
+            var requiredDocs = GetDocTypesByWorkflow(booking.WorkflowTypeId.GetValueOrDefault());
+
+            var uploadedDocs = _context.Documents.Where(p => p.BookingId == request.BookingId).ToList();
+            //Check if all required docs are uploaded
+            bool isAllUploaded = true;
+            foreach (var doc in requiredDocs)
+            {
+
+                if (!uploadedDocs.Any(p => p.DocumentTypeId == doc.DocumentTypeId))
+                {
+                    isAllUploaded = false; // Not all required docs are uploaded, but upload is successful
+                }
+            }
+
+            if (isAllUploaded)
+            {
+                booking.IsReqDocsUploaded = true;
+                booking.ReqDocsUploadedOn = DateTime.Now;
+                booking.Status = 4;
+                _context.Bookings.Update(booking);
+                _context.SaveChanges();
+            }
             return true;
         }
 
