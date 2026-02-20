@@ -919,6 +919,7 @@ namespace navsaar.api.Repositories
                 select new BookingInfo
                 {
                     Id = p.Id,
+                    WorkflowTypeId = p.WorkflowTypeId,
                     TownshipName = t.Name,
                     PlotNo = s.PlotNo,
                     PlotSize = s.PlotSize,
