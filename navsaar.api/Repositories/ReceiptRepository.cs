@@ -125,7 +125,7 @@ namespace navsaar.api.Repositories
             entity.ChequeNo = model.ChequeNo;
             entity.Status = 1; // 1: Verification Pending, 2: Under Verification, 3: Verified, 4: Rejected
             entity.Notes = model.Notes;
-
+            entity.CreatedBy=model.UserId;
             if (model.Id == 0)
             {
                 _context.Receipts.Add(entity);
@@ -153,7 +153,7 @@ namespace navsaar.api.Repositories
             this.SendVerificationRequest(new ViewModels.Receipt.VerifRequest
             {
                 ReceiptId = entity.Id,
-                UserId = entity.CreatedBy.GetValueOrDefault()
+                UserId = model.UserId.GetValueOrDefault()
             });
 
             return true;
