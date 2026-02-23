@@ -15,5 +15,6 @@
         public string PlotTypeName { get; set; }
 
         public string Status { get; set; }
+        public DateTime? HoldReleaseDateTime { get; set; }
     }
 }

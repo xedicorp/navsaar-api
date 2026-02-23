@@ -202,7 +202,6 @@ namespace navsaar.api.Repositories
 
         public List<PlotAvailabilityInfo> PlotAvailabilityReport(int townshipId = 0, int statusId = 0)
         {
-            // Release expired holds
             var plotRepo = new PlotRepository(_context);
             plotRepo.ReleaseExpiredHolds();
 
@@ -210,8 +209,16 @@ namespace navsaar.api.Repositories
                 from p in _context.Plots
                 join t in _context.Townships on p.TownshipId equals t.Id
                 join pt in _context.PlotTypes on p.PlotTypeId equals pt.Id
+
+                // LEFT JOIN HOLD TABLE
+                join h in _context.PlotHoldRequests
+                    .Where(x => !x.IsDelete)
+                    on p.Id equals h.PlotId into ph
+                from hold in ph.DefaultIfEmpty()
+
                 where (townshipId == 0 || p.TownshipId == townshipId)
                       && (statusId == 0 || p.Status == statusId)
+
                 select new PlotAvailabilityInfo
                 {
                     Id = p.Id,
@@ -230,7 +237,12 @@ namespace navsaar.api.Repositories
                              p.Status == 2 ? "Booked" :
                              p.Status == 3 ? "Hold" :
                              p.Status == 9 ? "Not for Sale" :
-                             "Unknown"
+                             "Unknown",
+
+                    HoldReleaseDateTime =
+                        p.Status == 3 && hold != null
+                        ? hold.HoldDateTime.AddHours(24)
+                        : (DateTime?)null
                 };
 
             return query
