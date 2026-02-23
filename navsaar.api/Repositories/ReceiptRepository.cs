@@ -4,6 +4,7 @@ using navsaar.api.Infrastructure;
 using navsaar.api.Models;
 using navsaar.api.ViewModels;
 using navsaar.api.ViewModels.Receipt;
+using Twilio.TwiML.Fax;
 
 namespace navsaar.api.Repositories
 {
@@ -148,6 +149,13 @@ namespace navsaar.api.Repositories
             }
 
             _context.SaveChanges();
+
+            this.SendVerificationRequest(new ViewModels.Receipt.VerifRequest
+            {
+                ReceiptId = entity.Id,
+                UserId = entity.CreatedBy.GetValueOrDefault()
+            });
+
             return true;
         }
 

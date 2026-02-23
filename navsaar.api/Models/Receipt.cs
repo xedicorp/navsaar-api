@@ -16,6 +16,7 @@ namespace navsaar.api.Models
         public int? Status { get; set; }
         public string? Notes { get; set; }
         public string? receiptImage { get; set; }
+        public int? CreatedBy { get; set; } 
 
     }
 }

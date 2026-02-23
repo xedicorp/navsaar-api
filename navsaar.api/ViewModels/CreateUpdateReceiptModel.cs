@@ -13,5 +13,7 @@
       //  public int? Status { get; set; }
         public string? Notes { get; set; }
         public IFormFile? receiptImage { get; set; }
+
+        public int? UserId { get; set; }    
     }
 }
