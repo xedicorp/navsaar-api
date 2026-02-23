@@ -10,7 +10,7 @@
         public string? TransactionId { get; set; }
         public string? BankName { get; set; }
         public string? ChequeNo { get; set; }
-        public int? Status { get; set; }
+      //  public int? Status { get; set; }
         public string? Notes { get; set; }
         public IFormFile? receiptImage { get; set; }
     }

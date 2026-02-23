@@ -197,22 +197,56 @@ namespace navsaar.api.Repositories
 
         public bool Verify(VerifReceiptRequest model)
         {
-            if(model.Status==1) //1 Approved
+            int bookingId = 0;
+            bool isInitialPayment = false;
+            var receipt = _context.Receipts.FirstOrDefault(p => p.Id == model.ReceiptId);
+            bookingId = receipt.BookingId;
+            if (receipt.Notes == "Initial Payment")
             {
-                var receipt = _context.Receipts.FirstOrDefault(p => p.Id == model.ReceiptId);
+                isInitialPayment = true;
+            }
+            else if (bookingId > 0)
+            {
+                var receipts = _context.Receipts.Where(p => p.BookingId == bookingId && p.Status != 4).ToList();
+                if (receipts.Count == 1)
+                {
+                    //means intital payment
+                    isInitialPayment = true;
+                }
+                else
+                {
+                    isInitialPayment = false;
+                }
+            }
+
+            if (model.Status == 1) //1 Approved
+            {
                 receipt.Status = 3; // Verified
                 _context.SaveChanges();
+
+                if (isInitialPayment)
+                {
+                    _context.Bookings.Find(receipt.BookingId).Status = 2; //2: Booking Confirmed, as Initital Payment Received
+                    _context.SaveChanges();
+                }
             }
             else if (model.Status == 2) //2 Rejected
             {
-                var receipt = _context.Receipts.FirstOrDefault(p => p.Id == model.ReceiptId);
+
                 receipt.Status = 4; // Rejected
                 _context.SaveChanges();
-            }
-
-            var verifRequest = _context.ReceiptVerificationRequests.FirstOrDefault(p => p.ReceiptId == model.ReceiptId  );
+                if (isInitialPayment)
+                {
+                    _context.Bookings.Find(receipt.BookingId).Status = 1; //2: Booking Not Confirmed, as Initital Payment not received
+                    _context.SaveChanges();
+                }
+            } 
+            var verifRequest = _context.ReceiptVerificationRequests.FirstOrDefault(p => p.ReceiptId == model.ReceiptId);
             verifRequest.Status = 2; //2: Verification Done
             _context.SaveChanges();
+
+
+
 
             return true;
         }
