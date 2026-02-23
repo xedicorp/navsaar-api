@@ -219,35 +219,42 @@ namespace navsaar.api.Repositories
                 where (townshipId == 0 || p.TownshipId == townshipId)
                       && (statusId == 0 || p.Status == statusId)
 
-                select new PlotAvailabilityInfo
+                select new
                 {
-                    Id = p.Id,
-                    TownshipId = p.TownshipId,
-                    TownshipName = t.Name,
-
-                    PlotNo = p.PlotNo,
-                    PlotSize = p.PlotSize,
-                    SaleableSize = p.SaleableSize,
-                    PlotSizeInSqrmtr = p.PlotSizeInSqrmtr,
-
-                    PlotTypeId = p.PlotTypeId,
-                    PlotTypeName = pt.Name,
-
-                    Status = p.Status == 1 ? "Available" :
-                             p.Status == 2 ? "Booked" :
-                             p.Status == 3 ? "Hold" :
-                             p.Status == 9 ? "Not for Sale" :
-                             "Unknown",
-
-                    HoldReleaseDateTime =
-                        p.Status == 3 && hold != null
-                        ? hold.HoldDateTime.AddHours(24)
-                        : (DateTime?)null
+                    p,
+                    t,
+                    pt,
+                    hold
                 };
 
-            return query
+            var result = query
+                .AsEnumerable()   // Needed for Date 
+                .Select(x => new PlotAvailabilityInfo
+                {
+                    Id = x.p.Id,
+                    TownshipId = x.p.TownshipId,
+                    TownshipName = x.t.Name,
+
+                    PlotNo = x.p.PlotNo,
+                    PlotSize = x.p.PlotSize,
+                    SaleableSize = x.p.SaleableSize,
+                    PlotSizeInSqrmtr = x.p.PlotSizeInSqrmtr,
+
+                    PlotTypeId = x.p.PlotTypeId,
+                    PlotTypeName = x.pt.Name,
+
+                    Status =
+                        x.p.Status == 1 ? "Available" :
+                        x.p.Status == 2 ? "Booked" :
+                        x.p.Status == 3 && x.hold != null
+                            ?  $"Hold (Till {x.hold.HoldDateTime.AddHours(24):dd MMM yyyy hh:mm tt})"
+                        : x.p.Status == 9 ? "Not for Sale"
+                        : "Unknown"
+                })
                 .OrderBy(x => x.PlotNo)
                 .ToList();
+
+            return result;
         }
     }
 }
