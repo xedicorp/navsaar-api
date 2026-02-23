@@ -13,6 +13,8 @@ namespace navsaar.api.Repositories
         List<BookingStatusType> BookingStatusTypeList();
         AppSettingInfo GetAppSetting();
         List<AppSettingInfo> GetAllAppSettings();
+        List<Bank> BankList();
+
 
     }
 }

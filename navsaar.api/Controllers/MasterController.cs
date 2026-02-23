@@ -65,5 +65,14 @@ namespace navsaar.api.Controllers
 
             return Ok(settings );
         }
+        [HttpGet]
+        [Route("Banks")]
+        public ActionResult<IEnumerable<Bank>> BankList()
+        {
+            var banks = _masterRepository.BankList();
+            return Ok(banks);
+        }
+
+
     }
 }

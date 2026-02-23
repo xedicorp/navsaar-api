@@ -62,5 +62,12 @@ namespace navsaar.api.Repositories
         {
             return _context.AppSettings.Select(s => s.TenantName).ToList();
         }
+
+        public List<Bank> BankList()
+        {
+            return _context.Banks
+                .OrderBy(b => b.Name)
+                .ToList();
+        }
     }
 }

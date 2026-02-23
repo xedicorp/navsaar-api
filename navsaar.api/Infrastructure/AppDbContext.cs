@@ -40,7 +40,7 @@ namespace navsaar.api.Infrastructure
         public DbSet<FileTimeline> FileTimelines { get; set; }
         public DbSet<AppSetting> AppSettings{ get; set;}
         public DbSet<PlotHoldRequest> PlotHoldRequests { get; set; }
-
+        public DbSet<Bank> Banks { get; set; }
 
     }
 }
