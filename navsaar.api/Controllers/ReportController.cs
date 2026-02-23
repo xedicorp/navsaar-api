@@ -36,5 +36,15 @@ namespace navsaar.api.Controllers
         {
             return _repository.TownshipHealthReport(townshipId);
         }
+
+        [HttpGet]
+        [Route("plot-availability")]
+        public IActionResult PlotAvailabilityReport(
+        int townshipId = 0,
+        int statusId = 0)
+        {
+            var data = _repository.PlotAvailabilityReport(townshipId, statusId);
+            return Ok(data);
+        }
     }
 }

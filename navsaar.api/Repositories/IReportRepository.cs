@@ -10,5 +10,6 @@ namespace navsaar.api.Repositories
       List<TownshipCollectionModel>  TownshipCollectionSummaryReport(int townshipId = 0);
         List<TownshipCollectionDetail> TownshipCollectionDetailReport(int townshipId = 0);
          TownshipHealthReportModel  TownshipHealthReport(int townshipId );
+        List<PlotAvailabilityInfo> PlotAvailabilityReport(int townshipId = 0, int statusId = 0);
     }
 }

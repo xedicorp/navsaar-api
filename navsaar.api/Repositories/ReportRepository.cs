@@ -199,5 +199,43 @@ namespace navsaar.api.Repositories
             }
             return reportModel;
         }
+
+        public List<PlotAvailabilityInfo> PlotAvailabilityReport(int townshipId = 0, int statusId = 0)
+        {
+            // Release expired holds
+            var plotRepo = new PlotRepository(_context);
+            plotRepo.ReleaseExpiredHolds();
+
+            var query =
+                from p in _context.Plots
+                join t in _context.Townships on p.TownshipId equals t.Id
+                join pt in _context.PlotTypes on p.PlotTypeId equals pt.Id
+                where (townshipId == 0 || p.TownshipId == townshipId)
+                      && (statusId == 0 || p.Status == statusId)
+                select new PlotAvailabilityInfo
+                {
+                    Id = p.Id,
+                    TownshipId = p.TownshipId,
+                    TownshipName = t.Name,
+
+                    PlotNo = p.PlotNo,
+                    PlotSize = p.PlotSize,
+                    SaleableSize = p.SaleableSize,
+                    PlotSizeInSqrmtr = p.PlotSizeInSqrmtr,
+
+                    PlotTypeId = p.PlotTypeId,
+                    PlotTypeName = pt.Name,
+
+                    Status = p.Status == 1 ? "Available" :
+                             p.Status == 2 ? "Booked" :
+                             p.Status == 3 ? "Hold" :
+                             p.Status == 9 ? "Not for Sale" :
+                             "Unknown"
+                };
+
+            return query
+                .OrderBy(x => x.PlotNo)
+                .ToList();
+        }
     }
 }
