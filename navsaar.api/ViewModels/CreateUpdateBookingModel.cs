@@ -38,5 +38,7 @@
         public IFormFile? InitialReceiptImage { get; set; }
         public int? InitialReceiptStatus { get; set; }
 
+        public int? UserId { get; set; }
+
     }
 }

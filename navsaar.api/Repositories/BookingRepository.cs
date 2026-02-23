@@ -74,8 +74,8 @@ namespace navsaar.api.Repositories
                 entity.LastStatusChangedOn = DateTime.Now;
                 entity.LeaderContactNo = booking.LeaderContactNo;   
                 entity.RelationType = booking.RelationType;         
-                entity.RelationName = booking.RelationName;         
-
+                entity.RelationName = booking.RelationName;
+                entity.CreatedBy = booking.UserId;
 
                 await _context.SaveChangesAsync(); // BookingId generated here
 
@@ -151,7 +151,11 @@ namespace navsaar.api.Repositories
                     await _context.Receipts.AddAsync(receipt);
                     await _context.SaveChangesAsync();
 
-
+                    _receiptRepository.SendVerificationRequest(new ViewModels.Receipt.VerifRequest
+                    {
+                        ReceiptId = receipt.Id,
+                         UserId=booking.UserId.GetValueOrDefault()
+                    });
                  
                 }
 

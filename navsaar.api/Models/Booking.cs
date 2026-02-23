@@ -97,5 +97,7 @@ namespace navsaar.api.Models
         public bool? IsReqDocsUploaded { get; set; }
         public DateTime? ReqDocsUploadedOn { get; set; }
 
+        public int? CreatedBy { get; set; }
+
     }
 }

@@ -247,7 +247,7 @@ namespace navsaar.api.Repositories
                         x.p.Status == 1 ? "Available" :
                         x.p.Status == 2 ? "Booked" :
                         x.p.Status == 3 && x.hold != null
-                            ?  $"Hold (Till {x.hold.HoldDateTime.AddHours(24):dd MMM yyyy hh:mm tt})"
+                            ?  $"Hold (  {x.hold.HoldDateTime.AddHours(24):dd MMM yyyy hh:mm tt})"
                         : x.p.Status == 9 ? "Not for Sale"
                         : "Unknown"
                 })
