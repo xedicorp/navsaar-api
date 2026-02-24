@@ -9,5 +9,7 @@ namespace navsaar.api.Repositories
         List<TownshipInfo> List(int userId=0);
         bool Save(TownshipCreateUpdateRequest request);
        Task< bool> UploadInventory(UploadInventoryRequestModel request);
+        bool Delete(int townshipId);
+
     }
 }

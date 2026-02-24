@@ -173,6 +173,17 @@ namespace navsaar.api.Repositories
             }
             return dt;
         }
+        public bool Delete(int townshipId)
+        {
+            var township = _context.Townships.FirstOrDefault(x => x.Id == townshipId);
+            if (township == null)
+                return false;
+
+            _context.Townships.Remove(township);
+            _context.SaveChanges();
+
+            return true;
+        }
 
     }
 }

@@ -37,5 +37,16 @@ namespace navsaar.api.Controllers
         {
             return await _repository.UploadInventory(model);
         }
+        [HttpDelete]
+        [Route("Delete/{id}")]
+        public IActionResult Delete(int id)
+        {
+            var result = _repository.Delete(id);
+
+            if (!result)
+                return NotFound(new { message = "Township not found" });
+
+            return Ok(new { message = "Township deleted successfully" });
+        }
     }
 }
