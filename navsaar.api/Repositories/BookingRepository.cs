@@ -291,7 +291,9 @@ namespace navsaar.api.Repositories
                                 ? "green"
                                 : "red"
                 }
-            ).ToList();
+            )
+            .OrderByDescending(x => x.BookingDate)
+            .ToList();
         }
 
 
@@ -945,7 +947,9 @@ namespace navsaar.api.Repositories
                     Status = bs.Name
                 };
 
-            return query.ToList();
+            return query
+                .OrderByDescending(x => x.BookingDate)
+                .ToList();
         }
 
         public bool SendToDraft(SendToDraftRequest request)
