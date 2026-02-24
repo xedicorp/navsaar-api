@@ -8,6 +8,7 @@ using navsaar.api.Repositories.Refunds;
 using navsaar.api.Repositories.Reminders;
 using navsaar.api.Services;
 using Microsoft.Extensions.FileProviders;
+using Hangfire;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,6 +32,7 @@ builder.Services.AddScoped<IRefundRepository, RefundRepository>();
 builder.Services.AddScoped<IWhatsAppService, WhatsAppService>();
 builder.Services.AddScoped<IAssociateRepository, AssociateRepository>();
 builder.Services.AddScoped<IFileTimelinesRepository, FileTimelinesRepository>();
+builder.Services.AddScoped<ISchedulerService, SchedulerService>();
 builder.Services.AddHttpContextAccessor();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -54,12 +56,22 @@ builder.Services.AddCors(options =>
     });
 });
 
+// 1. Add Hangfire services
+builder.Services.AddHangfire(config => config
+    .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+    .UseSimpleAssemblyNameTypeSerializer()
+    .UseRecommendedSerializerSettings()
+    .UseSqlServerStorage(builder.Configuration.GetConnectionString("HangfireDBConnection")));
+
+// 2. Add the processing server
+builder.Services.AddHangfireServer();
 var app = builder.Build();
 
+app.UseHangfireDashboard();
 // Configure the HTTP request pipeline.
 //if (app.Environment.IsDevelopment())
 //{
-    app.UseSwagger();
+app.UseSwagger();
     app.UseSwaggerUI();
 //}
 
@@ -74,6 +86,8 @@ app.UseStaticFiles(new StaticFileOptions
         Path.Combine(Directory.GetCurrentDirectory(), "Uploads")),
     RequestPath = "/Uploads"
 });
+
+RecurringJob.AddOrUpdate<ISchedulerService>("Create Notifications", service => service.GenerateNofications(), Cron.Minutely);
 
 app.MapControllers();
 
