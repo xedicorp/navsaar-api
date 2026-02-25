@@ -40,7 +40,10 @@ namespace navsaar.api.Repositories.Refunds
                 });
             }
 
-            return refunds;
+            return refunds
+                    .OrderByDescending(x => x.CancelledOn ?? DateTime.MinValue)
+                    .ThenByDescending(x => x.Id)
+                    .ToList();
         }
 
         private static string GetStatus(int status)

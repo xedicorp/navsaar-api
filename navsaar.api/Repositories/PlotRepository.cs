@@ -179,6 +179,7 @@ namespace navsaar.api.Repositories
                           where !h.IsDelete
                                 && p.Status == 3                 // HOLD
                                 && p.TownshipId == townshipId    // FILTER
+                          orderby h.HoldDateTime descending
                           select new HoldPlotInfo
                           {
                               PlotId = h.PlotId,

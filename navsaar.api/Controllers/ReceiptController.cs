@@ -47,7 +47,7 @@ namespace navsaar.api.Controllers
         }
         [HttpGet]
         [Route("VerificationRequests")]
-        public IEnumerable<VerificationRequestInfo> VerificationRequests()
+        public VerificationRequestApiResponse VerificationRequests()
         {
             return _receiptRepository.VerificationRequests();
         }

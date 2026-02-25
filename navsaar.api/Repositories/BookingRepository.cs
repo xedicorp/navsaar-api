@@ -977,33 +977,39 @@ namespace navsaar.api.Repositories
             _whatsAppService.SendMessage(BookingUpdate.SentToDraft,booking);
             return true;
         }
-        public List<DraftRequestInfo> GetDraftRequests()
+        public DraftRequestApiResponse GetDraftRequests()
         {
-            var q = from p in _context.DraftRequests                 
-                    join b in _context.Bookings on p.BookingId equals b.Id
-                    join pl in _context.Plots on b.PlotId equals pl.Id
-                    join u in _context.Users on p.RequestedBy equals u.Id
-                    where p.Status == 1 // Pending
-                    select new DraftRequestInfo
-                    {
-                        Id = p.Id,                       
-                        Status = p.Status,
-                        Notes = p.Notes,
-                        RequestedOn = p.RequestedDate,
-                        RequestedByName = u.UserName,
-                        BookingId = b.Id,
-                        CustomerName = b.ClientName,
-                        PlotNo = pl.PlotNo,
-                        ApplicantName = p.ApplicantName,
-                        RelativeName = p.RelativeName,
-                        RelationType = p.RelationType,
-                        ContactNo =p.ContactNo,
-                        Address = p.Address,
-                        Amount = b.TotalAgreementValue
-                    };
-            return q.ToList();
-        }
+            var data =
+                (from p in _context.DraftRequests
+                 join b in _context.Bookings on p.BookingId equals b.Id
+                 join pl in _context.Plots on b.PlotId equals pl.Id
+                 join u in _context.Users on p.RequestedBy equals u.Id
+                 where p.Status == 1
+                 orderby p.RequestedDate descending
+                 select new DraftRequestInfo
+                 {
+                     Id = p.Id,
+                     Status = p.Status,
+                     Notes = p.Notes,
+                     RequestedOn = p.RequestedDate,
+                     RequestedByName = u.UserName,
+                     BookingId = b.Id,
+                     CustomerName = b.ClientName,
+                     PlotNo = pl.PlotNo,
+                     ApplicantName = p.ApplicantName,
+                     RelativeName = p.RelativeName,
+                     RelationType = p.RelationType,
+                     ContactNo = p.ContactNo,
+                     Address = p.Address,
+                     Amount = b.TotalAgreementValue
+                 }).ToList();
 
+            return new DraftRequestApiResponse
+            {
+                PendingCount = data.Count,   
+                Data = data
+            };
+        }
         public bool MarkDraftComplete(MarkDraftCompleteRequest request)
         {
             DraftRequest draftRequest = _context.DraftRequests.FirstOrDefault(p => p.Id == request.Id);
@@ -1053,6 +1059,7 @@ namespace navsaar.api.Repositories
                     join pl in _context.Plots on b.PlotId equals pl.Id
                     join u in _context.Users on p.RequestedBy equals u.Id
                     where p.Status == 1 // Pending
+                    orderby p.RequestedDate descending
                     select new AllotmentLetterRequestInfo
                     {
                         Id = p.Id,
