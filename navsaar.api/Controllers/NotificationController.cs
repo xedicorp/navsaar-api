@@ -22,5 +22,11 @@ namespace navsaar.api.Controllers
         {
             return _repository.List(priority);
         }
+        [HttpGet]
+        [Route("CountByPriority")]
+        public ActionResult<List<NotificationCount>> CountByPriority()
+        {
+            return Ok(_repository.CountByPriority());
+        }
     }
 }
