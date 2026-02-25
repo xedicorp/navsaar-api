@@ -9,7 +9,7 @@ using navsaar.api.Repositories.Reminders;
 using navsaar.api.Services;
 using Microsoft.Extensions.FileProviders;
 using Hangfire;
-using navsaar.api.Repositories.Notifications;
+ 
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -90,7 +90,7 @@ app.UseStaticFiles(new StaticFileOptions
     RequestPath = "/Uploads"
 });
 
-RecurringJob.AddOrUpdate<ISchedulerService>("Create Notifications", service => service.GenerateNofications(), Cron.Minutely);
+RecurringJob.AddOrUpdate<ISchedulerService>("Create Notifications", service => service.GenerateNofications(), Cron.Hourly);
 
 app.MapControllers();
 
