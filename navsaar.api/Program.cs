@@ -9,6 +9,7 @@ using navsaar.api.Repositories.Reminders;
 using navsaar.api.Services;
 using Microsoft.Extensions.FileProviders;
 using Hangfire;
+using navsaar.api.Repositories.Notifications;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,6 +34,8 @@ builder.Services.AddScoped<IWhatsAppService, WhatsAppService>();
 builder.Services.AddScoped<IAssociateRepository, AssociateRepository>();
 builder.Services.AddScoped<IFileTimelinesRepository, FileTimelinesRepository>();
 builder.Services.AddScoped<ISchedulerService, SchedulerService>();
+builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+
 builder.Services.AddHttpContextAccessor();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

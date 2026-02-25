@@ -41,6 +41,8 @@ namespace navsaar.api.Infrastructure
         public DbSet<AppSetting> AppSettings{ get; set;}
         public DbSet<PlotHoldRequest> PlotHoldRequests { get; set; }
         public DbSet<Bank> Banks { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
+
 
     }
 }
