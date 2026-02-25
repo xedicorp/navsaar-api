@@ -5,8 +5,8 @@ using navsaar.api.Repositories;
 
 namespace navsaar.api.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("[controller]")]
     public class NotificationController : ControllerBase
     {
         INotificationRepository _repository;
