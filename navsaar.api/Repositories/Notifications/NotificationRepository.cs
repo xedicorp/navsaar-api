@@ -43,5 +43,21 @@ namespace navsaar.api.Repositories
                     return "Very Low";
             }
         }
+
+        public List<NotificationCount> CountByPriority()
+        {
+            return _context.Notifications
+                .GroupBy(n => n.Priority)
+                .Select(g => new NotificationCount
+                {
+                    Priority = g.Key,
+                    PriorityName = g.Key == 1 ? "Normal" :
+                                   g.Key == 2 ? "High" :
+                                   g.Key == 3 ? "Critical" : "Unknown",
+                    Count = g.Count()
+                })
+                .OrderBy(x => x.Priority)
+                .ToList();
+        }
     }
 }

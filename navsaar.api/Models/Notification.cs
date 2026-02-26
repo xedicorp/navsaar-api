@@ -12,4 +12,11 @@ namespace navsaar.api.Models
         public DateTime CreatedOn { get; set; }
         public bool IsRead { get; set; }
     }
+    public class NotificationCount
+    {
+        public int Priority { get; set; }
+        public string PriorityName { get; set; } = null!;
+
+        public int Count { get; set; }
+    }
 }
