@@ -29,6 +29,40 @@ namespace navsaar.api.Repositories
                 })
                 .ToList();
         }
+        public AssociateInfo GetById(long id)
+        {
+            return _context.Associates
+                .Where(a => a.ID == id)
+                .Select(a => new AssociateInfo
+                {
+                    Id = a.ID,
+                    UserName = a.UserName,
+                    FirstName = a.FirstName,
+                    ContactNo = a.ContactNo,
+                    LeaderName = a.LeaderName,
+                    LeaderContactNo = a.LeaderContactNo,
+                    ReraNo = a.RERA,
+
+                    DOB = a.DOB,
+                    AnniversaryDate = a.AnniversaryDate,
+
+                    PANCardNo = a.PANCardNo,
+                    AadhaarNo = a.AadhaarNo,
+                    PassportNo = a.PassportNo,
+
+                    IsActive = a.IsActive,
+                    IsApproved = a.IsApproved,
+
+                    CreatedAt = a.CreatedAt,
+                    UpdatedAt = a.UpdatedAt,
+
+                    RERACertificateFile = a.RERACertificateFile,
+                    PhotoFile = a.PhotoFile,
+                    PassportFile = a.PassportFile,
+                    BankDocumentFile = a.BankDocumentFile
+                })
+                .FirstOrDefault();
+        }
         public AssociateInfo GetByRera(string reraNo)
         {
             return _context.Associates
