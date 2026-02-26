@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using navsaar.api.Models;
 using navsaar.api.Repositories;
+using navsaar.api.ViewModels.Notifications;
 
 namespace navsaar.api.Controllers
 {
@@ -18,9 +19,9 @@ namespace navsaar.api.Controllers
 
         [HttpGet]
         [Route("List")]
-        public IEnumerable<Notification> List(int priority)
+        public IEnumerable<NotificationInfo> List(int priority, int userId)
         {
-            return _repository.List(priority);
+            return _repository.List(priority, userId);
         }
     }
 }
