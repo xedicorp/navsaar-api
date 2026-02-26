@@ -8,6 +8,7 @@
         public string BranchName { get; set; }
         public string LoginRefNo { get; set; }
         public string Notes { get; set; }
+        public int? UserId { get; set; } = 0;
     }
     public class DraftPerparationStatusRequest
     {
@@ -17,6 +18,7 @@
         public bool IsDraftGivenToBank { get; set; }
         public DateTime? DraftGivenToBankOn { get; set; }
         public string Notes { get; set; }
+        public int? UserId { get; set; } = 0;
     }
     public class UploadDocumentRequest
     {
@@ -27,6 +29,7 @@
         public bool IsDraft { get; set; }
         public bool IsATT { get; set; }
         public bool IsAllotment { get; set; }
+        public int? UserId { get; set; } = 0;
     }
     public class  DocumentModel
     {

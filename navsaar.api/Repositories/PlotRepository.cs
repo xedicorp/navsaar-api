@@ -1,5 +1,6 @@
 ﻿using navsaar.api.Infrastructure;
 using navsaar.api.Models;
+using navsaar.api.Services;
 using navsaar.api.ViewModels;
 using navsaar.api.ViewModels.Inventory;
 
@@ -8,9 +9,11 @@ namespace navsaar.api.Repositories
     public class PlotRepository : IPlotRepository
     {
         private readonly AppDbContext _context;
-        public PlotRepository(AppDbContext context)
+        IWhatsAppService _whatsAppService;
+        public PlotRepository(AppDbContext context, IWhatsAppService whatsAppService)
         {
             _context = context;
+            _whatsAppService = whatsAppService;
         }
         public List<PlotInfo> List(int townshipId, int status = 0)
         {
@@ -120,6 +123,7 @@ namespace navsaar.api.Repositories
         }
         public bool HoldPlot(PlotHoldRequestModel model)
         {
+            var associate = _context.Associates.FirstOrDefault(x => x.ID == model.AssociateId);
             var plot = _context.Plots.FirstOrDefault(x => x.Id == model.PlotId);
 
             if (plot == null || plot.Status != 1)
@@ -147,6 +151,9 @@ namespace navsaar.api.Repositories
             });
 
             _context.SaveChanges();
+
+            _whatsAppService.SendMessage( BookingUpdate.Hold, plot.PlotNo, string.Format("{0} {1}", associate.FirstName , associate.LastName),
+                 associate.ContactNo);
             return true;
         }
 

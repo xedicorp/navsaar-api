@@ -42,7 +42,7 @@ namespace navsaar.api.Infrastructure
         public DbSet<PlotHoldRequest> PlotHoldRequests { get; set; }
         public DbSet<Bank> Banks { get; set; }
         public DbSet<Notification> Notifications { get; set; }
-
+        public DbSet<BookingLog> BookingLogs { get; set; }
 
     }
 }

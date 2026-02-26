@@ -3,6 +3,7 @@
     public enum BookingUpdate
     {
         New,
+        Hold,
         BookingAmountReceived,
         LoanDocumentReminder,
         JDAPattaReminder,

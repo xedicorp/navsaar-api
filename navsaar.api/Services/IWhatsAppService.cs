@@ -6,5 +6,6 @@ namespace navsaar.api.Services
     public interface IWhatsAppService
     {
         void SendMessage(BookingUpdate update,   Booking  booking);
+        void SendMessage(BookingUpdate update, string plotNo, string associateName,   string associateNo);
     } 
 }

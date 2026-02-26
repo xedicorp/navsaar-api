@@ -16,14 +16,17 @@ namespace navsaar.api.Repositories
         private readonly AppDbContext _context;
         private readonly IReceiptRepository _receiptRepository;
         private readonly IDocumentRepository _documentRepository;
+        private readonly IBookingLogRepository _bookingLogRepository;
         IWhatsAppService _whatsAppService;
         public BookingRepository(AppDbContext context, IReceiptRepository receiptRepository,
-                IDocumentRepository documentRepository, IWhatsAppService whatsAppService)
+                IDocumentRepository documentRepository, IWhatsAppService whatsAppService, 
+                IBookingLogRepository bookingLogRepository)
         {
             _context = context;
             _receiptRepository = receiptRepository;
             _documentRepository = documentRepository;
             _whatsAppService = whatsAppService;
+            _bookingLogRepository = bookingLogRepository;
         }
         public async Task<int> Save(CreateUpdateBookingModel booking)
         {
@@ -160,17 +163,13 @@ namespace navsaar.api.Repositories
                 }
 
                 await transaction.CommitAsync();
-                if(isNew)
+                if (isNew)
                 {
-                    _whatsAppService.SendMessage(
-                   BookingUpdate.New,
-                   entity
-               );
+                    //_bookingLogRepository.Log( new BookingLog { BookingId = entity.Id, Message = "Booking created", Timestamp = DateTime.Now, UserId = booking.UserId.GetValueOrDefault() });
 
-                    _whatsAppService.SendMessage(
-                        BookingUpdate.BookingAmountReceived,
-                        entity
-                    );
+                    //Send WhatsApp message for new booking and initial amount received (if any)
+                    _whatsAppService.SendMessage( BookingUpdate.New, entity );
+                    _whatsAppService.SendMessage(BookingUpdate.BookingAmountReceived,  entity );
                 }
                 return entity.Id;
             }
@@ -350,6 +349,7 @@ namespace navsaar.api.Repositories
 
             if(!string.IsNullOrEmpty(request.LoginRefNo))
             {
+                //_bookingLogRepository.Log(new BookingLog { BookingId = entity.Id, Message = "File Login done", Timestamp = DateTime.Now, UserId = request.UserId.GetValueOrDefault() });
                 _whatsAppService.SendMessage(BookingUpdate.BankLoginDone, entity);
             }
             

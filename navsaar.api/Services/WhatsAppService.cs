@@ -25,7 +25,39 @@ namespace navsaar.api.Services
             from = _configuration["Twilio:FromPhoneNumber"];
         }
 
+        public async void SendMessage(BookingUpdate update, string plotNo, 
+            string associateName, string associateNo)
+        {
+            try
+            {
 
+
+                TwilioClient.Init(accountSid, authToken);
+                switch (update)
+                {
+                    case BookingUpdate.Hold:
+                        contentSID = "HX596d37a6a4133a3a875e2ae63dc4a27f";
+                        break;
+                }
+                var contentVariables = new Dictionary<string, string>
+                {
+                    { "name",associateName },
+                    { "townshipname", "Navsaar Valley"},
+                    {"plotno", plotNo   }
+                };
+
+                await MessageResource.CreateAsync(
+                        from: new Twilio.Types.PhoneNumber("whatsapp:" + from),
+                        to: new Twilio.Types.PhoneNumber("whatsapp:" + associateNo),
+                        contentSid: contentSID,
+                        contentVariables: Newtonsoft.Json.JsonConvert.SerializeObject(contentVariables)
+                );
+            }
+            catch (Exception ex)
+            { 
+
+            }
+        }
         public void SendMessage(
             BookingUpdate update, Booking booking)
         {
@@ -54,6 +86,7 @@ namespace navsaar.api.Services
                     case BookingUpdate.JDAPattaApplied:
                         contentSID = "HX596d37a6a4133a3a875e2ae63dc4a27f";
                         break;
+                   
                     //case BookingUpdate.BankLoginDone:
                     //    message =
                     //        $"Mr./Ms. {booking.ClientName},\n" +
@@ -179,20 +212,20 @@ namespace navsaar.api.Services
         }
 
 
-        private async  void Send(string to,   Booking update, string message)
+        private async void Send(string to, Booking update, string message)
         {
-            var contentVariables = new Dictionary<string, string>
-        {
-            { "1", update.ClientName },
-            { "2", update.PlotNo }
-        };
+                var contentVariables = new Dictionary<string, string>
+                {
+                    { "1", update.ClientName },
+                    { "2", update.PlotNo }
+                };
 
-            await MessageResource.CreateAsync(
-            from: new Twilio.Types.PhoneNumber("whatsapp:" + from),
-            to: new Twilio.Types.PhoneNumber("whatsapp:" + to),
-            contentSid: contentSID,
-            contentVariables: Newtonsoft.Json.JsonConvert.SerializeObject(contentVariables)
-            );
-        } 
+                await MessageResource.CreateAsync(
+                        from: new Twilio.Types.PhoneNumber("whatsapp:" + from),
+                        to: new Twilio.Types.PhoneNumber("whatsapp:" + to),
+                        contentSid: contentSID,
+                        contentVariables: Newtonsoft.Json.JsonConvert.SerializeObject(contentVariables)
+                );
+        }
     }
 }

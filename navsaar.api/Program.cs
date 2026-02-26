@@ -35,6 +35,7 @@ builder.Services.AddScoped<IAssociateRepository, AssociateRepository>();
 builder.Services.AddScoped<IFileTimelinesRepository, FileTimelinesRepository>();
 builder.Services.AddScoped<ISchedulerService, SchedulerService>();
 builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+builder.Services.AddScoped<IBookingLogRepository, BookingLogRepository>();
 
 builder.Services.AddHttpContextAccessor();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
