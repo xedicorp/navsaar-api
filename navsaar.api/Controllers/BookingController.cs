@@ -133,7 +133,7 @@ namespace navsaar.api.Controllers
         }
         [HttpGet]
         [Route("GetDraftRequests")]
-        public DraftRequestApiResponse GetDraftRequests()
+        public List<DraftRequestInfo> GetDraftRequests()
         {
             return _bookingRepository.GetDraftRequests();
         }

@@ -19,9 +19,4 @@
         public string PlotNo { get; set; }
         public string CustomerName { get; set; }
     }
-    public class VerificationRequestApiResponse
-    {
-        public int PendingCount { get; set; }
-        public List<VerificationRequestInfo> Data { get; set; } = new();
-    }
 }

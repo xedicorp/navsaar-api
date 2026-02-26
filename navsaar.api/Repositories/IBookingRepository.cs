@@ -32,7 +32,7 @@ namespace navsaar.api.Repositories
         bool ChangePlot(ChangePlotRequest request);
         bool Cancel(BookingCancelRequest request);
         bool SendToDraft(SendToDraftRequest request);
-        DraftRequestApiResponse GetDraftRequests();
+        List<DraftRequestInfo> GetDraftRequests();
         bool MarkDraftComplete(MarkDraftCompleteRequest request);
 
 
