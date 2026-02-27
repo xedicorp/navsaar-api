@@ -204,7 +204,7 @@ namespace navsaar.api.Repositories
 
         public List<PlotAvailabilityInfo> PlotAvailabilityReport(int townshipId = 0, int statusId = 0)
         {
-            var plotRepo = _plotRepository;
+            var plotRepo = new PlotRepository(_context);
             plotRepo.ReleaseExpiredHolds();
 
             var query =
@@ -212,7 +212,6 @@ namespace navsaar.api.Repositories
                 join t in _context.Townships on p.TownshipId equals t.Id
                 join pt in _context.PlotTypes on p.PlotTypeId equals pt.Id
 
-                // LEFT JOIN HOLD TABLE
                 join h in _context.PlotHoldRequests
                     .Where(x => !x.IsDelete)
                     on p.Id equals h.PlotId into ph
@@ -230,7 +229,7 @@ namespace navsaar.api.Repositories
                 };
 
             var result = query
-                .AsEnumerable()   // Needed for Date 
+                .AsEnumerable()
                 .Select(x => new PlotAvailabilityInfo
                 {
                     Id = x.p.Id,
@@ -249,7 +248,7 @@ namespace navsaar.api.Repositories
                         x.p.Status == 1 ? "Available" :
                         x.p.Status == 2 ? "Booked" :
                         x.p.Status == 3 && x.hold != null
-                            ?  $"Hold (  {x.hold.HoldDateTime.AddHours(24):dd MMM yyyy hh:mm tt})"
+                            ? $"Hold ({x.hold.HoldDateTime.AddHours(24):dd MMM yyyy hh:mm tt})"
                         : x.p.Status == 9 ? "Not for Sale"
                         : "Unknown"
                 })

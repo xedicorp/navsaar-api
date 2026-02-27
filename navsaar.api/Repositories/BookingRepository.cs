@@ -801,6 +801,7 @@ namespace navsaar.api.Repositories
                         JDAPattaNotes = p.JDAPattaNotes,
                         JDAPattaRegisteredOn = p.JDAPattaRegisteredOn ,
                         AgreementValue=p.AgreementValue,
+                        TotalAgreementValue=p.TotalAgreementValue,
                         PlotId = p.PlotId
                       
                     }).FirstOrDefault();
@@ -927,6 +928,7 @@ namespace navsaar.api.Repositories
                     Id = p.Id,
                     WorkflowTypeId = p.WorkflowTypeId,
                     TownshipName = t.Name,
+                    TownshipId = p.TownshipId,
                     PlotNo = s.PlotNo,
                     PlotSize = s.PlotSize,
                     BookingDate = p.BookingDate,

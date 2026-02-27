@@ -55,6 +55,8 @@ namespace navsaar.api.Repositories
                     return "Booked";
                 case 3:
                     return "Hold";
+                case 5:
+                    return "Rahan";
                 case 9:
                     return "Not for Sale";
                 default:
