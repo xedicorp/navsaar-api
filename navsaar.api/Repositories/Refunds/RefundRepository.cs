@@ -71,7 +71,7 @@ namespace navsaar.api.Repositories.Refunds
             RefundStatusLog statusLog = new RefundStatusLog();
             statusLog.RefundRequestId = model.RefundRequestId;
             statusLog.ActualDate = model.ActualDate;
-            statusLog.NewStatus = model.NewStatus;
+          //  statusLog.NewStatus = model.NewStatus;
             statusLog.StatusChangeDate = DateTime.Now;
             statusLog.StatusChangedBy = model.UserId;
             statusLog.Notes = model.Notes;

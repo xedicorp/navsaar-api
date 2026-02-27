@@ -459,7 +459,7 @@ namespace navsaar.api.Repositories
             entity.DokitSigingNotes = request.Notes;
             entity.CurrentStage = 8;
             entity.Status = 16; //Dokit Signed
-            _context.SaveChanges();
+          
             if (request.IsDokitSigned == true)
             {
                 _whatsAppService.SendMessage(
@@ -467,6 +467,7 @@ namespace navsaar.api.Repositories
                     entity
                 );
             }
+            _context.SaveChanges();
             return true;
         }
         public async Task UploadBankDD(UploadBankDDRequest request)
@@ -499,6 +500,7 @@ namespace navsaar.api.Repositories
             entity.BankDDPath = request.File != null ? entity.BankDDPath : entity.BankDDPath;
             entity.DDAmount = request.DDAmount;
             entity.DDNo = request.DDNo;
+            entity.Status = 30; // Bank DD Received
             entity.DDNotes = request.DDNotes;
             _context.SaveChanges();
         }
@@ -519,7 +521,24 @@ namespace navsaar.api.Repositories
             entity.DDReceivedFromBankOn = request.DDReceivedFromBankOn;
             entity.JDAPattaNotes = request.Notes;
             entity.CurrentStage = 8;
-            _context.SaveChanges();
+
+            if(request.IsJDAPattaGivenToBank==true)
+            {
+                entity.Status = 24; //JDA Patta Given to Bank
+            }
+            else
+            {
+                if(request.IsJDAPattaRegistered == true)
+                {
+                    entity.Status = 22; //JDA Patta Registered
+                }
+                else if (request.IsJDAPattaApplied == true)
+                {
+                    entity.Status = 18; //JDA Patta Applied
+                }
+            }
+
+                _context.SaveChanges();
 
             if (request.IsJDAPattaApplied == true)
             {

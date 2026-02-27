@@ -27,6 +27,7 @@ namespace navsaar.api.Repositories
                     IsActive = a.IsActive,
                     IsApproved = a.IsApproved
                 })
+                .OrderBy(a => a.FirstName)
                 .ToList();
         }
         public AssociateInfo GetById(long id)
