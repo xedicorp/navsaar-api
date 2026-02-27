@@ -74,7 +74,7 @@ namespace navsaar.api.Controllers
         }
 
         [HttpGet]
-        [Route("PlotShapes")]
+        [Route("PlotShapeTypes")]
         public ActionResult<IEnumerable<PlotShape>> PlotShapes()
         {
             var shapes = _masterRepository.PlotShapeList();
