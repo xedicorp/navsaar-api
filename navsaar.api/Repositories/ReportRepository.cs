@@ -204,8 +204,8 @@ namespace navsaar.api.Repositories
 
         public List<PlotAvailabilityInfo> PlotAvailabilityReport(int townshipId = 0, int statusId = 0)
         {
-            var plotRepo = new PlotRepository(_context);
-            plotRepo.ReleaseExpiredHolds();
+           
+            _plotRepository.ReleaseExpiredHolds();
 
             var query =
                 from p in _context.Plots
