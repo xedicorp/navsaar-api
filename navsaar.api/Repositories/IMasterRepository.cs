@@ -14,7 +14,7 @@ namespace navsaar.api.Repositories
         AppSettingInfo GetAppSetting();
         List<AppSettingInfo> GetAllAppSettings();
         List<Bank> BankList();
-
+        List<PlotShape> PlotShapeList();
 
     }
 }

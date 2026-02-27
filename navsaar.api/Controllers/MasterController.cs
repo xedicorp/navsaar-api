@@ -73,6 +73,13 @@ namespace navsaar.api.Controllers
             return Ok(banks);
         }
 
+        [HttpGet]
+        [Route("PlotShapes")]
+        public ActionResult<IEnumerable<PlotShape>> PlotShapes()
+        {
+            var shapes = _masterRepository.PlotShapeList();
+            return Ok(shapes);
+        }
 
     }
 }

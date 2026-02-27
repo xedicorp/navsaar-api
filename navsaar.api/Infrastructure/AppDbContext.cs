@@ -43,6 +43,7 @@ namespace navsaar.api.Infrastructure
         public DbSet<Bank> Banks { get; set; }
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<BookingLog> BookingLogs { get; set; }
+        public DbSet<PlotShape> PlotShapes { get; set; }
 
     }
 }

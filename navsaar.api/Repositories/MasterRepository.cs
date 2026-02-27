@@ -69,5 +69,11 @@ namespace navsaar.api.Repositories
                 .OrderBy(b => b.Name)
                 .ToList();
         }
+        public List<PlotShape> PlotShapeList()
+        {
+            return _context.PlotShapes
+                .OrderBy(p => p.ShapeName)
+                .ToList();
+        }
     }
 }
