@@ -11,9 +11,11 @@ namespace navsaar.api.Repositories
     public class ReportRepository : IReportRepository
     {
         private readonly AppDbContext _context;
-        public ReportRepository(AppDbContext context)
+        IPlotRepository _plotRepository;
+        public ReportRepository(AppDbContext context, IPlotRepository plotRepository)
         {
             _context = context;
+            _plotRepository = plotRepository;
         }
 
         public List<TownshipCollectionDetail> TownshipCollectionDetailReport(int townshipId = 0)
@@ -202,7 +204,7 @@ namespace navsaar.api.Repositories
 
         public List<PlotAvailabilityInfo> PlotAvailabilityReport(int townshipId = 0, int statusId = 0)
         {
-            var plotRepo = new PlotRepository(_context);
+            var plotRepo = _plotRepository;
             plotRepo.ReleaseExpiredHolds();
 
             var query =
