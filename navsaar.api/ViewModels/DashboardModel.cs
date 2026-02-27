@@ -5,7 +5,7 @@
         public NotificationCount NotificationCount { get; set; }
         public int PendingDraftRequestCount { get; set; }
         public int PendingReceiptVerificationCount { get; set; }
-
+        public int AllotmentLetterRequestCount { get; set; }
 
     }
 

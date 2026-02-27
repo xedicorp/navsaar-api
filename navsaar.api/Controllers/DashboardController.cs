@@ -52,6 +52,14 @@ namespace navsaar.api.Controllers
                  where p.Status == 1
                  select p.Id).Count();
 
+            model.AllotmentLetterRequestCount =
+               (from p in _context.AllotmentLetterRequests
+                join b in _context.Bookings on p.BookingId equals b.Id
+                join pl in _context.Plots on b.PlotId equals pl.Id
+                join u in _context.Users on p.RequestedBy equals u.Id
+                where p.Status == 1
+                select p.Id).Count();
+
             return model;
         }
     }
