@@ -21,29 +21,33 @@ namespace navsaar.api.Repositories
                     join t in _context.Townships on p.TownshipId equals t.Id
                     join pt in _context.PlotTypes on p.PlotTypeId equals pt.Id
                     join f in _context.FacingTypes on p.Facing equals f.Id
+                    join ps in _context.PlotShapes
+                        on p.PlotShapeId equals ps.Id into pps
+                    from shape in pps.DefaultIfEmpty()
+
                     where p.TownshipId == townshipId
                     && (status == 0 || p.Status == status)
+
                     select new PlotInfo
                     {
                         Id = p.Id,
                         TownshipId = p.TownshipId,
                         Facing = p.Facing,
-                        IsCorner = p.IsCorner,
-                        IsTPoint = p.IsTPoint,
-                        IsTapper = p.IsTapper,
                         PlotNo = p.PlotNo,
                         PlotSize = p.PlotSize,
                         PlotTypeId = p.PlotTypeId,
                         TownshipName = t.Name,
                         PlotTypeName = pt.Name,
                         FacingName = f.FacingName,
+                        PlotShapeId = p.PlotShapeId,
+                        PlotShapeName = shape != null ? shape.ShapeName : null,
+                        Remark = p.Remark,
                         Status = GetStatus(p.Status ?? 0),
                         SaleableSize = p.SaleableSize,
                         PlotSizeInSqrmtr = p.PlotSizeInSqrmtr,
                         RoadSize = p.RoadSize,
                         PLC = p.PLC
                     }).ToList();
-
         }
         private static string GetStatus(int status)
         {
@@ -63,65 +67,89 @@ namespace navsaar.api.Repositories
                     return "Unknown";
             }
         }
-        public  PlotInfo  GetById(int plotId)
+        public PlotInfo GetById(int plotId)
         {
             ReleaseExpiredHolds();
+
             return (from p in _context.Plots
                     join t in _context.Townships on p.TownshipId equals t.Id
                     join pt in _context.PlotTypes on p.PlotTypeId equals pt.Id
+
+                    // ✅ LEFT JOIN PlotShape
+                    join ps in _context.PlotShapes
+                        on p.PlotShapeId equals ps.Id into pps
+                    from shape in pps.DefaultIfEmpty()
+
                     where p.Id == plotId
+
                     select new PlotInfo
                     {
                         Id = p.Id,
                         TownshipId = p.TownshipId,
                         Facing = p.Facing,
-                        IsCorner = p.IsCorner,
-                        IsTPoint = p.IsTPoint,
-                        IsTapper = p.IsTapper,
+
                         PlotNo = p.PlotNo,
                         PlotSize = p.PlotSize,
                         PlotTypeId = p.PlotTypeId,
+
                         TownshipName = t.Name,
                         PlotTypeName = pt.Name,
-                        FacingName = p.Facing == 1 ? "East" : (p.Facing == 2 ? "West" : (p.Facing == 3 ? "North" : "South")),
+
+                        FacingName = p.Facing == 1 ? "East" :
+                                     (p.Facing == 2 ? "West" :
+                                     (p.Facing == 3 ? "North" : "South")),
+
                         SaleableSize = p.SaleableSize,
                         PlotSizeInSqrmtr = p.PlotSizeInSqrmtr,
                         RoadSize = p.RoadSize,
                         PLC = p.PLC,
-                        Status = GetStatus(p.Status ?? 0)
+                        PlotShapeId = p.PlotShapeId,
+                        PlotShapeName = shape != null ? shape.ShapeName : null,
+                        Remark = p.Remark,
+                        Status = GetStatus(p.Status ?? 0),
                     }).FirstOrDefault();
-
         }
         public int Save(CreateEditPlotRequest request)
         {
             Plot plot = new Plot();
-            if (request.Id>0)
+
+            if (request.Id > 0)
             {
                 plot = _context.Plots.Find(request.Id);
+                if (plot == null)
+                    return 0;
             }
+
             plot.PlotNo = request.PlotNo;
             plot.PlotSize = request.PlotSize;
             plot.TownshipId = request.TownshipId;
             plot.PlotTypeId = request.PlotTypeId;
-            plot.Facing = request.Facing;   
-            plot.IsCorner = request.IsCorner;   
-            plot.IsTPoint = request.IsTPoint;   
-            plot.IsTapper = request.IsTapper;
-            plot.SaleableSize=request.SaleableSize;
+            plot.Facing = request.Facing;
+            // plot.IsCorner = request.IsCorner;
+            // plot.IsTPoint = request.IsTPoint;
+            // plot.IsTapper = request.IsTapper;
+
+            plot.SaleableSize = request.SaleableSize;
             plot.PlotSizeInSqrmtr = request.PlotSizeInSqrmtr;
             plot.RoadSize = request.RoadSize;
             plot.PLC = request.PLC;
-
+            plot.PlotShapeId = request.PlotShapeId;
+            plot.Remark = request.Remark;
 
             if (request.Id == 0)
             {
-                plot.Status = 1; // Available
+                // If new plot and status not provided → default Available
+                plot.Status = request.Status ?? 1;
                 _context.Plots.Add(plot);
-
             }
+            else
+            {
+                // Update status if provided
+                plot.Status = request.Status ?? plot.Status;
+            }
+
             _context.SaveChanges();
             return plot.Id;
-
         }
         public bool HoldPlot(PlotHoldRequestModel model)
         {

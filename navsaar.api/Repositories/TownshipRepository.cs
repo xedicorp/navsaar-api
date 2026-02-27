@@ -61,52 +61,71 @@ namespace navsaar.api.Repositories
         }
 
         public async Task<bool> UploadInventory(UploadInventoryRequestModel request)
-        { 
+        {
             string filePath = string.Empty;
+
             if (request.File != null)
             {
-                // Define the path where the file will be saved
                 var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "Uploads");
+
                 if (!Directory.Exists(uploadsFolder))
-                {
                     Directory.CreateDirectory(uploadsFolder);
-                }
+
                 string fileName = Guid.NewGuid().ToString() + "_" + request.File.FileName;
-                  filePath = Path.Combine(uploadsFolder, fileName);
+                filePath = Path.Combine(uploadsFolder, fileName);
 
                 using (var stream = new FileStream(filePath, FileMode.Create))
                 {
-                    request.File.CopyTo(stream);
+                    await request.File.CopyToAsync(stream);
                 }
             }
 
-            //Read excel and save data
+            // Read Excel
             DataTable dtblData = this.ExcelDataToDataTable(filePath, "Sheet1", true);
 
-           var existingRecords=   _context.Plots.Where(p => p.TownshipId == request.TownshipId ).ToList();
+            var existingRecords = _context.Plots
+                .Where(p => p.TownshipId == request.TownshipId)
+                .ToList();
+
+            var plotTypeList = _context.PlotTypes.ToList();
+            var plotShapeList = _context.PlotShapes.ToList();
 
             foreach (DataRow row in dtblData.Rows)
             {
-                string plotNo = row[0].ToString();
-                decimal plotSize = Convert.ToDecimal(row[1].ToString());
-                string isCorner = row[2].ToString();
-                string isTapper = row[3].ToString();
-                string isTPoint = row[4].ToString();
-                string facing = row[5].ToString();
-                string plotType = row[6].ToString();
-                var existingPlot = existingRecords.Where(p => p.TownshipId == request.TownshipId && p.PlotNo == plotNo).ToList();
-                var plotId = existingPlot == null ? 0 : existingPlot.FirstOrDefault().Id;
-                var plotTypeList = _context.PlotTypes.ToList();
-                
-                int facingId = 0;
-                if (facing.ToUpper() == "EAST")
-                    facingId = 1;
-                else if (facing.ToUpper() == "WEST")
-                    facingId = 2;
-                else if (facing.ToUpper() == "NORTH")
-                    facingId = 3;
-                else if (facing.ToUpper() == "SOUTH")
-                    facingId = 4;
+                string plotNo = row[0]?.ToString()?.Trim();
+                decimal plotSize = Convert.ToDecimal(row[1]?.ToString() ?? "0");
+
+                string plotShapeName = row[2]?.ToString()?.Trim();
+                string facing = row[3]?.ToString()?.Trim();
+                string plotType = row[4]?.ToString()?.Trim();
+                string remark = row[5]?.ToString()?.Trim();
+                string statusText = row[6]?.ToString()?.Trim();
+
+                var existingPlot = existingRecords
+                    .FirstOrDefault(p => p.PlotNo == plotNo);
+
+                int plotId = existingPlot?.Id ?? 0;
+
+                // Facing Mapping
+                int facingId = facing?.ToUpper() switch
+                {
+                    "EAST" => 1,
+                    "WEST" => 2,
+                    "NORTH" => 3,
+                    "SOUTH" => 4,
+                    _ => 0
+                };
+
+                // Status Mapping
+                int statusId = statusText?.ToUpper() switch
+                {
+                    "AVAILABLE" => 1,
+                    "BOOKED" => 2,
+                    "HOLD" => 3,
+                    "RAHAN" => 5,
+                    "NOT FOR SALE" => 9,
+                    _ => 1
+                };
 
                 _plotRepository.Save(new CreateEditPlotRequest
                 {
@@ -115,16 +134,20 @@ namespace navsaar.api.Repositories
                     PlotNo = plotNo,
                     PlotSize = plotSize,
                     Facing = facingId,
-                    IsCorner = isCorner.ToUpper() == "YES" ? true : false,
-                    IsTPoint = isTPoint.ToUpper() == "YES" ? true : false,
-                    IsTapper = isTapper.ToUpper() == "YES" ? true : false,
-                    PlotTypeId = plotTypeList.FirstOrDefault(p => p.Name == plotType)?.Id ?? 0,
-                });
+                    PlotTypeId = plotTypeList
+                        .FirstOrDefault(p => p.Name.ToUpper() == plotType.ToUpper())?.Id ?? 0,
 
-            } 
+                    // ✅ New Fields
+                    PlotShapeId = plotShapeList
+                        .FirstOrDefault(s => s.ShapeName.ToUpper() == plotShapeName.ToUpper())?.Id,
+
+                    Remark = remark,
+                    Status = statusId
+                });
+            }
+
             return true;
         }
-        
         public DataTable ExcelDataToDataTable(string filePath, string sheetName, bool hasHeader = true)
         {
             var dt = new DataTable();

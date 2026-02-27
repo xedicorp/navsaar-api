@@ -11,15 +11,17 @@
         public decimal? PlotSizeInSqrmtr { get; set; }
         public int Facing { get; set; }
         public string FacingName { get; set; }
-        public bool IsCorner { get; set; }
-        public bool IsTPoint { get; set; }
-        public bool IsTapper { get; set; }
+        //public bool IsCorner { get; set; }
+        //public bool IsTPoint { get; set; }
+        //public bool IsTapper { get; set; }
         public int PlotTypeId { get; set; }
         public string PlotTypeName { get; set; }
-        public string Status { get; set; }
         public decimal? RoadSize { get; set; }
-        public decimal? PLC { get; set; }   
-
+        public decimal? PLC { get; set; }
+        public int? PlotShapeId { get; set; }
+        public string? PlotShapeName { get; set; }
+        public string? Remark { get; set; }
+        public string? Status { get; set; }
     }
     public class PlotHoldRequestModel
     {
