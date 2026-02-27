@@ -24,6 +24,18 @@ namespace navsaar.api.Controllers
         }
 
         [HttpGet]
+        [Route("GetById/{id}")]
+        public ActionResult<AssociateInfo> GetById(long id)
+        {
+            var result = _associateRepository.GetById(id);
+
+            if (result == null)
+                return NotFound("Associate not found");
+
+            return Ok(result);
+        }
+
+        [HttpGet]
         [Route("GetByRera")]
         public ActionResult<AssociateInfo> GetByRera(string reraNo)
         {

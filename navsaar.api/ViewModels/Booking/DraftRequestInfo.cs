@@ -20,9 +20,4 @@
         public string? Address { get; set; }
         public string? ContactNo { get; set; }
     }
-    public class DraftRequestApiResponse
-    {
-        public int PendingCount { get; set; }
-        public List<DraftRequestInfo> Data { get; set; } = new();
-    }
 }

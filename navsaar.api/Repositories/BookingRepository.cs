@@ -977,38 +977,32 @@ namespace navsaar.api.Repositories
             _whatsAppService.SendMessage(BookingUpdate.SentToDraft,booking);
             return true;
         }
-        public DraftRequestApiResponse GetDraftRequests()
+        public List<DraftRequestInfo> GetDraftRequests()
         {
-            var data =
-                (from p in _context.DraftRequests
-                 join b in _context.Bookings on p.BookingId equals b.Id
-                 join pl in _context.Plots on b.PlotId equals pl.Id
-                 join u in _context.Users on p.RequestedBy equals u.Id
-                 where p.Status == 1
-                 orderby p.RequestedDate descending
-                 select new DraftRequestInfo
-                 {
-                     Id = p.Id,
-                     Status = p.Status,
-                     Notes = p.Notes,
-                     RequestedOn = p.RequestedDate,
-                     RequestedByName = u.UserName,
-                     BookingId = b.Id,
-                     CustomerName = b.ClientName,
-                     PlotNo = pl.PlotNo,
-                     ApplicantName = p.ApplicantName,
-                     RelativeName = p.RelativeName,
-                     RelationType = p.RelationType,
-                     ContactNo = p.ContactNo,
-                     Address = p.Address,
-                     Amount = b.TotalAgreementValue
-                 }).ToList();
-
-            return new DraftRequestApiResponse
-            {
-                PendingCount = data.Count,   
-                Data = data
-            };
+            var q = from p in _context.DraftRequests
+                    join b in _context.Bookings on p.BookingId equals b.Id
+                    join pl in _context.Plots on b.PlotId equals pl.Id
+                    join u in _context.Users on p.RequestedBy equals u.Id
+                    where p.Status == 1 // Pending
+                    orderby p.RequestedDate descending
+                    select new DraftRequestInfo
+                    {
+                        Id = p.Id,
+                        Status = p.Status,
+                        Notes = p.Notes,
+                        RequestedOn = p.RequestedDate,
+                        RequestedByName = u.UserName,
+                        BookingId = b.Id,
+                        CustomerName = b.ClientName,
+                        PlotNo = pl.PlotNo,
+                        ApplicantName = p.ApplicantName,
+                        RelativeName = p.RelativeName,
+                        RelationType = p.RelationType,
+                        ContactNo = p.ContactNo,
+                        Address = p.Address,
+                        Amount = b.TotalAgreementValue
+                    };
+            return q.ToList();
         }
         public bool MarkDraftComplete(MarkDraftCompleteRequest request)
         {

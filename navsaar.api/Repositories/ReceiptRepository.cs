@@ -175,39 +175,33 @@ namespace navsaar.api.Repositories
             return true;
         }
 
-        public VerificationRequestApiResponse VerificationRequests()
+        public List<VerificationRequestInfo> VerificationRequests()
         {
-            var data =
-                (from p in _context.ReceiptVerificationRequests
-                 join r in _context.Receipts on p.ReceiptId equals r.Id
-                 join b in _context.Bookings on r.BookingId equals b.Id
-                 join pl in _context.Plots on b.PlotId equals pl.Id
-                 join u in _context.Users on p.RequestedBy equals u.Id
-                 where p.Status == 1 // Pending
-                 orderby p.RequestedOn descending   
-                 select new VerificationRequestInfo
-                 {
-                     Id = r.Id,
-                     Amount = r.Amount,
-                     ReceiptDate = r.ReceiptDate,
-                     ReceiptMethod = r.ReceiptMethod,
-                     TransactionId = r.TransactionId,
-                     BankName = r.BankName,
-                     ChequeNo = r.ChequeNo,
-                     Status = r.Status,
-                     Notes = r.Notes,
-                     RequestedOn = p.RequestedOn,
-                     RequestedByName = u.UserName,
-                     BookingId = b.Id,
-                     CustomerName = b.ClientName,
-                     PlotNo = pl.PlotNo
-                 }).ToList();
-
-            return new VerificationRequestApiResponse
-            {
-                PendingCount = data.Count,   
-                Data = data
-            };
+            var q = from p in _context.ReceiptVerificationRequests
+                    join r in _context.Receipts on p.ReceiptId equals r.Id
+                    join b in _context.Bookings on r.BookingId equals b.Id
+                    join pl in _context.Plots on b.PlotId equals pl.Id
+                    join u in _context.Users on p.RequestedBy equals u.Id
+                    where p.Status == 1 // Pending
+                    orderby p.RequestedOn descending
+                    select new VerificationRequestInfo
+                    {
+                        Id = r.Id,
+                        Amount = r.Amount,
+                        ReceiptDate = r.ReceiptDate,
+                        ReceiptMethod = r.ReceiptMethod,
+                        TransactionId = r.TransactionId,
+                        BankName = r.BankName,
+                        ChequeNo = r.ChequeNo,
+                        Status = p.Status,
+                        Notes = r.Notes,
+                        RequestedOn = p.RequestedOn,
+                        RequestedByName = u.UserName,
+                        BookingId = b.Id,
+                        CustomerName = b.ClientName,
+                        PlotNo = pl.PlotNo
+                    };
+            return q.ToList();
         }
         public bool Verify(VerifReceiptRequest model)
         {

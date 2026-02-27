@@ -10,7 +10,7 @@ namespace navsaar.api.Repositories
         List<ReceiptInfo> List();
         List<ReceiptInfo> ListByBookingId(int bookingId);
         Task<bool> Save(CreateUpdateReceiptModel model);
-        VerificationRequestApiResponse VerificationRequests();
+        List<VerificationRequestInfo> VerificationRequests();
         bool SendVerificationRequest(VerifRequest model);
         bool Verify(VerifReceiptRequest model);
     }

@@ -2,8 +2,11 @@
 {
     public class DashboardModel
     {
-        public NotificationCount NotificationCount { get; set; }       
-       
+        public NotificationCount NotificationCount { get; set; }
+        public int PendingDraftRequestCount { get; set; }
+        public int PendingReceiptVerificationCount { get; set; }
+
+
     }
 
     public class NotificationCount
@@ -12,4 +15,4 @@
         public int MediumPriority { get; set; }
         public int LowPriority { get; set; }
     }
-}
+    }
