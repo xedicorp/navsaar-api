@@ -13,5 +13,7 @@ namespace navsaar.api.Repositories
         List<VerificationRequestInfo> VerificationRequests();
         bool SendVerificationRequest(VerifRequest model);
         bool Verify(VerifReceiptRequest model);
+        byte[] GenerateReceiptPdf(int receiptId);
+
     }
 }
