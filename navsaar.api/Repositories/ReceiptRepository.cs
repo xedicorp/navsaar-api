@@ -5,6 +5,12 @@ using navsaar.api.Models;
 using navsaar.api.ViewModels;
 using navsaar.api.ViewModels.Receipt;
 using Twilio.TwiML.Fax;
+using iText.Kernel.Pdf;
+using iText.Layout;
+using iText.Layout.Element;
+using iText.Layout.Properties;
+using iText.Kernel.Font;
+using iText.IO.Font.Constants;
 
 namespace navsaar.api.Repositories
 {
@@ -257,6 +263,65 @@ namespace navsaar.api.Repositories
 
 
             return true;
+        }
+        public byte[] GenerateReceiptPdf(int receiptId)
+        {
+            var receipt = (from r in _context.Receipts
+                           join b in _context.Bookings on r.BookingId equals b.Id
+                           join p in _context.Plots on b.PlotId equals p.Id
+                           where r.Id == receiptId && r.Status == 3 // Only Verified
+                           select new
+                           {
+                               r.Id,
+                               r.Amount,
+                               r.ReceiptDate,
+                               r.ReceiptMethod,
+                               r.TransactionId,
+                               r.BankName,
+                               r.ChequeNo,
+                               r.Notes,
+                               b.ClientName,
+                               p.PlotNo
+                           }).FirstOrDefault();
+
+            if (receipt == null)
+                return null;
+
+            using (var memoryStream = new MemoryStream())
+            {
+                PdfWriter writer = new PdfWriter(memoryStream);
+                PdfDocument pdf = new PdfDocument(writer);
+                iText.Layout.Document document = new iText.Layout.Document(pdf);
+
+                PdfFont boldFont = PdfFontFactory.CreateFont(StandardFonts.HELVETICA_BOLD);
+                PdfFont normalFont = PdfFontFactory.CreateFont(StandardFonts.HELVETICA);
+
+                document.Add(new Paragraph("RECEIPT")
+                    .SetFont(boldFont)
+                    .SetFontSize(20)
+                    .SetTextAlignment(TextAlignment.CENTER));
+
+                document.Add(new Paragraph("\n"));
+
+                document.Add(new Paragraph($"Receipt No: {receipt.Id}").SetFont(normalFont));
+                document.Add(new Paragraph($"Date: {receipt.ReceiptDate:dd-MM-yyyy}").SetFont(normalFont));
+                document.Add(new Paragraph($"Customer Name: {receipt.ClientName}").SetFont(normalFont));
+                document.Add(new Paragraph($"Plot No: {receipt.PlotNo}").SetFont(normalFont));
+                document.Add(new Paragraph($"Amount: ₹ {receipt.Amount}").SetFont(normalFont));
+                document.Add(new Paragraph($"Payment Method: {receipt.ReceiptMethod}").SetFont(normalFont));
+                document.Add(new Paragraph($"Transaction ID: {receipt.TransactionId}").SetFont(normalFont));
+                document.Add(new Paragraph($"Bank Name: {receipt.BankName}").SetFont(normalFont));
+                document.Add(new Paragraph($"Cheque No: {receipt.ChequeNo}").SetFont(normalFont));
+                document.Add(new Paragraph($"Notes: {receipt.Notes}").SetFont(normalFont));
+
+                document.Add(new Paragraph("\n\n"));
+                document.Add(new Paragraph("Authorized Signature")
+                    .SetTextAlignment(TextAlignment.RIGHT));
+
+                document.Close();
+
+                return memoryStream.ToArray();
+            }
         }
     }
 }

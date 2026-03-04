@@ -57,5 +57,16 @@ namespace navsaar.api.Controllers
         {
             return _receiptRepository.Verify(model);
         }
+        [HttpGet]
+        [Route("DownloadReceipt/{receiptId}")]
+        public IActionResult PrintReceipt(int receiptId)
+        {
+            var pdfBytes = _receiptRepository.GenerateReceiptPdf(receiptId);
+
+            if (pdfBytes == null)
+                return NotFound("Receipt not found or not verified.");
+
+            return File(pdfBytes, "application/pdf", $"Receipt_{receiptId}.pdf");
+        }
     }
 }
