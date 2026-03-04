@@ -6,6 +6,7 @@
         public int PendingDraftRequestCount { get; set; }
         public int PendingReceiptVerificationCount { get; set; }
         public int AllotmentLetterRequestCount { get; set; }
+        public int FollowupCount { get; set; }
 
     }
 

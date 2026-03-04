@@ -60,6 +60,11 @@ namespace navsaar.api.Controllers
                 where p.Status == 1
                 select p.Id).Count();
 
+            model.FollowupCount = (from r in _context.Reminders
+                                   where r.CreatedBy == userId && !r.IsCompleted
+                                   select r
+                     ).Count();
+
             return model;
         }
     }
