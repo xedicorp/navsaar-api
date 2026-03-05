@@ -1118,5 +1118,82 @@ namespace navsaar.api.Repositories
             return model;  
 
         }
+        public bool SendForCloserRequest(SendForCloserRequest request)
+        {
+            var booking = _context.Bookings.FirstOrDefault(x => x.Id == request.BookingId);
+
+            if (booking == null)
+                return false;
+
+            CloserRequest closerRequest = new CloserRequest
+            {
+                BookingId = request.BookingId,
+                UserId = request.UserId,
+                Date = DateTime.Now,
+                Status = 1
+            };
+
+            _context.CloserRequests.Add(closerRequest);
+
+            booking.Status = 49; // Booking Closing Request Sent
+            booking.LastStatusChangedOn = DateTime.Now;
+            booking.LastStatusChangedBy = request.UserId;
+
+            _context.SaveChanges();
+
+            return true;
+        }
+
+        public bool CloseBooking(CloseBookingRequest request)
+        {
+            var closerRequest = _context.CloserRequests
+                .FirstOrDefault(x => x.Id == request.CloserRequestId);
+
+            if (closerRequest == null)
+                return false;
+
+            var booking = _context.Bookings
+                .FirstOrDefault(x => x.Id == closerRequest.BookingId);
+
+            if (booking == null)
+                return false;
+
+            // Update closer request
+            closerRequest.Status = 2; // Approved
+            closerRequest.UpdatedAt = DateTime.Now;
+
+            // Update booking
+            booking.Status = 50; // Closed
+            booking.LastStatusChangedOn = DateTime.Now;
+            booking.LastStatusChangedBy = request.UserId;
+
+            _context.SaveChanges();
+
+            return true;
+        }
+
+        public int AddCloserRequestDetail(AddCloserRequestDetailRequest request)
+        {
+            CloserRequestDetail entity = new CloserRequestDetail
+            {
+                CloserId = request.CloserId,
+                UserId = request.UserId,
+                Reason = request.Reason,
+                Date = DateTime.Now
+            };
+
+            _context.CloserRequestDetails.Add(entity);
+            _context.SaveChanges();
+
+            return entity.Id;
+        }
+
+        public List<CloserRequestDetail> GetCloserRequestDetails(int closerId)
+        {
+            return _context.CloserRequestDetails
+                .Where(x => x.CloserId == closerId)
+                .OrderByDescending(x => x.Date)
+                .ToList();
+        }
     }
 }

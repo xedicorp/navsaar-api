@@ -1,5 +1,6 @@
 ﻿
 
+using navsaar.api.Models;
 using navsaar.api.ViewModels;
 using navsaar.api.ViewModels.Booking;
 
@@ -42,5 +43,9 @@ namespace navsaar.api.Repositories
 
         List<BookingInfo> Search(int? statusTypeId, int? townshipId, int? bookingType, string? reraNo, DateTime? fromDate);
         List<DocumentModel> GetCheckList(int bookingId);
+        bool CloseBooking(CloseBookingRequest request);
+        bool SendForCloserRequest(SendForCloserRequest request);
+        int AddCloserRequestDetail(AddCloserRequestDetailRequest request);
+        List<CloserRequestDetail> GetCloserRequestDetails(int closerId);
     }
 }

@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using navsaar.api.Models;
 using navsaar.api.Repositories;
 using navsaar.api.ViewModels;
 using navsaar.api.ViewModels.Booking;
@@ -167,6 +168,51 @@ namespace navsaar.api.Controllers
         {
            
             return _bookingRepository.GetCheckList(bookingId);
+        }
+        [HttpPost]
+        [Route("SendForCloserRequest")]
+        public IActionResult SendForCloserRequest([FromBody] SendForCloserRequest request)
+        {
+            var result = _bookingRepository.SendForCloserRequest(request);
+
+            if (!result)
+                return BadRequest("Booking not found");
+
+            return Ok(new { message = "Booking sent for closer request successfully" });
+        }
+
+        [HttpPost]
+        [Route("CloseBooking")]
+        public IActionResult CloseBooking([FromBody] CloseBookingRequest request)
+        {
+            var result = _bookingRepository.CloseBooking(request);
+
+            if (!result)
+                return BadRequest("Closer request not found");
+
+            return Ok(new { message = "Booking closed successfully" });
+        }
+
+        [HttpPost]
+        [Route("AddCloserRequestDetail")]
+        public IActionResult AddCloserRequestDetail([FromBody] AddCloserRequestDetailRequest request)
+        {
+            var id = _bookingRepository.AddCloserRequestDetail(request);
+
+            return Ok(new
+            {
+                message = "Closer request detail added successfully",
+                id = id
+            });
+        }
+
+        [HttpGet]
+        [Route("GetCloserRequestDetails/{closerId}")]
+        public IActionResult GetCloserRequestDetails(int closerId)
+        {
+            var data = _bookingRepository.GetCloserRequestDetails(closerId);
+
+            return Ok(data);
         }
     }
 }

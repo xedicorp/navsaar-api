@@ -44,6 +44,9 @@ namespace navsaar.api.Infrastructure
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<BookingLog> BookingLogs { get; set; }
         public DbSet<PlotShape> PlotShapes { get; set; }
+        public DbSet<CloserRequest> CloserRequests { get; set; }
+        public DbSet<CloserRequestDetail> CloserRequestDetails { get; set; }
+
 
     }
 }
