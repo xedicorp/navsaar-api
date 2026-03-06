@@ -70,6 +70,11 @@ namespace navsaar.api.Controllers
                                    select r
                    ).Count();
 
+            model.PendingInternalNotificationCount =
+                    (from n in _context.Notifications
+                     where n.IsTransactional == true
+                        && n.IsActionTaken == false
+                     select n.Id).Count();
             return model;
         }
     }

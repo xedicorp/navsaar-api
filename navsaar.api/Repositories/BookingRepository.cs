@@ -1036,6 +1036,21 @@ namespace navsaar.api.Repositories
             booking.Status = 9; //  Draft Prepared
             _context.SaveChanges();
 
+            // Create Notification
+            var notification = new Notification
+            {
+                BookingId = booking.Id,
+                NotificationText = "Draft Prepared",
+                NotificationType = "Internal Notification",
+                Priority = 4,
+                CreatedOn = DateTime.Now,
+                IsTransactional = true,
+                IsRead = false
+            };
+
+            _context.Notifications.Add(notification);
+            _context.SaveChanges();
+
             return true;
         }
 
@@ -1104,6 +1119,20 @@ namespace navsaar.api.Repositories
 
             var booking = _context.Bookings.FirstOrDefault(p => p.Id == allotmentLetterRequest.BookingId);
             booking.Status = 11; //  Allotment Letter prepared
+
+            // Create Notification
+            var notification = new Notification
+            {
+                BookingId = booking.Id,
+                NotificationText = "Allotment letter prepared",
+                NotificationType = "Internal Notification",
+                Priority = 4,
+                CreatedOn = DateTime.Now,
+                IsRead = false,
+                IsTransactional = true
+            };
+
+            _context.Notifications.Add(notification);
             _context.SaveChanges();
             _whatsAppService.SendMessage(BookingUpdate.AllotmentLetterReceived,booking);
             return true;
@@ -1139,6 +1168,19 @@ namespace navsaar.api.Repositories
             booking.LastStatusChangedOn = DateTime.Now;
             booking.LastStatusChangedBy = request.UserId;
 
+            // Create Notification
+            var notification = new Notification
+            {
+                BookingId = request.BookingId,
+                NotificationText = "Booking sent for closer request",
+                NotificationType = "Internal Notification",
+                Priority = 4,
+                CreatedOn = DateTime.Now,
+                IsRead = false,
+                IsTransactional = true
+            };
+
+            _context.Notifications.Add(notification);
             _context.SaveChanges();
 
             return true;

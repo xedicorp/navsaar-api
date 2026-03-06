@@ -12,7 +12,9 @@ namespace navsaar.api.Models
         public DateTime CreatedOn { get; set; }
         public bool IsRead { get; set; }
         public bool IsTransactional { get; set; }
-
+        public bool IsActionTaken { get; set; }
+        public int? ActionType { get; set; }   // 1 = Action Not Required, 2 = Action Required
+        public DateTime? ActionOn { get; set; }
 
     }
     public class NotificationCount

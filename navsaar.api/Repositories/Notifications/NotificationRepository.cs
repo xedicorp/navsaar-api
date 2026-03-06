@@ -44,7 +44,41 @@ namespace navsaar.api.Repositories
                     return "Very Low";
             }
         }
+        public List<NotificationInfo> InternalActionPendingList(int userId = 0)
+        {
+            var q = from p in _context.Notifications
+                    where p.IsTransactional == true
+                       && p.IsActionTaken == false
+                    select new NotificationInfo
+                    {
+                        Id = p.Id,
+                        BookingId = p.BookingId,
+                        NotificationText = p.NotificationText,
+                        NotificationType = p.NotificationType,
+                        Priority = GetPriorityName(p.Priority),
+                        CreatedOn = p.CreatedOn,
+                        IsRead = p.IsRead,
+                        IsTransactional = p.IsTransactional
+                    };
 
-        
+            return q.OrderByDescending(x => x.CreatedOn).ToList();
+        }
+
+        public bool TakeAction(NotificationActionRequest request)
+        {
+            var notification = _context.Notifications
+                .FirstOrDefault(p => p.Id == request.NotificationId);
+
+            if (notification == null)
+                return false;
+
+            notification.IsActionTaken = true;
+            notification.ActionType = request.ActionType;
+            notification.ActionOn = DateTime.Now;
+
+            _context.SaveChanges();
+
+            return true;
+        }
     }
 }

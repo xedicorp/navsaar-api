@@ -23,6 +23,23 @@ namespace navsaar.api.Controllers
         {
             return _repository.List(priority, userId);
         }
-        
+
+        [HttpGet("internal/pending-actions")]
+        public IActionResult GetInternalPendingNotifications()
+        {
+            var result = _repository.InternalActionPendingList();
+            return Ok(result);
+        }
+        [HttpPost]
+        [Route("take-action")]
+        public IActionResult TakeAction(NotificationActionRequest request)
+        {
+            var result = _repository.TakeAction(request);
+
+            if (!result)
+                return BadRequest("Notification not found");
+
+            return Ok("Action updated successfully");
+        }
     }
 }

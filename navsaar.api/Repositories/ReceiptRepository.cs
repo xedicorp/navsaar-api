@@ -243,6 +243,20 @@ namespace navsaar.api.Repositories
                     _context.Bookings.Find(receipt.BookingId).Status = 2; //2: Booking Confirmed, as Initital Payment Received
                     _context.SaveChanges();
                 }
+                // SEND NOTIFICATION
+                var notification = new Notification
+                {
+                    BookingId = receipt.BookingId,
+                    NotificationText = "Receipt verified",
+                    NotificationType = "Internal Notification",
+                    Priority = 4,
+                    CreatedOn = DateTime.Now,
+                    IsRead = false,
+                    IsTransactional = true
+                };
+
+                _context.Notifications.Add(notification);
+                _context.SaveChanges();
             }
             else if (model.Status == 2) //2 Rejected
             {
