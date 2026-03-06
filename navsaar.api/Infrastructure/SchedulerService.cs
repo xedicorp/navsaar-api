@@ -36,13 +36,14 @@ namespace navsaar.api.Infrastructure
                         NotificationType = "BookingProgressAlert",
                         Priority = priority,
                         CreatedOn = DateTime.Now,
-                        IsRead = false
+                        IsRead = false,
+                        IsTransactional = false
 
                     });
                 }
 
             }
-            _context.Notifications.RemoveRange(_context.Notifications.Where(n => n.CreatedOn.Date == today)); // Clear today's notifications
+            _context.Notifications.RemoveRange(_context.Notifications.Where(n =>   n.IsTransactional==false)); // Clear today's notifications
 
 
 
@@ -59,8 +60,8 @@ namespace navsaar.api.Infrastructure
                         NotificationType = "VerifRequestAlert",
                         Priority = 1,
                         CreatedOn = DateTime.Now,
-                        IsRead = false
-
+                        IsRead = false,
+                          IsTransactional = false
                     });
                 }
             }
@@ -77,7 +78,8 @@ namespace navsaar.api.Infrastructure
                         NotificationType = "AllotmentLetterRequestAlert",
                         Priority = 1,
                         CreatedOn = DateTime.Now,
-                        IsRead = false
+                        IsRead = false,
+                        IsTransactional = false
 
                     });
                 }

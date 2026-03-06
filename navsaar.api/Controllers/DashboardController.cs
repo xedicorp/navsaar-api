@@ -65,6 +65,11 @@ namespace navsaar.api.Controllers
                                    select r
                      ).Count();
 
+            model.ClosureRequestCount = (from r in _context.CloserRequests
+                                   where  r.Status==1
+                                   select r
+                   ).Count();
+
             return model;
         }
     }

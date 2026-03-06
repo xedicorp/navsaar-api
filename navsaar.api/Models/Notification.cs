@@ -11,6 +11,9 @@ namespace navsaar.api.Models
         public int Priority { get; set; }
         public DateTime CreatedOn { get; set; }
         public bool IsRead { get; set; }
+        public bool IsTransactional { get; set; }
+
+
     }
     public class NotificationCount
     {

@@ -25,7 +25,8 @@ namespace navsaar.api.Repositories
                          NotificationType = p.NotificationType,
                          Priority = GetPriorityName( p.Priority),
                          CreatedOn = p.CreatedOn,
-                         IsRead = p.IsRead
+                         IsRead = p.IsRead,
+                         IsTransactional= p.IsTransactional,    
                      };
             return q.ToList();
         }
