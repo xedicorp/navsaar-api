@@ -47,5 +47,6 @@ namespace navsaar.api.Repositories
         bool SendForCloserRequest(SendForCloserRequest request);
         int AddCloserRequestDetail(AddCloserRequestDetailRequest request);
         List<CloserRequestDetail> GetCloserRequestDetails(int closerId);
+        List<CloserRequestInfo> GetCloserRequests();
     }
 }

@@ -214,5 +214,13 @@ namespace navsaar.api.Controllers
 
             return Ok(data);
         }
+        [HttpGet]
+        [Route("GetCloserRequests")]
+        public IActionResult GetCloserRequests()
+        {
+            var data = _bookingRepository.GetCloserRequests();
+
+            return Ok(data);
+        }
     }
 }

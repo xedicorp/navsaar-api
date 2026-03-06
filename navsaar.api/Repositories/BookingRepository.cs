@@ -1195,5 +1195,29 @@ namespace navsaar.api.Repositories
                 .OrderByDescending(x => x.Date)
                 .ToList();
         }
+        public List<CloserRequestInfo> GetCloserRequests()
+        {
+            var q = from c in _context.CloserRequests
+                    join b in _context.Bookings on c.BookingId equals b.Id
+                    join p in _context.Plots on b.PlotId equals p.Id
+                    join t in _context.Townships on b.TownshipId equals t.Id
+                    join u in _context.Users on c.UserId equals u.Id
+                    where c.Status == 1 // Pending
+                    orderby c.Date descending
+                    select new CloserRequestInfo
+                    {
+                        Id = c.Id,
+                        BookingId = b.Id,
+                        CustomerName = b.ClientName,
+                        PlotNo = p.PlotNo,
+                        TownshipName = t.Name,
+                        Amount = b.TotalAgreementValue,
+                        RequestedBy = u.UserName,
+                        RequestedOn = c.Date,
+                        Status = c.Status
+                    };
+
+            return q.ToList();
+        }
     }
 }
