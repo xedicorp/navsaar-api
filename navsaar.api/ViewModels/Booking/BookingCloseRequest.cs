@@ -12,6 +12,15 @@ namespace navsaar.api.Models
         public int CloserRequestId { get; set; }
         public int UserId { get; set; }
     }
+    public class ApproveRejectClosureRequestModel 
+    {
+        public int CloserRequestId { get; set; }
+        public int UserId { get; set; }
+        public int Status { get; set; }
+        public string Notes { get; set; }
+      
+    }
+    
     public class AddCloserRequestDetailRequest
     {
         public int CloserId { get; set; }

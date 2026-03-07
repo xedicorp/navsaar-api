@@ -182,16 +182,17 @@ namespace navsaar.api.Controllers
         }
 
         [HttpPost]
-        [Route("CloseBooking")]
-        public IActionResult CloseBooking([FromBody] CloseBookingRequest request)
+        [Route("ApproveRejectClosureRequest")]
+        public IActionResult ApproveRejectClosureRequest([FromBody] ApproveRejectClosureRequestModel request)
         {
-            var result = _bookingRepository.CloseBooking(request);
+            var result = _bookingRepository.ApproveRejectClosureRequest(request);
 
             if (!result)
                 return BadRequest("Closer request not found");
 
             return Ok(new { message = "Booking closed successfully" });
         }
+        
 
         [HttpPost]
         [Route("AddCloserRequestDetail")]

@@ -1186,7 +1186,7 @@ namespace navsaar.api.Repositories
             return true;
         }
 
-        public bool CloseBooking(CloseBookingRequest request)
+        public bool ApproveRejectClosureRequest(ApproveRejectClosureRequestModel request)
         {
             var closerRequest = _context.CloserRequests
                 .FirstOrDefault(x => x.Id == request.CloserRequestId);
@@ -1201,10 +1201,11 @@ namespace navsaar.api.Repositories
                 return false;
 
             // Update closer request
-            closerRequest.Status = 2; // Approved
+            closerRequest.Status = 2; // Approved //3 Reject
             closerRequest.UpdatedAt = DateTime.Now;
 
             // Update booking
+             
             booking.Status = 50; // Closed
             booking.LastStatusChangedOn = DateTime.Now;
             booking.LastStatusChangedBy = request.UserId;
