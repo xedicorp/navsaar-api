@@ -29,10 +29,10 @@ namespace navsaar.api.Controllers
             var list = _notificationRepository.List(0, userId);
             model.NotificationCount = new NotificationCount
             {
-                HighPriority = list.Where(p => p.Priority == "High").Count(),
-                MediumPriority = list.Where(p => p.Priority == "Medium").Count(),
-                LowPriority = list.Where(p => p.Priority == "Low").Count(),
-                VeryLowPriority = list.Where(p => p.Priority == "Very Low").Count()
+                HighPriority = list.Where(p => p.PriorityId ==1).Count(),
+                MediumPriority = list.Where(p => p.PriorityId == 2).Count(),
+                LowPriority = list.Where(p => p.PriorityId == 3).Count(),
+                VeryLowPriority = list.Where(p => p.PriorityId == 4 && p.ActionType==null).Count()
             };
             //Add Pending Draft Request Count
             model.PendingDraftRequestCount =

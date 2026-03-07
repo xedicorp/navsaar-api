@@ -7,8 +7,10 @@
         public int BookingId { get; set; }
         public string NotificationType { get; set; } = null!;
         public string Priority { get; set; }
+        public int PriorityId { get; set; }
         public DateTime CreatedOn { get; set; }
         public bool IsRead { get; set; }
-        public bool IsTransactional { get; set; }   
+        public bool IsTransactional { get; set; }  
+        public int? ActionType { get; set; }
     }
 }
