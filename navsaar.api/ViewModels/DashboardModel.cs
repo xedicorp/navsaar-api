@@ -17,5 +17,7 @@
         public int HighPriority { get; set; }
         public int MediumPriority { get; set; }
         public int LowPriority { get; set; }
+        public int VeryLowPriority { get; set; }
+        
     }
     }

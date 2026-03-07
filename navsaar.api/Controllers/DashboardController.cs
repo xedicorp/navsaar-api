@@ -31,7 +31,8 @@ namespace navsaar.api.Controllers
             {
                 HighPriority = list.Where(p => p.Priority == "High").Count(),
                 MediumPriority = list.Where(p => p.Priority == "Medium").Count(),
-                LowPriority = list.Where(p => p.Priority == "Low").Count()
+                LowPriority = list.Where(p => p.Priority == "Low").Count(),
+                VeryLowPriority = list.Where(p => p.Priority == "Very Low").Count()
             };
             //Add Pending Draft Request Count
             model.PendingDraftRequestCount =

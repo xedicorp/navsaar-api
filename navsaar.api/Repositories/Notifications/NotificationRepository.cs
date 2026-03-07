@@ -16,7 +16,8 @@ namespace navsaar.api.Repositories
              
             // Filter notifications based on the provided priority
             var q =  from p in _context.Notifications
-                     where ( priority==0 || p.Priority == priority)
+                     where ( priority==0 || (p.Priority == priority && priority!=4))
+                     || (p.Priority==4 && priority == 4 && p.ActionType==null)
                      select new NotificationInfo
                      {
                          Id = p.Id,
