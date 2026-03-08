@@ -194,18 +194,18 @@ namespace navsaar.api.Controllers
         }
         
 
-        [HttpPost]
-        [Route("AddCloserRequestDetail")]
-        public IActionResult AddCloserRequestDetail([FromBody] AddCloserRequestDetailRequest request)
-        {
-            var id = _bookingRepository.AddCloserRequestDetail(request);
+        //[HttpPost]
+        //[Route("AddCloserRequestDetail")]
+        //public IActionResult AddCloserRequestDetail([FromBody] AddCloserRequestDetailRequest request)
+        //{
+        //    var id = _bookingRepository.AddCloserRequestDetail(request);
 
-            return Ok(new
-            {
-                message = "Closer request detail added successfully",
-                id = id
-            });
-        }
+        //    return Ok(new
+        //    {
+        //        message = "Closer request detail added successfully",
+        //        id = id
+        //    });
+        //}
 
         [HttpGet]
         [Route("GetCloserRequestDetails/{closerId}")]

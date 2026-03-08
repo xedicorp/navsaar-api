@@ -45,7 +45,7 @@ namespace navsaar.api.Repositories
         List<DocumentModel> GetCheckList(int bookingId);
         bool ApproveRejectClosureRequest(ApproveRejectClosureRequestModel request);
         bool SendForCloserRequest(SendForCloserRequest request);
-        int AddCloserRequestDetail(AddCloserRequestDetailRequest request);
+       // int AddCloserRequestDetail(AddCloserRequestDetailRequest request);
         List<CloserRequestDetail> GetCloserRequestDetails(int closerId);
         List<CloserRequestInfo> GetCloserRequests();
     }

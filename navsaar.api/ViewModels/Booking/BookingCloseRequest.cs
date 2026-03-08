@@ -16,7 +16,7 @@ namespace navsaar.api.Models
     {
         public int CloserRequestId { get; set; }
         public int UserId { get; set; }
-        public int Status { get; set; }
+        public bool ApproverResponse { get; set; }
         public string Notes { get; set; }
       
     }

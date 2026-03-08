@@ -1148,7 +1148,9 @@ namespace navsaar.api.Repositories
 
         }
         public bool SendForCloserRequest(SendForCloserRequest request)
-        {
+        {  //User can create closure request only is required documents uploaded, IsRequiredForClosure from tblDocTypes
+            //this check has to be put here.
+
             var booking = _context.Bookings.FirstOrDefault(x => x.Id == request.BookingId);
 
             if (booking == null)
@@ -1188,48 +1190,89 @@ namespace navsaar.api.Repositories
 
         public bool ApproveRejectClosureRequest(ApproveRejectClosureRequestModel request)
         {
-            var closerRequest = _context.CloserRequests
-                .FirstOrDefault(x => x.Id == request.CloserRequestId);
 
-            if (closerRequest == null)
-                return false;
+            //Request only can be closed, if required roles users has approved that.
 
-            var booking = _context.Bookings
-                .FirstOrDefault(x => x.Id == closerRequest.BookingId);
 
-            if (booking == null)
-                return false;
 
-            // Update closer request
-            closerRequest.Status = 2; // Approved //3 Reject
-            closerRequest.UpdatedAt = DateTime.Now;
+            //soft delete old responses on same request
 
-            // Update booking
-             
-            booking.Status = 50; // Closed
-            booking.LastStatusChangedOn = DateTime.Now;
-            booking.LastStatusChangedBy = request.UserId;
+            var oldResponses = _context.CloserRequestDetails.Where(p => p.UserId == request.UserId).ToList();
 
-            _context.SaveChanges();
-
-            return true;
-        }
-
-        public int AddCloserRequestDetail(AddCloserRequestDetailRequest request)
-        {
+            if (oldResponses != null)
+            {
+                _context.CloserRequestDetails.RemoveRange(oldResponses);
+                _context.SaveChanges();
+            }
+            //Create new response line
             CloserRequestDetail entity = new CloserRequestDetail
             {
-                CloserId = request.CloserId,
+                CloserId = request.CloserRequestId,
                 UserId = request.UserId,
-                Reason = request.Reason,
-                Date = DateTime.Now
+                Reason = string.Empty,
+                Date = DateTime.Now,
+                ApproverResponse = request.ApproverResponse
             };
 
             _context.CloserRequestDetails.Add(entity);
             _context.SaveChanges();
 
-            return entity.Id;
+            //Now check who has approved.
+            var approvedResponseUsers = _context.CloserRequestDetails.Where(p => p.ApproverResponse==true && (p.IsDeleted == false || p.IsDeleted==null)).Select(p => p.UserId).ToList();
+
+            if (approvedResponseUsers != null)
+            {
+                var approverRoles = _context.Users.Where(p => approvedResponseUsers.Contains(p.Id)).Select(p => p.RoleId);
+
+                var requiredRoleIds = _context.RequiredClosureRoles.ToList();
+
+                bool isRequiredRolesApproved = requiredRoleIds.All(p => approverRoles.Contains(p.RoleId));
+                if (isRequiredRolesApproved)
+                {
+
+                    var closerRequest = _context.CloserRequests
+                        .FirstOrDefault(x => x.Id == request.CloserRequestId);
+
+                    var booking = _context.Bookings
+                        .FirstOrDefault(x => x.Id == closerRequest.BookingId);
+
+                    if (booking == null)
+                        return false;
+
+                    // Update closer request
+                    closerRequest.Status = 2; // Approved //3 Reject
+                    closerRequest.UpdatedAt = DateTime.Now;
+
+                    // Update booking
+
+                    booking.Status = 50; // Closed
+                    booking.LastStatusChangedOn = DateTime.Now;
+                    booking.LastStatusChangedBy = request.UserId;
+
+                    _context.SaveChanges();
+                }
+            }
+
+            return true;
         }
+
+        //public int AddCloserRequestDetail(AddCloserRequestDetailRequest request)
+        //{
+
+          
+        //    CloserRequestDetail entity = new CloserRequestDetail
+        //    {
+        //        CloserId = request.CloserId,
+        //        UserId = request.UserId,
+        //        Reason = request.Reason,
+        //        Date = DateTime.Now
+        //    };
+
+        //    _context.CloserRequestDetails.Add(entity);
+        //    _context.SaveChanges();
+
+        //    return entity.Id;
+        //}
 
         public List<CloserRequestDetail> GetCloserRequestDetails(int closerId)
         {

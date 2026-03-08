@@ -16,5 +16,9 @@ namespace navsaar.api.Models
         public string? Reason { get; set; }
 
         public DateTime Date { get; set; }
+
+        public bool? ApproverResponse { get;set; }
+
+        public bool? IsDeleted { get; set; }
     }
 }
