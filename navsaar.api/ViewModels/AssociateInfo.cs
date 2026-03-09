@@ -28,4 +28,16 @@
         public string? PassportFile { get; set; }
         public string? BankDocumentFile { get; set; }
     }
+    public class AssociateLoginRequest
+    {
+        public string MobileNo { get; set; } = null!;
+        public string Otp { get; set; } = null!;
+    }
+
+    public class AssociateLoginResponse
+    {
+        public bool IsSuccessful { get; set; }
+        public string Message { get; set; } = null!;
+        public AssociateInfo? Associate { get; set; }
+    }
 }

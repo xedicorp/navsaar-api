@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using navsaar.api.Repositories;
 using navsaar.api.ViewModels;
+using navsaar.api.ViewModels.Associate;
 using navsaar.api.ViewModels.Identity;
 
 namespace navsaar.api.Controllers
@@ -59,6 +60,17 @@ namespace navsaar.api.Controllers
         public bool AssignUserTownships(AssignUserTownshipsRequest request)
         {
             return _repository.AssignTownships(request);
+        }
+        [HttpPost]
+        [Route("associate-login")]
+        public IActionResult AssociateLogin([FromBody] AssociateLoginRequest request)
+        {
+            var result = _repository.AssociateLogin(request);
+
+            if (!result.IsSuccessful)
+                return BadRequest(result);
+
+            return Ok(result);
         }
     }
 }

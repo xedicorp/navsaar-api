@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace navsaar.api.Models
 {
     [Table("tblAssociates")]
-    public class AssociateInfo
+    public class Associate
     {
         [Key]
         public long ID { get; set; }

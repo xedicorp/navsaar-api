@@ -6,6 +6,7 @@ using navsaar.api.Infrastructure;
 using navsaar.api.Models;
 using navsaar.api.Repositories.Identity;
 using navsaar.api.ViewModels;
+using navsaar.api.ViewModels.Associate;
 using navsaar.api.ViewModels.Identity;
 
 namespace navsaar.api.Repositories
@@ -101,5 +102,49 @@ namespace navsaar.api.Repositories
         {
             return _permissionRepository.AssignRolePermissions(request.RoleId, request.Permissions);
         }
+        public AssociateLoginResponse AssociateLogin(AssociateLoginRequest request)
+        {
+            var associate = _context.Associates
+                .FirstOrDefault(x => x.ContactNo == request.MobileNo);
+
+            if (associate == null)
+            {
+                return new AssociateLoginResponse
+                {
+                    IsSuccessful = false,
+                    Message = "Mobile number does not exist",
+                    Associate = null
+                };
+            }
+
+            // Fixed OTP check
+            if (request.Otp != "123456")
+            {
+                return new AssociateLoginResponse
+                {
+                    IsSuccessful = false,
+                    Message = "Invalid OTP",
+                    Associate = null
+                };
+            }
+
+            return new AssociateLoginResponse
+            {
+                IsSuccessful = true,
+                Message = "Login successful",
+                Associate = new AssociateInfo
+                {
+                    Id = associate.ID,
+                    FirstName = associate.FirstName,
+                    ContactNo = associate.ContactNo,
+                    LeaderName = associate.LeaderName,
+                    LeaderContactNo = associate.LeaderContactNo,
+                    ReraNo = associate.RERA,
+                    IsActive = associate.IsActive,
+                    IsApproved = associate.IsApproved
+                }
+            };
+        }
+
     }
 }

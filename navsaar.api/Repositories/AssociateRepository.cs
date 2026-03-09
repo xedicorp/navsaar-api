@@ -84,7 +84,7 @@ namespace navsaar.api.Repositories
         }
         public async Task<bool> Save(CreateUpdateAssociateModel model)
         {
-            Models.AssociateInfo entity;
+            Models.Associate entity;
 
             if (model.Id > 0)
             {
@@ -94,7 +94,7 @@ namespace navsaar.api.Repositories
             }
             else
             {
-                entity = new Models.AssociateInfo
+                entity = new Models.Associate
                 {
                     IsActive = true,
                     CreatedAt = DateTime.Now
