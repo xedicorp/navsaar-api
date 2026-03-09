@@ -47,6 +47,7 @@ namespace navsaar.api.Infrastructure
         public DbSet<CloserRequest> CloserRequests { get; set; }
         public DbSet<CloserRequestDetail> CloserRequestDetails { get; set; }
         public DbSet<Complaint> Complaints { get; set; }
+        public DbSet<ComplaintType> ComplaintTypes { get; set; }
         public DbSet<RequiredClosureRole> RequiredClosureRoles { get; set; }
 
 

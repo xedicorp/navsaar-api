@@ -24,7 +24,25 @@ namespace navsaar.api.Controllers
         {
             return _repository.List();
         }
-       
+        [HttpPost]
+        [Route("Save")]
+        public async Task<bool> Save([FromForm] CreateUpdateComplaintModel model)
+        {
+            return await _repository.Save(model);
+        }
+
+        [HttpGet]
+        [Route("GetById/{id}")]
+        public ComplaintInfo GetById(int id)
+        {
+            return _repository.GetById(id);
+        }
+        [HttpPost]
+        [Route("MarkComplete/{id}")]
+        public bool MarkComplete(int id)
+        {
+            return _repository.MarkComplete(id);
+        }
 
     }
 }
