@@ -48,5 +48,6 @@ namespace navsaar.api.Repositories
        // int AddCloserRequestDetail(AddCloserRequestDetailRequest request);
         List<CloserRequestDetail> GetCloserRequestDetails(int closerId);
         List<CloserRequestInfo> GetCloserRequests();
+        List<BookingInfo> GetByAssociateId(long associateId);
     }
 }

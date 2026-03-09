@@ -79,7 +79,16 @@ namespace navsaar.api.Repositories
                 entity.RelationType = booking.RelationType;         
                 entity.RelationName = booking.RelationName;
                 entity.CreatedBy = booking.UserId;
+                if (!string.IsNullOrWhiteSpace(booking.AssociateReraNo))
+                {
+                    var associate = await _context.Associates
+                        .FirstOrDefaultAsync(x => x.RERA == booking.AssociateReraNo);
 
+                    if (associate != null)
+                    {
+                        entity.AssociateId = associate.ID; // Auto set AssociateId
+                    }
+                }
                 await _context.SaveChangesAsync(); // BookingId generated here
 
                 // ========================
@@ -1304,6 +1313,43 @@ namespace navsaar.api.Repositories
                     };
 
             return q.ToList();
+        }
+        public List<BookingInfo> GetByAssociateId(long associateId)
+        {
+            return (
+                from p in _context.Bookings
+                join t in _context.Townships on p.TownshipId equals t.Id
+                join s in _context.Plots on p.PlotId equals s.Id
+                join bs in _context.BookingStatusTypes on p.Status equals bs.Id
+                where p.AssociateId == associateId
+                select new BookingInfo
+                {
+                    Id = p.Id,
+                    TownshipName = t.Name,
+                    PlotNo = s.PlotNo,
+                    PlotSize = s.PlotSize,
+                    BookingDate = p.BookingDate,
+                    ClientName = p.ClientName,
+                    ClientEmail = p.ClientEmail,
+                    ContactNo = p.ClientContactNo,
+                    ClientAddress = p.ClientAddress,
+                    AssociateName = p.AssociateName,
+                    AssociateReraNo = p.AssociateReraNo,
+                    AssociateContactNo = p.AssociateContactNo,
+                    LeaderName = p.LeaderName,
+                    LeaderContactNo = p.LeaderContactNo,
+                    RelationType = p.RelationType,
+                    RelationName = p.RelationName,
+                    AgreementValue = p.AgreementValue,
+                    TotalAgreementValue = p.TotalAgreementValue,
+                    StatusId = p.Status,
+                    Status = bs.Name,
+                    TownshipId = p.TownshipId,
+                    PlotId = p.PlotId,
+                    WorkflowTypeId = p.WorkflowTypeId,
+                    LastStatusChangedOn = p.LastStatusChangedOn
+                }
+            ).ToList();
         }
     }
 }
