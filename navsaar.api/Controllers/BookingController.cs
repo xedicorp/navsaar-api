@@ -224,10 +224,10 @@ namespace navsaar.api.Controllers
             return Ok(data);
         }
         [HttpGet]
-        [Route("GetBookingByAssociateId/{associateId}")]
-        public IActionResult GetByAssociateId(long associateId)
+        [Route("GetBookingByAssociateId/{associateId}/{townshipId}")]
+        public IActionResult GetByAssociateId(long associateId, long townshipId)
         {
-            var result = _bookingRepository.GetByAssociateId(associateId);
+            var result = _bookingRepository.GetByAssociateId(associateId, townshipId);
             return Ok(result);
         }
     }

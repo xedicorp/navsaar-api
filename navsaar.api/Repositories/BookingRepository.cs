@@ -1314,7 +1314,7 @@ namespace navsaar.api.Repositories
 
             return q.ToList();
         }
-        public List<BookingInfo> GetByAssociateId(long associateId)
+        public List<BookingInfo> GetByAssociateId(long associateId, long townshipId)
         {
             return (
                 from p in _context.Bookings
@@ -1322,6 +1322,7 @@ namespace navsaar.api.Repositories
                 join s in _context.Plots on p.PlotId equals s.Id
                 join bs in _context.BookingStatusTypes on p.Status equals bs.Id
                 where p.AssociateId == associateId
+                      && p.TownshipId == townshipId
                 select new BookingInfo
                 {
                     Id = p.Id,
