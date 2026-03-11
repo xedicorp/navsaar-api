@@ -15,6 +15,7 @@ namespace navsaar.api.Repositories
         List<AppSettingInfo> GetAllAppSettings();
         List<Bank> BankList();
         List<PlotShape> PlotShapeList();
+        List<MediaItemType> MediaItemTypeList();
 
     }
 }

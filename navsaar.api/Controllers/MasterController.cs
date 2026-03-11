@@ -81,5 +81,11 @@ namespace navsaar.api.Controllers
             return Ok(shapes);
         }
 
+        [HttpGet]
+        [Route("MediaItemTypes")]
+        public IEnumerable<MediaItemType> MediaItemTypes()
+        {
+            return _masterRepository.MediaItemTypeList();
+        }
     }
 }

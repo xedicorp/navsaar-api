@@ -50,6 +50,7 @@ namespace navsaar.api.Infrastructure
         public DbSet<ComplaintType> ComplaintTypes { get; set; }
         public DbSet<RequiredClosureRole> RequiredClosureRoles { get; set; }
         public DbSet<MediaItem> MediaItems { get; set; }
+        public DbSet<MediaItemType> MediaItemTypes { get; set; }
 
 
     }

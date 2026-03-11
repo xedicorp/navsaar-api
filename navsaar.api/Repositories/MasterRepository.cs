@@ -75,5 +75,12 @@ namespace navsaar.api.Repositories
                 .OrderBy(p => p.ShapeName)
                 .ToList();
         }
+
+        public List<MediaItemType> MediaItemTypeList()
+        {
+            return _context.MediaItemTypes
+                .OrderBy(p => p.Name)
+                .ToList();
+        }
     }
 }
