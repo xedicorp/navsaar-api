@@ -87,6 +87,7 @@ namespace navsaar.api.Models
 
         public bool? IsDDSubmittedToBank { get; set; }
         public DateTime? DDClearedOn { get; set; }
+        public DateTime? DDSubmittedOn { get; set; }
         public string? DDUpdateNotes { get; set; }
 
         public int? Status { get; set; }

@@ -928,13 +928,20 @@ namespace navsaar.api.Repositories
             return true;
         }
 
-        public List<BookingInfo> Search(
+        public List<BookingInfo> Search(int userId,
             int? statusTypeId,
             int? townshipId,
             int? bookingType,
             string? reraNo,
             DateTime? fromDate)
         {
+            // List<int> userBookings = GetUserBookings(userId);
+            List<int> allowedTownshipIds = new List<int>();
+            allowedTownshipIds = _context.UserTownships.Where(p => p.UserId == userId).Select(p => p.TownshipId).ToList();
+
+            List<BookingInfo> bookings = new List<BookingInfo>();
+
+
             var query =
                 from p in _context.Bookings
                 join t in _context.Townships on p.TownshipId equals t.Id
@@ -945,7 +952,10 @@ namespace navsaar.api.Repositories
                 join r in _context.Receipts on p.Id equals r.BookingId into receiptGroup
                 from r in receiptGroup.OrderByDescending(x => x.Id).Take(1).DefaultIfEmpty()
 
-                where (townshipId == null || townshipId == 0 || p.TownshipId == townshipId)
+
+
+                where (allowedTownshipIds.Contains(t.Id)) && 
+                (townshipId == null || townshipId == 0 || p.TownshipId == townshipId)
                 && (bookingType == null || bookingType == 0 || p.WorkflowTypeId == bookingType)
                 && (statusTypeId == null || statusTypeId == 0 || p.Status == statusTypeId)
                 && (string.IsNullOrEmpty(reraNo) || p.AssociateReraNo == reraNo)
@@ -974,7 +984,15 @@ namespace navsaar.api.Repositories
                     TotalAgreementValue = p.TotalAgreementValue,
                     BankName = r != null ? r.BankName : null,
 
-                    Status = bs.Name
+                    Status = bs.Name,
+                     StatusId = p.Status,
+                    LoanSanctionDate = p.LoanSanctionDate,
+                    IsLoanSanctioned = p.IsLoanSanctioned,
+                    DokitSignDate = p.DokitSignDate,
+                    IsDokitSigned = p.IsDokitSigned,
+                    IsJDAPattaApplied = p.IsJDAPattaApplied,
+                    JDAPattaAppliedOn = p.JDAPattaAppliedOn,
+                    DDSubmittedOn = p.DDSubmittedOn
                 };
 
             return query

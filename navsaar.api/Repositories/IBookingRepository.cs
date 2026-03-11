@@ -41,7 +41,7 @@ namespace navsaar.api.Repositories
         List<AllotmentLetterRequestInfo> GetAllotmentLetterRequests();
         bool MarkAllotmentLetterComplete(MarkAllotmentLetterCompleteRequest request);
 
-        List<BookingInfo> Search(int? statusTypeId, int? townshipId, int? bookingType, string? reraNo, DateTime? fromDate);
+        List<BookingInfo> Search(int userId, int? statusTypeId, int? townshipId, int? bookingType, string? reraNo, DateTime? fromDate);
         List<DocumentModel> GetCheckList(int bookingId);
         bool ApproveRejectClosureRequest(ApproveRejectClosureRequestModel request);
         bool SendForCloserRequest(SendForCloserRequest request);
