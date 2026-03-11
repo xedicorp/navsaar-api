@@ -11,5 +11,6 @@ namespace navsaar.api.Repositories
         List<DocumentModel> GetAllByBookingId(int bookingId);
         List<WorkflowDocType> GetDocTypesByWorkflow(int workflowTypeId);
         Document GetById(int id);
+        bool Delete(int id);
     }
 }

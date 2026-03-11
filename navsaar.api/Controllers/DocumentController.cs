@@ -43,7 +43,12 @@ namespace navsaar.api.Controllers
         {
             return _repository.GetAllByBookingId(bookingId);
         }
-      
 
+        [HttpDelete]
+        [Route("Delete/{id}")]
+        public bool Delete(int id)
+        {
+            return _repository.Delete(id);
+        }
     }
 }

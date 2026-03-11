@@ -134,5 +134,27 @@ namespace navsaar.api.Repositories
                          DocumentTypeId = p.DocumentTypeId  
                      }).ToList();
         }
+        public bool Delete(int id)
+        {
+            var document = _context.Documents.FirstOrDefault(x => x.Id == id);
+
+            if (document == null)
+                return false;
+
+            // Delete file from Uploads folder
+            var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "Uploads");
+            var fullFilePath = Path.Combine(uploadsFolder, document.FilePath);
+
+            if (System.IO.File.Exists(fullFilePath))
+            {
+                System.IO.File.Delete(fullFilePath);
+            }
+
+            // Remove from database
+            _context.Documents.Remove(document);
+            _context.SaveChanges();
+
+            return true;
+        }
     }
 }
