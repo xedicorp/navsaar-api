@@ -39,6 +39,7 @@ namespace navsaar.api.Repositories
                         join t in _context.Townships on b.TownshipId equals t.Id
                         join r in _context.Receipts on b.Id equals r.BookingId  
                         where t.Id == townshipId || townshipId == 0
+                        && r.Status ==3 //3: verified
                         select new TownshipCollectionDetail
                         {
                             TownshipName = t.Name,

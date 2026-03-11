@@ -7,5 +7,6 @@
         public string? DDNo { get; set; }
         public decimal? DDAmount { get; set; }
         public string? DDNotes { get; set; }
+        public int? UserId { get; set; }    
     }
 }

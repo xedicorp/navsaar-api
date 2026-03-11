@@ -512,6 +512,23 @@ namespace navsaar.api.Repositories
             entity.Status = 30; // Bank DD Received
             entity.DDNotes = request.DDNotes;
             _context.SaveChanges();
+
+            //Should create an entry in Receipts and send for verification
+            var receipt = new CreateUpdateReceiptModel()
+            {
+                Amount = request.DDAmount.GetValueOrDefault(),
+                UserId = request.UserId,
+                BankName = "",
+                BookingId = request.BookingId,
+                ChequeNo = request.DDNo,
+                Notes = request.DDNotes,
+                ReceiptDate = DateTime.Now,
+                ReceiptMethod = 6, //6: DD
+                receiptImage = request.File,
+                TransactionId = request.DDNo
+            }; 
+
+           await _receiptRepository.Save(receipt);
         }
         public bool UpdateJDAPattaStatus(UpdateJDAPattaStatusRequest request)
         {
