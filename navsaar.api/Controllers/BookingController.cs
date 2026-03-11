@@ -140,7 +140,7 @@ namespace navsaar.api.Controllers
         }
         [HttpPost]
         [Route("MarkDraftComplete")]
-        public bool MarkDraftComplete(MarkDraftCompleteRequest request)
+        public bool MarkDraftComplete( [FromForm] MarkDraftCompleteRequest request)
         {
             return _bookingRepository.MarkDraftComplete(request);
         }

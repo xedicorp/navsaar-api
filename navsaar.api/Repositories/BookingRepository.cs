@@ -1063,6 +1063,38 @@ namespace navsaar.api.Repositories
             booking.Status = 9; //  Draft Prepared
             _context.SaveChanges();
 
+            // ---------------- FILE UPLOAD ----------------
+
+            if (request.File != null && request.File.Length > 0)
+            {
+                var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "Uploads");
+
+                if (!Directory.Exists(uploadsFolder))
+                {
+                    Directory.CreateDirectory(uploadsFolder);
+                }
+
+                var uniqueFileName = Guid.NewGuid().ToString() + "_" + request.File.FileName;
+                var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    request.File.CopyTo(stream);
+                }
+
+                Document document = new Document
+                {
+                    BookingId = booking.Id,
+                    DocumentTypeId = 7,
+                    FilePath = uniqueFileName,
+                    FileName = request.File.FileName,
+                    Notes = request.Notes,
+                    UploadedOn = DateTime.UtcNow,
+                    UploadedBy = request.UserId
+                };
+
+                _context.Documents.Add(document);
+            }
             // Create Notification
             var notification = new Notification
             {
@@ -1173,7 +1205,7 @@ namespace navsaar.api.Repositories
                     FilePath = uniqueFileName,
                     FileName = request.File.FileName,
                     Notes = request.Notes,
-                    UploadedOn = DateTime.Now,
+                    UploadedOn = DateTime.UtcNow,
                     UploadedBy = request.UserId,
                     IsAllotment = false
                 };
