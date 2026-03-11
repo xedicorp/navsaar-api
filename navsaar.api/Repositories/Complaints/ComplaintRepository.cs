@@ -22,6 +22,10 @@ namespace navsaar.api.Repositories
                     on p.ComplaintTypeId equals ct.Id
                     join t in _context.Townships
                     on p.TownshipId equals t.Id
+                    join a in _context.Associates
+                    on p.SentBy equals a.ID into aJoin
+                    from a in aJoin.DefaultIfEmpty()
+
                     select new ComplaintInfo
                     {
                         Id = p.Id,
@@ -32,6 +36,7 @@ namespace navsaar.api.Repositories
                         : "https://api.navsaargroup.com/Uploads/" + p.ImagePath,
                         Notes = p.Notes,
                         SentBy = p.SentBy,
+                        SentByName = a.FirstName,
                         SentOn = p.SentOn,
                         TownshipId = p.TownshipId,
                         TownshipName = t.Name,
@@ -95,6 +100,10 @@ namespace navsaar.api.Repositories
                     on p.ComplaintTypeId equals ct.Id
                     join t in _context.Townships
                     on p.TownshipId equals t.Id
+                    join a in _context.Associates
+                    on p.SentBy equals a.ID into aJoin
+                    from a in aJoin.DefaultIfEmpty()
+
                     where p.Id == id
                     select new ComplaintInfo
                     {
@@ -106,6 +115,7 @@ namespace navsaar.api.Repositories
                         : "https://api.navsaargroup.com/Uploads/" + p.ImagePath,
                         Notes = p.Notes,
                         SentBy = p.SentBy,
+                        SentByName = a.FirstName,
                         SentOn = p.SentOn,
                         TownshipId = p.TownshipId,
                         TownshipName = t.Name,

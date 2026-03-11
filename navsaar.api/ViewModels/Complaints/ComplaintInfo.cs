@@ -5,6 +5,8 @@
         public int Id { get; set; }
         public string? ImagePath { get; set; }
         public int? SentBy { get; set; }
+        public string? SentByName { get; set; }
+
         public DateTime SentOn { get; set; }
         public string? Notes { get; set; }
         public int? ComplaintTypeId { get; set; }
