@@ -44,7 +44,7 @@ namespace navsaar.api.Repositories
             document.BookingId = request.BookingId;
             document.DocumentTypeId = request.DocumentTypeId;
             document.Notes = request.Notes;
-            document.UploadedOn = DateTime.Now;
+            document.UploadedOn = DateTime.UtcNow;
             document.UploadedBy = 1; //TODO: Change to logged in user
             document.FilePath = uniqueFileName;
             document.FileName = request.File.FileName;
@@ -74,7 +74,7 @@ namespace navsaar.api.Repositories
             if (isAllUploaded)
             {
                 booking.IsReqDocsUploaded = true;
-                booking.ReqDocsUploadedOn = DateTime.Now;
+                booking.ReqDocsUploadedOn = DateTime.UtcNow;
                 booking.Status = 4;
                 _context.Bookings.Update(booking);
                 _context.SaveChanges();
@@ -103,7 +103,19 @@ namespace navsaar.api.Repositories
                         IsATT = p.IsATT,
                         IsAllotment = p.IsAllotment
                     };
-            return q.ToList();
+            var data = q.ToList();
+
+            var istZone = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
+
+            foreach (var item in data)
+            {
+                if (item.UploadedOn.HasValue)
+                {
+                    item.UploadedOn = TimeZoneInfo.ConvertTimeFromUtc(item.UploadedOn.Value, istZone);
+                }
+            }
+
+            return data;
         }
 
         public Document GetById(int id)

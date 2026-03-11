@@ -1147,6 +1147,40 @@ namespace navsaar.api.Repositories
             var booking = _context.Bookings.FirstOrDefault(p => p.Id == allotmentLetterRequest.BookingId);
             booking.Status = 11; //  Allotment Letter prepared
 
+            // ---------------- FILE UPLOAD ----------------
+
+            if (request.File != null && request.File.Length > 0)
+            {
+                var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "Uploads");
+
+                if (!Directory.Exists(uploadsFolder))
+                {
+                    Directory.CreateDirectory(uploadsFolder);
+                }
+
+                var uniqueFileName = Guid.NewGuid().ToString() + "_" + request.File.FileName;
+                var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    request.File.CopyTo(stream);
+                }
+
+                Document document = new Document
+                {
+                    BookingId = booking.Id,
+                    DocumentTypeId = 11,
+                    FilePath = uniqueFileName,
+                    FileName = request.File.FileName,
+                    Notes = request.Notes,
+                    UploadedOn = DateTime.Now,
+                    UploadedBy = request.UserId,
+                    IsAllotment = false
+                };
+
+                _context.Documents.Add(document);
+            }
+
             // Create Notification
             var notification = new Notification
             {

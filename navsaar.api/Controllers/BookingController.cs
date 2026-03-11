@@ -158,7 +158,7 @@ namespace navsaar.api.Controllers
         }
         [HttpPost]
         [Route("MarkAllotmentLetterComplete")]
-        public bool MarkAllotmentLetterComplete(MarkAllotmentLetterCompleteRequest request)
+        public bool MarkAllotmentLetterComplete([FromForm] MarkAllotmentLetterCompleteRequest request)
         {
             return _bookingRepository.MarkAllotmentLetterComplete(request);
         }
