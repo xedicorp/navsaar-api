@@ -46,5 +46,11 @@ namespace navsaar.api.Controllers
             var data = _repository.PlotAvailabilityReport(townshipId, statusId);
             return Ok(data);
         }
+        [HttpGet]
+        [Route("progress-summary-report")]
+        public IEnumerable<ProgressSummaryCount> ProgressSummaryReport(int townshipId)
+        {
+            return _repository.ProgressSummaryReport(townshipId);
+        }
     }
 }

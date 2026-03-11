@@ -17,7 +17,22 @@ namespace navsaar.api.Repositories
             _context = context;
             _plotRepository = plotRepository;
         }
+        public List<ProgressSummaryCount> ProgressSummaryReport(int townshipId)
+        {
 
+            var groupedResult = from p in _context.Bookings
+                                join s in _context.BookingStatusTypes on p.Status equals s.Id
+                                where p.TownshipId == townshipId
+                                group p by new { p.Status, s.Name } into statusGroup
+                                select new ProgressSummaryCount
+                                {
+                                    Status = statusGroup.Key.Name,
+                                    StatusId = statusGroup.Key.Status.GetValueOrDefault(),
+                                    Count = statusGroup.Count()
+                                };
+
+            return groupedResult.ToList();
+        }
         public List<TownshipCollectionDetail> TownshipCollectionDetailReport(int townshipId = 0)
         {
             var query = from b in _context.Bookings
