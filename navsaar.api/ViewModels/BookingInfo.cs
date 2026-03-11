@@ -101,5 +101,14 @@
 
         public string? ProgressState { get; set; }   // IN_PROGRESS | ON_TIME | DELAYED
         public string? ProgressColor { get; set; }   // orange | green | red
+
+        public decimal? InitialAmount { get; set; }
+        public DateTime? InitialPaymentDate { get; set; }
+        public int? InitialReceiptMethod { get; set; }
+        public string InitialTransactionId { get; set; }
+        public string InitialBankName { get; set; }
+        public string InitialChequeNo { get; set; }
+        public string InitialNotes { get; set; }
+        public string InitialReceiptImage { get; set; }
     }
 }

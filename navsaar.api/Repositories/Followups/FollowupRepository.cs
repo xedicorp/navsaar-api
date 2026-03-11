@@ -76,7 +76,7 @@ namespace navsaar.api.Repositories.Followups
             entity.CreatedBy = request.CreatedBy;
             entity.Notes = request.Notes;
             entity.FollowupTypeId = request.FollowupTypeId;
-            entity.FollowupDate = DateTime.Now;
+            entity.FollowupDate = request.FollowupDate;
 
             if (request.Id == 0)
             {

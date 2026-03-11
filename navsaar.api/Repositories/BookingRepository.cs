@@ -756,33 +756,39 @@ namespace navsaar.api.Repositories
 
         public BookingInfo GetById(int bookingId)
         {
-             
             return (from p in _context.Bookings
                     join t in _context.Townships on p.TownshipId equals t.Id
                     join s in _context.Plots on p.PlotId equals s.Id
-                    where p.Id==bookingId
+
+                    join r in _context.Receipts
+                        .Where(x => x.Notes == "Initial Payment")
+                        on p.Id equals r.BookingId into rJoin
+                    from r in rJoin.DefaultIfEmpty()
+
+                    where p.Id == bookingId
+
                     select new BookingInfo
                     {
                         Id = p.Id,
                         TownshipName = t.Name,
                         PlotNo = s.PlotNo,
-                        PlotSize = s.PlotSize     ,
+                        PlotSize = s.PlotSize,
                         BookingDate = p.BookingDate,
                         ClientName = p.ClientName,
                         ClientEmail = p.ClientEmail,
                         ContactNo = p.ClientContactNo,
-                        ClientAddress=p.ClientAddress,
+                        ClientAddress = p.ClientAddress,
                         AssociateName = p.AssociateName,
                         AssociateReraNo = p.AssociateReraNo,
                         AssociateContactNo = p.AssociateContactNo,
                         LeaderName = p.LeaderName,
-                        LeaderContactNo = p.LeaderContactNo,   
-                        RelationType = p.RelationType,         
+                        LeaderContactNo = p.LeaderContactNo,
+                        RelationType = p.RelationType,
                         RelationName = p.RelationName,
                         DDClearedOn = p.DDClearedOn,
                         DraftPreparedOn = p.DraftPreparedOn,
                         TownshipId = p.TownshipId,
-                       // ChequeFilePath = p.ChequeFilePath,
+                        // ChequeFilePath = p.ChequeFilePath,
                         IsDDSubmittedToBank = p.IsDDSubmittedToBank,
                         WorkflowTypeId = p.WorkflowTypeId,
                         DDReceivedFromBankOn = p.DDReceivedFromBankOn,
@@ -827,11 +833,22 @@ namespace navsaar.api.Repositories
                         IsJDAPattaRegistered = p.IsJDAPattaRegistered,
                         JDAPattaAppliedOn = p.JDAPattaAppliedOn,
                         JDAPattaNotes = p.JDAPattaNotes,
-                        JDAPattaRegisteredOn = p.JDAPattaRegisteredOn ,
-                        AgreementValue=p.AgreementValue,
-                        TotalAgreementValue=p.TotalAgreementValue,
-                        PlotId = p.PlotId
-                      
+                        JDAPattaRegisteredOn = p.JDAPattaRegisteredOn,
+                        PlotId = p.PlotId,
+                        DDSubmittedOn = p.DDSubmittedOn,
+                        AgreementValue = p.AgreementValue,
+                        TotalAgreementValue = p.TotalAgreementValue,
+
+                        // INITIAL PAYMENT INFO
+                        InitialAmount = r.Amount,
+                        InitialPaymentDate = r.ReceiptDate,
+                        InitialReceiptMethod = r.ReceiptMethod,
+                        InitialTransactionId = r.TransactionId,
+                        InitialBankName = r.BankName,
+                        InitialChequeNo = r.ChequeNo,
+                        InitialNotes = r.Notes,
+                        InitialReceiptImage = r.receiptImage
+
                     }).FirstOrDefault();
         }
 
