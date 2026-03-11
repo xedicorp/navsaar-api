@@ -129,5 +129,11 @@ namespace navsaar.api.Repositories
 
             return true;
         }
+        public List<ComplaintType> GetComplaintTypes()
+        {
+            return _context.ComplaintTypes
+                .OrderBy(x => x.Name)
+                .ToList();
+        }
     }
 }

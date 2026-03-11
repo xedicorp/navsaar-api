@@ -43,6 +43,11 @@ namespace navsaar.api.Controllers
         {
             return _repository.MarkComplete(id);
         }
-
+        [HttpGet]
+        [Route("ComplaintTypes")]
+        public IEnumerable<ComplaintType> ComplaintTypes()
+        {
+            return _repository.GetComplaintTypes();
+        }
     }
 }
