@@ -148,7 +148,7 @@ namespace navsaar.api.Repositories
 
                 using (var stream = new FileStream(filePath, FileMode.Create))
                 {
-                    await model.receiptImage.CopyToAsync(stream);
+                      model.receiptImage.CopyTo(stream);
                 }
 
                 entity.receiptImage = fileName; 
