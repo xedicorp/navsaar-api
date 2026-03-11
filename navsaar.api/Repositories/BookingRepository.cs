@@ -763,8 +763,8 @@ namespace navsaar.api.Repositories
             {
                 progressModels.Add(new BookingProgressModel
                 {
-                    ProgressDate = entity.DDClearedOn.GetValueOrDefault(),
-                    ProgressDetails = "DD Cleared On",
+                    ProgressDate = entity.DDSubmittedOn.GetValueOrDefault(),
+                    ProgressDetails = "DD Submitted To Bank  ",
                     DaysFromBooking = entity.DDClearedOn.GetValueOrDefault().Subtract(entity.BookingDate).Days
                 });
             }

@@ -72,19 +72,19 @@ namespace navsaar.api.Repositories
                     ReceiptDate = booking.DateOfTransfer.GetValueOrDefault(),
                     Amount = booking.Amount_2.GetValueOrDefault()
                 });
-                if (booking.DDClearedOn != null)
-                {
-                    collections.Add(new TownshipCollectionDetail
-                    {
-                        TownshipName = township.Name,
-                        BookingNo = booking.Id,
-                        CustomerName = booking.ClientName,
-                        CustomerContactNo = booking.ClientContactNo,
-                        Description = "Bank DD",
-                        ReceiptDate = booking.DDClearedOn.GetValueOrDefault(),
-                        Amount = booking.DDAmount.GetValueOrDefault()
-                    });
-                }
+                //if (booking.DDClearedOn != null)
+                //{
+                //    collections.Add(new TownshipCollectionDetail
+                //    {
+                //        TownshipName = township.Name,
+                //        BookingNo = booking.Id,
+                //        CustomerName = booking.ClientName,
+                //        CustomerContactNo = booking.ClientContactNo,
+                //        Description = "Bank DD",
+                //        ReceiptDate = booking.DDClearedOn.GetValueOrDefault(),
+                //        Amount = booking.DDAmount.GetValueOrDefault()
+                //    });
+                //}
             }
             collections = collections
             .OrderByDescending(x => x.ReceiptDate)
@@ -135,25 +135,25 @@ namespace navsaar.api.Repositories
                         .Sum(x => x.ReceiptAmount)
                 })
                 .ToList();
-            foreach (var item in result)
-            {
+            //foreach (var item in result)
+            //{
 
 
-                var bookings = _context.Bookings.Where(p => p.TownshipId == item.Id).ToList();
-                if (bookings != null)
-                {
-                    var ttlInitialPayment = bookings.Sum(p => p.Amount_2.GetValueOrDefault());
-                    var ttlDDAmount = bookings.Where(s => s.DDClearedOn != null).Sum(p => p.DDAmount.GetValueOrDefault());
-                    item.TotalCollection += ttlInitialPayment + ttlDDAmount;
+            //    var bookings = _context.Bookings.Where(p => p.TownshipId == item.Id).ToList();
+            //    if (bookings != null)
+            //    {
+            //        var ttlInitialPayment = bookings.Sum(p => p.Amount_2.GetValueOrDefault());
+            //        var ttlDDAmount = bookings.Where(s => s.DDClearedOn != null).Sum(p => p.DDAmount.GetValueOrDefault());
+            //        item.TotalCollection += ttlInitialPayment + ttlDDAmount;
 
 
-                    var todayInitialPayment = bookings.Where(p => p.DateOfTransfer.GetValueOrDefault().Date == DateTime.Now.Date).Sum(p => p.Amount_2.GetValueOrDefault());
-                    var todayDDAmount = bookings.Where(p => p.DDClearedOn.GetValueOrDefault().Date == DateTime.Now.Date).Sum(p => p.DDAmount.GetValueOrDefault());
+            //        var todayInitialPayment = bookings.Where(p => p.DateOfTransfer.GetValueOrDefault().Date == DateTime.Now.Date).Sum(p => p.Amount_2.GetValueOrDefault());
+            //        var todayDDAmount = bookings.Where(p => p.DDClearedOn.GetValueOrDefault().Date == DateTime.Now.Date).Sum(p => p.DDAmount.GetValueOrDefault());
 
-                    item.TodaysCollection += todayInitialPayment + todayDDAmount;
-                }
+            //        item.TodaysCollection += todayInitialPayment + todayDDAmount;
+            //    }
 
-            }
+            //}
             return result;
         }
 
