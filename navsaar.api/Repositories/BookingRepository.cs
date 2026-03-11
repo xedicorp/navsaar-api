@@ -91,6 +91,48 @@ namespace navsaar.api.Repositories
                 }
                 await _context.SaveChangesAsync(); // BookingId generated here
 
+
+                // ========================
+                // SAVE DOCUMENT (AADHAR / PAN)
+                // ========================
+
+                if (booking.File != null && booking.File.Length > 0)
+                {
+                    var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "Uploads");
+
+                    if (!Directory.Exists(uploadsFolder))
+                        Directory.CreateDirectory(uploadsFolder);
+
+                    var uniqueFileName = Guid.NewGuid() + "_" + booking.File.FileName;
+                    var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await booking.File.CopyToAsync(stream);
+                    }
+
+                    string notes = booking.DocumentTypeId switch
+                    {
+                        1 => "Aadhar Card",
+                        2 => "PAN Card",
+                        _ => null
+                    };
+
+                    Document document = new Document
+                    {
+                        BookingId = entity.Id,
+                        DocumentTypeId = booking.DocumentTypeId,
+                        FilePath = uniqueFileName,
+                        FileName = booking.File.FileName,
+                        Notes = notes,
+                        UploadedOn = DateTime.UtcNow,
+                        UploadedBy = entity.CreatedBy
+                    };
+
+                    _context.Documents.Add(document);
+                    await _context.SaveChangesAsync();
+                }
+
                 // ========================
                 // UPDATE PLOT STATUS
                 // ========================
