@@ -22,6 +22,7 @@
         public string? PlotShapeName { get; set; }
         public string? Remark { get; set; }
         public string? Status { get; set; }
+        public int? StatusId { get; set; }
     }
     public class PlotHoldRequestModel
     {

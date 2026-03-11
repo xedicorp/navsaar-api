@@ -46,7 +46,8 @@ namespace navsaar.api.Repositories
                         SaleableSize = p.SaleableSize,
                         PlotSizeInSqrmtr = p.PlotSizeInSqrmtr,
                         RoadSize = p.RoadSize,
-                        PLC = p.PLC
+                        PLC = p.PLC,
+                        StatusId=p.Status
                     }).ToList();
         }
         private static string GetStatus(int status)
@@ -107,6 +108,7 @@ namespace navsaar.api.Repositories
                         PlotShapeName = shape != null ? shape.ShapeName : null,
                         Remark = p.Remark,
                         Status = GetStatus(p.Status ?? 0),
+                        StatusId = p.Status
                     }).FirstOrDefault();
         }
         public int Save(CreateEditPlotRequest request)
@@ -145,7 +147,7 @@ namespace navsaar.api.Repositories
             else
             {
                 // Update status if provided
-                plot.Status = request.Status ?? plot.Status;
+                plot.Status = request.Status ;
             }
 
             _context.SaveChanges();
