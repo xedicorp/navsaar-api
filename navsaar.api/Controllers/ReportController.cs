@@ -20,9 +20,9 @@ namespace navsaar.api.Controllers
 
         [HttpGet]
         [Route("TownshipCollectionSummaryReport")]
-        public IEnumerable<TownshipCollectionModel> TownshipCollectionSummaryReport(int townshipId=0)
+        public IEnumerable<TownshipCollectionModel> TownshipCollectionSummaryReport(int townshipId = 0, int userId = 0)
         {
-            return _repository.TownshipCollectionSummaryReport(townshipId);
+            return _repository.TownshipCollectionSummaryReport(townshipId, userId);
         }
         [HttpGet]
         [Route("TownshipCollectionDetailReport")]

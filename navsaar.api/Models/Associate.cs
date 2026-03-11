@@ -7,7 +7,7 @@ namespace navsaar.api.Models
     public class Associate
     {
         [Key]
-        public long ID { get; set; }
+        public int ID { get; set; }
 
         [StringLength(50)]
         public string? UserName { get; set; }

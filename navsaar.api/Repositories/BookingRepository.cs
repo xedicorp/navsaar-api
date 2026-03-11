@@ -86,7 +86,7 @@ namespace navsaar.api.Repositories
 
                     if (associate != null)
                     {
-                        entity.AssociateId = associate.ID; // Auto set AssociateId
+                        entity.AssociateId =(int) associate.ID; // Auto set AssociateId
                     }
                 }
                 await _context.SaveChangesAsync(); // BookingId generated here

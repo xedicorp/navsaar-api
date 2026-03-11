@@ -77,8 +77,10 @@ namespace navsaar.api.Repositories
             return collections;
         }
 
-        public List<TownshipCollectionModel> TownshipCollectionSummaryReport(int townshipId = 0)
+        public List<TownshipCollectionModel> TownshipCollectionSummaryReport(int townshipId = 0, int userId = 0)
         {
+            List<int> allowedTownshipIds = new List<int>();
+            allowedTownshipIds = _context.UserTownships.Where(p => p.UserId == userId).Select(p => p.TownshipId).ToList();
 
             var query =
                     from t in _context.Townships
@@ -90,7 +92,7 @@ namespace navsaar.api.Repositories
                     join r in _context.Receipts
                         on booking.Id equals r.BookingId into br
                     from receipt in br.DefaultIfEmpty()
-
+                    where (userId == 0 || allowedTownshipIds.Contains(t.Id))
                     select new
                     {
                         TownshipId = t.Id,
@@ -106,10 +108,10 @@ namespace navsaar.api.Repositories
             }
 
             var result = query
-                .GroupBy(x => new { TownshipName=x.TownshipName, TownshipId=x.TownshipId})
+                .GroupBy(x => new { TownshipName = x.TownshipName, TownshipId = x.TownshipId })
                 .Select(g => new TownshipCollectionModel
                 {
-                    Id=g.Key.TownshipId,
+                    Id = g.Key.TownshipId,
                     TownshipName = g.Key.TownshipName,
                     TotalCollection = g.Sum(x => x.ReceiptAmount),
                     TodaysCollection = g
@@ -122,20 +124,21 @@ namespace navsaar.api.Repositories
 
 
                 var bookings = _context.Bookings.Where(p => p.TownshipId == item.Id).ToList();
-                if (bookings != null) { 
-                var ttlInitialPayment = bookings.Sum(p => p.Amount_2.GetValueOrDefault());
-                var ttlDDAmount = bookings.Where(s => s.DDClearedOn != null).Sum(p => p.DDAmount.GetValueOrDefault());
-                item.TotalCollection += ttlInitialPayment + ttlDDAmount;
+                if (bookings != null)
+                {
+                    var ttlInitialPayment = bookings.Sum(p => p.Amount_2.GetValueOrDefault());
+                    var ttlDDAmount = bookings.Where(s => s.DDClearedOn != null).Sum(p => p.DDAmount.GetValueOrDefault());
+                    item.TotalCollection += ttlInitialPayment + ttlDDAmount;
 
 
-                var todayInitialPayment = bookings.Where(p => p.DateOfTransfer.GetValueOrDefault().Date == DateTime.Now.Date).Sum(p => p.Amount_2.GetValueOrDefault());
-                var todayDDAmount = bookings.Where(p => p.DDClearedOn.GetValueOrDefault().Date == DateTime.Now.Date).Sum(p => p.DDAmount.GetValueOrDefault());
+                    var todayInitialPayment = bookings.Where(p => p.DateOfTransfer.GetValueOrDefault().Date == DateTime.Now.Date).Sum(p => p.Amount_2.GetValueOrDefault());
+                    var todayDDAmount = bookings.Where(p => p.DDClearedOn.GetValueOrDefault().Date == DateTime.Now.Date).Sum(p => p.DDAmount.GetValueOrDefault());
 
-                item.TodaysCollection += todayInitialPayment + todayDDAmount;
+                    item.TodaysCollection += todayInitialPayment + todayDDAmount;
+                }
+
             }
-
-            }
-            return result; 
+            return result;
         }
 
         public TownshipHealthReportModel TownshipHealthReport(int townshipId)

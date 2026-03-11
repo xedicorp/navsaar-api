@@ -100,7 +100,7 @@ namespace navsaar.api.Models
 
         public int? CreatedBy { get; set; }
 
-        public long? AssociateId { get; set; }
+        public int? AssociateId { get; set; }
 
         [ForeignKey("AssociateId")]
         public Associate? Associate { get; set; }
