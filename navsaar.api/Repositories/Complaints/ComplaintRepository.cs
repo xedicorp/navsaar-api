@@ -17,34 +17,43 @@ namespace navsaar.api.Repositories
 
         public List<ComplaintInfo> List()
         {
-            var q = from p in _context.Complaints
-                    join ct in _context.ComplaintTypes
-                    on p.ComplaintTypeId equals ct.Id
-                    join t in _context.Townships
-                    on p.TownshipId equals t.Id
-                    join a in _context.Associates
-                    on p.SentBy equals a.ID into aJoin
-                    from a in aJoin.DefaultIfEmpty()
+            var data = (from p in _context.Complaints
+                        join ct in _context.ComplaintTypes
+                        on p.ComplaintTypeId equals ct.Id
+                        join t in _context.Townships
+                        on p.TownshipId equals t.Id
+                        join a in _context.Associates
+                        on p.SentBy equals a.ID into aJoin
+                        from a in aJoin.DefaultIfEmpty()
 
-                    select new ComplaintInfo
-                    {
-                        Id = p.Id,
-                        ComplaintTypeId = p.ComplaintTypeId,
-                        ComplaintTypeName = ct.Name,
-                        ImagePath = string.IsNullOrEmpty(p.ImagePath)
-                        ? null
-                        : "https://api.navsaargroup.com/Uploads/" + p.ImagePath,
-                        Notes = p.Notes,
-                        SentBy = p.SentBy,
-                        SentByName = a.FirstName,
-                        SentOn = p.SentOn,
-                        TownshipId = p.TownshipId,
-                        TownshipName = t.Name,
-                        Status = p.Status,
-                        StatusText = p.Status == 1 ? "Pending" : "Completed"
-                    };
+                        select new ComplaintInfo
+                        {
+                            Id = p.Id,
+                            ComplaintTypeId = p.ComplaintTypeId,
+                            ComplaintTypeName = ct.Name,
+                            ImagePath = string.IsNullOrEmpty(p.ImagePath)
+                                ? null
+                                : "https://api.navsaargroup.com/Uploads/" + p.ImagePath,
+                            Notes = p.Notes,
+                            SentBy = p.SentBy,
+                            SentByName = a.FirstName,
+                            SentOn = p.SentOn,
+                            TownshipId = p.TownshipId,
+                            TownshipName = t.Name,
+                            Status = p.Status,
+                            StatusText = p.Status == 1 ? "Pending" : "Completed"
+                        })
+                        .OrderByDescending(x => x.SentOn)
+                        .ToList();
 
-            return q.OrderByDescending(x => x.SentOn).ToList();
+            var istZone = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
+
+            foreach (var item in data)
+            {
+                item.SentOn = TimeZoneInfo.ConvertTimeFromUtc(item.SentOn, istZone);
+            }
+
+            return data;
         }
         public async Task<bool> Save(CreateUpdateComplaintModel model)
         {
@@ -65,7 +74,7 @@ namespace navsaar.api.Repositories
             entity.Status = 1; // Pending
 
             if (model.Id == 0)
-                entity.SentOn = DateTime.Now;
+                entity.SentOn = DateTime.UtcNow;
 
             if (model.Id == 0)
                 _context.Complaints.Add(entity);
@@ -95,37 +104,42 @@ namespace navsaar.api.Repositories
         }
         public ComplaintInfo GetById(int id)
         {
-            var q = from p in _context.Complaints
-                    join ct in _context.ComplaintTypes
-                    on p.ComplaintTypeId equals ct.Id
-                    join t in _context.Townships
-                    on p.TownshipId equals t.Id
-                    join a in _context.Associates
-                    on p.SentBy equals a.ID into aJoin
-                    from a in aJoin.DefaultIfEmpty()
+            var data = (from p in _context.Complaints
+                        join ct in _context.ComplaintTypes
+                        on p.ComplaintTypeId equals ct.Id
+                        join t in _context.Townships
+                        on p.TownshipId equals t.Id
+                        join a in _context.Associates
+                        on p.SentBy equals a.ID into aJoin
+                        from a in aJoin.DefaultIfEmpty()
 
-                    where p.Id == id
-                    select new ComplaintInfo
-                    {
-                        Id = p.Id,
-                        ComplaintTypeId = p.ComplaintTypeId,
-                        ComplaintTypeName = ct.Name,
-                        ImagePath = string.IsNullOrEmpty(p.ImagePath)
-                        ? null
-                        : "https://api.navsaargroup.com/Uploads/" + p.ImagePath,
-                        Notes = p.Notes,
-                        SentBy = p.SentBy,
-                        SentByName = a.FirstName,
-                        SentOn = p.SentOn,
-                        TownshipId = p.TownshipId,
-                        TownshipName = t.Name,
-                        Status = p.Status,
-                        StatusText = p.Status == 1 ? "Pending" : "Completed"
-                    };
+                        where p.Id == id
+                        select new ComplaintInfo
+                        {
+                            Id = p.Id,
+                            ComplaintTypeId = p.ComplaintTypeId,
+                            ComplaintTypeName = ct.Name,
+                            ImagePath = string.IsNullOrEmpty(p.ImagePath)
+                                ? null
+                                : "https://api.navsaargroup.com/Uploads/" + p.ImagePath,
+                            Notes = p.Notes,
+                            SentBy = p.SentBy,
+                            SentByName = a.FirstName,
+                            SentOn = p.SentOn,
+                            TownshipId = p.TownshipId,
+                            TownshipName = t.Name,
+                            Status = p.Status,
+                            StatusText = p.Status == 1 ? "Pending" : "Completed"
+                        }).FirstOrDefault();
 
-            return q.FirstOrDefault();
+            if (data != null)
+            {
+                var istZone = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
+                data.SentOn = TimeZoneInfo.ConvertTimeFromUtc(data.SentOn, istZone);
+            }
+
+            return data;
         }
-
         public bool MarkComplete(int id)
         {
             var entity = _context.Complaints.FirstOrDefault(x => x.Id == id);

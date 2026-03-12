@@ -76,7 +76,15 @@ namespace navsaar.api.Controllers
                      where n.IsTransactional == true
                         && n.IsActionTaken == false
                      select n.Id).Count();
+
+            model.PendingComplaintCount =
+            (from c in _context.Complaints
+             where c.Status == 1
+             select c.Id).Count();
+
             return model;
+
+
         }
     }
 }

@@ -9,7 +9,7 @@
         public int FollowupCount { get; set; }
         public int ClosureRequestCount { get; set; }
         public int PendingInternalNotificationCount { get; set; }
-
+        public int PendingComplaintCount { get; set; }
     }
 
     public class NotificationCount
