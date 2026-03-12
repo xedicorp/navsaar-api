@@ -41,7 +41,10 @@ namespace navsaar.api.Repositories
                             TownshipId = p.TownshipId,
                             TownshipName = t.Name,
                             Status = p.Status,
-                            StatusText = p.Status == 1 ? "Pending" : "Completed"
+                            StatusText = p.Status == 1 ? "Pending"
+                           : p.Status == 2 ? "Completed"
+                           : p.Status == 3 ? "No Action Required"
+                           : ""
                         })
                         .OrderByDescending(x => x.SentOn)
                         .ToList();
@@ -129,7 +132,10 @@ namespace navsaar.api.Repositories
                             TownshipId = p.TownshipId,
                             TownshipName = t.Name,
                             Status = p.Status,
-                            StatusText = p.Status == 1 ? "Pending" : "Completed"
+                            StatusText = p.Status == 1 ? "Pending"
+                           : p.Status == 2 ? "Completed"
+                           : p.Status == 3 ? "No Action Required"
+                           : ""
                         }).FirstOrDefault();
 
             if (data != null)
@@ -140,14 +146,18 @@ namespace navsaar.api.Repositories
 
             return data;
         }
-        public bool MarkComplete(int id)
+        public bool UpdateStatus(int id, int status)
         {
             var entity = _context.Complaints.FirstOrDefault(x => x.Id == id);
 
             if (entity == null)
                 return false;
 
-            entity.Status = 2;
+            // Allow only valid statuses
+            if (status != 2 && status != 3)
+                throw new Exception("Invalid status");
+
+            entity.Status = status;
 
             _context.SaveChanges();
 

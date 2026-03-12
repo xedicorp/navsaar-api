@@ -38,10 +38,10 @@ namespace navsaar.api.Controllers
             return _repository.GetById(id);
         }
         [HttpPost]
-        [Route("MarkComplete/{id}")]
-        public bool MarkComplete(int id)
+        [Route("UpdateComplaintStatus")]
+        public bool UpdateComplaintStatus(int id, int status)
         {
-            return _repository.MarkComplete(id);
+            return _repository.UpdateStatus(id, status);
         }
         [HttpGet]
         [Route("ComplaintTypes")]
