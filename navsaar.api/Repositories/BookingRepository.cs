@@ -145,6 +145,26 @@ namespace navsaar.api.Repositories
 
                 if (isNew && booking.InitialAmount.HasValue && booking.InitialAmount > 0)
                 {
+                    // Prevent duplicate TransactionId
+                    if (!string.IsNullOrWhiteSpace(booking.InitialTransactionId))
+                    {
+                        var transactionExists = await _context.Receipts
+                            .AnyAsync(x => x.TransactionId == booking.InitialTransactionId);
+
+                        if (transactionExists)
+                            throw new Exception("Transaction ID already exists.");
+                    }
+
+                    // Prevent duplicate ChequeNo
+                    if (!string.IsNullOrWhiteSpace(booking.InitialChequeNo))
+                    {
+                        var chequeExists = await _context.Receipts
+                            .AnyAsync(x => x.ChequeNo == booking.InitialChequeNo);
+
+                        if (chequeExists)
+                            throw new Exception("Cheque number already exists.");
+                    }
+
                     var receipt = new Receipt
                     {
                         BookingId = entity.Id,
@@ -507,6 +527,14 @@ namespace navsaar.api.Repositories
         }
         public async Task UploadBankDD(UploadBankDDRequest request)
         {
+            // Check duplicate DD No
+            var existingDD = _context.Bookings
+                .FirstOrDefault(x => x.DDNo == request.DDNo && x.Id != request.BookingId);
+
+            if (existingDD != null)
+            {
+                throw new Exception("This DD number already exists. Duplicate DD numbers are not allowed.");
+            }
             var entity = new Models.Booking();
             string fileName = null;
             if (request.File != null)

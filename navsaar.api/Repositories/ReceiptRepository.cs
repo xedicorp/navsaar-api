@@ -11,6 +11,7 @@ using iText.Layout.Element;
 using iText.Layout.Properties;
 using iText.Kernel.Font;
 using iText.IO.Font.Constants;
+using Microsoft.EntityFrameworkCore;
 
 namespace navsaar.api.Repositories
 {
@@ -80,7 +81,7 @@ namespace navsaar.api.Repositories
                         StatusText=p.Status==1? "Verification Pending" : (p.Status == 2 ? "Under Verification" : (p.Status == 3 ? "Verified" : "Rejected")),
                         ReceiptImage = string.IsNullOrEmpty(p.receiptImage)
                         ? null
-                        : "https://api.navsaargroup.com/Uploads/" + p.receiptImage
+                        : "https://api.navsaargroup.com/Uploads/Receipts/" + p.receiptImage
 
                     }).ToList();
 
@@ -122,6 +123,24 @@ namespace navsaar.api.Repositories
                     return false;
                 }
             }
+            if (!string.IsNullOrWhiteSpace(model.TransactionId))
+            {
+                var transactionExists = await _context.Receipts
+                    .AnyAsync(x => x.TransactionId == model.TransactionId && x.Id != model.Id);
+
+                if (transactionExists)
+                    throw new Exception("Transaction ID already exists.");
+            }
+
+            if (!string.IsNullOrWhiteSpace(model.ChequeNo))
+            {
+                var chequeExists = await _context.Receipts
+                    .AnyAsync(x => x.ChequeNo == model.ChequeNo && x.Id != model.Id);
+
+                if (chequeExists)
+                    throw new Exception("Cheque number already exists.");
+            }
+
             entity.BookingId = model.BookingId;
             entity.Amount = model.Amount;
             entity.ReceiptDate = model.ReceiptDate;
