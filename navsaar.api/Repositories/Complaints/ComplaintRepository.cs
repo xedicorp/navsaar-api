@@ -44,7 +44,9 @@ namespace navsaar.api.Repositories
                             StatusText = p.Status == 1 ? "Pending"
                            : p.Status == 2 ? "Completed"
                            : p.Status == 3 ? "No Action Required"
-                           : ""
+                           : "",
+                            CompletedOn = p.CompletedOn,
+                            CompletedNotes = p.CompletedNotes,
                         })
                         .OrderByDescending(x => x.SentOn)
                         .ToList();
@@ -54,6 +56,9 @@ namespace navsaar.api.Repositories
             foreach (var item in data)
             {
                 item.SentOn = TimeZoneInfo.ConvertTimeFromUtc(item.SentOn, istZone);
+
+                if (item.CompletedOn.HasValue && item.Status == 3)
+                    item.CompletedOn = TimeZoneInfo.ConvertTimeFromUtc(item.CompletedOn.Value, istZone);
             }
 
             return data;
@@ -135,29 +140,45 @@ namespace navsaar.api.Repositories
                             StatusText = p.Status == 1 ? "Pending"
                            : p.Status == 2 ? "Completed"
                            : p.Status == 3 ? "No Action Required"
-                           : ""
+                           : "",
+                            CompletedOn = p.CompletedOn,
+                            CompletedNotes = p.CompletedNotes,
                         }).FirstOrDefault();
 
             if (data != null)
             {
                 var istZone = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
+
                 data.SentOn = TimeZoneInfo.ConvertTimeFromUtc(data.SentOn, istZone);
+
+                if (data.CompletedOn.HasValue && data.Status == 3)
+                    data.CompletedOn = TimeZoneInfo.ConvertTimeFromUtc(data.CompletedOn.Value, istZone);
             }
 
             return data;
         }
-        public bool UpdateStatus(int id, int status)
+        public bool UpdateStatus(int id, int status, DateTime? completedOn, string completedNotes)
         {
             var entity = _context.Complaints.FirstOrDefault(x => x.Id == id);
 
             if (entity == null)
                 return false;
 
-            // Allow only valid statuses
             if (status != 2 && status != 3)
                 throw new Exception("Invalid status");
 
             entity.Status = status;
+
+            if (status == 2) // Completed
+            {
+                entity.CompletedOn = completedOn;
+                entity.CompletedNotes = completedNotes;
+            }
+            else if (status == 3) // No Action Required
+            {
+                entity.CompletedOn = DateTime.UtcNow;
+                entity.CompletedNotes = null;
+            }
 
             _context.SaveChanges();
 

@@ -39,9 +39,9 @@ namespace navsaar.api.Controllers
         }
         [HttpPost]
         [Route("UpdateComplaintStatus")]
-        public bool UpdateComplaintStatus(int id, int status)
+        public bool UpdateComplaintStatus(int id, int status, DateTime? completedOn, string? completedNotes)
         {
-            return _repository.UpdateStatus(id, status);
+            return _repository.UpdateStatus(id, status, completedOn, completedNotes);
         }
         [HttpGet]
         [Route("ComplaintTypes")]

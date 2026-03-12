@@ -18,5 +18,7 @@
         public int? Status { get; set; }
         public string? StatusText { get; set; }
 
+        public DateTime? CompletedOn { get; set; }
+        public string? CompletedNotes { get; set; }
     }
 }

@@ -13,6 +13,7 @@ namespace navsaar.api.Models
         public int? ComplaintTypeId { get; set; }
         public int? Status { get; set; }
         public int TownshipId { get; set; }
-
+        public DateTime? CompletedOn { get; set; }
+        public string? CompletedNotes { get; set; }
     }
 }

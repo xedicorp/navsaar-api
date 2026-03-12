@@ -13,7 +13,7 @@ namespace navsaar.api.Repositories
 
         Task<bool> Save(CreateUpdateComplaintModel request);
 
-        bool UpdateStatus(int id, int status);
+        bool UpdateStatus(int id, int status, DateTime? completedOn, string completedNotes);
         List<ComplaintType> GetComplaintTypes();
 
     }
