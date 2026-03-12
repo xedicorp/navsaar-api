@@ -96,41 +96,25 @@ namespace navsaar.api.Repositories
                 // SAVE DOCUMENT (AADHAR / PAN)
                 // ========================
 
+
                 if (booking.File != null && booking.File.Length > 0)
                 {
-                    var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "Uploads");
-
-                    if (!Directory.Exists(uploadsFolder))
-                        Directory.CreateDirectory(uploadsFolder);
-
-                    var uniqueFileName = Guid.NewGuid() + "_" + booking.File.FileName;
-                    var filePath = Path.Combine(uploadsFolder, uniqueFileName);
-
-                    using (var stream = new FileStream(filePath, FileMode.Create))
-                    {
-                        await booking.File.CopyToAsync(stream);
-                    }
-
                     string notes = booking.DocumentTypeId switch
                     {
                         1 => "Aadhar Card",
                         2 => "PAN Card",
                         _ => null
                     };
-
-                    Document document = new Document
+                    _documentRepository.Upload(new UploadDocumentRequest
                     {
                         BookingId = entity.Id,
-                        DocumentTypeId = booking.DocumentTypeId,
-                        FilePath = uniqueFileName,
-                        FileName = booking.File.FileName,
-                        Notes = notes,
-                        UploadedOn = DateTime.UtcNow,
-                        UploadedBy = entity.CreatedBy
-                    };
-
-                    _context.Documents.Add(document);
-                    await _context.SaveChangesAsync();
+                        DocumentTypeId = booking.DocumentTypeId.GetValueOrDefault(),
+                        File = booking.File,
+                        IsAllotment = false,
+                        IsATT = false,
+                        IsDraft = false,
+                        Notes = notes
+                    });
                 }
 
                 // ========================
@@ -524,7 +508,7 @@ namespace navsaar.api.Repositories
         public async Task UploadBankDD(UploadBankDDRequest request)
         {
             var entity = new Models.Booking();
-
+            string fileName = null;
             if (request.File != null)
             {
                 // Define the path where the file will be saved
@@ -533,7 +517,7 @@ namespace navsaar.api.Repositories
                 {
                     Directory.CreateDirectory(uploadsFolder);
                 }
-                string fileName = Guid.NewGuid().ToString() + "_" + request.File.FileName;
+                  fileName = Guid.NewGuid().ToString() + "_" + request.File.FileName;
                 var filePath = Path.Combine(uploadsFolder, fileName);
 
                 using (var stream = new FileStream(filePath, FileMode.Create))
@@ -548,13 +532,30 @@ namespace navsaar.api.Repositories
                 entity.CurrentStage = 9;
             }
 
-            entity.BankDDPath = request.File != null ? entity.BankDDPath : entity.BankDDPath;
+            if (request.File != null)
+            {
+                entity.BankDDPath = Path.Combine("uploads", fileName);
+            }
             entity.DDAmount = request.DDAmount;
             entity.DDNo = request.DDNo;
             entity.Status = 30; // Bank DD Received
             entity.DDNotes = request.DDNotes;
             _context.SaveChanges();
 
+            //Save DD document if sent
+            if (request.File != null && request.File.Length > 0)
+            {
+                _documentRepository.Upload(new UploadDocumentRequest
+                {
+                    BookingId = entity.Id,
+                    DocumentTypeId = 8, //8: Bank DD
+                    File = request.File,
+                    IsAllotment = false,
+                    IsATT = false,
+                    IsDraft = false,
+                    Notes = string.Format("DD no: {0}, DD amount: {1}, Notes: {2} ", request.DDNo, request.DDAmount, request.DDNotes)
+                });
+            }
             //Should create an entry in Receipts and send for verification
             var receipt = new CreateUpdateReceiptModel()
             {

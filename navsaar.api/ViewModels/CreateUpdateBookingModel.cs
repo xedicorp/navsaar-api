@@ -20,7 +20,7 @@
         public string LeaderName { get; set; } 
         public int WorkflowTypeId { get; set; }
         public  IFormFile?  File { get; set; }
-        public int DocumentTypeId { get; set; }
+        public int? DocumentTypeId { get; set; }
         public string? LeaderContactNo { get; set; }
         public string? RelationType { get; set; }
         public string? RelationName { get; set; }
@@ -39,6 +39,6 @@
         public int? InitialReceiptStatus { get; set; }
 
         public int? UserId { get; set; }
-
+       
     }
 }
