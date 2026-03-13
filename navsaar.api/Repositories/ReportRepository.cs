@@ -109,6 +109,7 @@ namespace navsaar.api.Repositories
                         on booking.Id equals r.BookingId into br
                     from receipt in br.DefaultIfEmpty()
                     where (userId == 0 || allowedTownshipIds.Contains(t.Id))
+                    && receipt.Status==3  // 3:Verified
                     select new
                     {
                         TownshipId = t.Id,
