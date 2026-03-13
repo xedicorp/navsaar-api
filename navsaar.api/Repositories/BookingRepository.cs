@@ -1190,7 +1190,7 @@ namespace navsaar.api.Repositories
                 Document document = new Document
                 {
                     BookingId = booking.Id,
-                    DocumentTypeId = 7,
+                    DocumentTypeId = 9,
                     FilePath = uniqueFileName,
                     FileName = request.File.FileName,
                     Notes = request.Notes,
