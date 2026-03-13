@@ -49,5 +49,6 @@ namespace navsaar.api.Repositories
         List<CloserRequestDetail> GetCloserRequestDetails(int closerId);
         List<CloserRequestInfo> GetCloserRequests();
         List<BookingInfo> GetByAssociateId(long associateId, long townshipId);
+        ClosureValidationResponse GetClosureValidation(int bookingId);
     }
 }

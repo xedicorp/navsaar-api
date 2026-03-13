@@ -1345,6 +1345,64 @@ namespace navsaar.api.Repositories
             return model;  
 
         }
+        public ClosureValidationResponse GetClosureValidation(int bookingId)
+        {
+            var booking = _context.Bookings.FirstOrDefault(x => x.Id == bookingId);
+
+            if (booking == null)
+                return null;
+
+            decimal agreementValue = booking.TotalAgreementValue ?? booking.AgreementValue;
+
+            // -------- PAYMENT CHECK --------
+
+            decimal receivedAmount = _context.Receipts
+                .Where(r => r.BookingId == bookingId && r.Status == 3)
+                .Sum(r => (decimal?)r.Amount) ?? 0;
+
+            decimal pendingAmount = agreementValue - receivedAmount;
+
+            bool isPaymentCompleted = pendingAmount <= 0;
+
+            // -------- DOCUMENT CHECK --------
+
+            var requiredDocs = _context.DocumentTypes
+                .Where(d => d.IsRequiredForClosure == true)
+                .ToList();
+
+            var uploadedDocs = _context.Documents
+                .Where(d => d.BookingId == bookingId)
+                .Select(d => d.DocumentTypeId)
+                .ToList();
+
+            var documentsReceived = requiredDocs
+                .Where(d => uploadedDocs.Contains(d.Id))
+                .Select(d => d.Name)
+                .ToList();
+
+            var documentsPending = requiredDocs
+                .Where(d => !uploadedDocs.Contains(d.Id))
+                .Select(d => d.Name)
+                .ToList();
+
+            bool areDocumentsComplete = documentsPending.Count == 0;
+
+            // -------- FINAL CHECK --------
+
+            bool canSendForClosure = isPaymentCompleted && areDocumentsComplete;
+
+            return new ClosureValidationResponse
+            {
+                AgreementValue = agreementValue,
+                ReceivedAmount = receivedAmount,
+                PendingAmount = pendingAmount,
+                DocumentsReceived = documentsReceived,
+                DocumentsPending = documentsPending,
+                IsPaymentCompleted = isPaymentCompleted,
+                AreDocumentsComplete = areDocumentsComplete,
+                CanSendForClosure = canSendForClosure
+            };
+        }
         public bool SendForCloserRequest(SendForCloserRequest request)
         {  //User can create closure request only is required documents uploaded, IsRequiredForClosure from tblDocTypes
             //this check has to be put here.

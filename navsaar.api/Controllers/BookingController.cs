@@ -169,6 +169,17 @@ namespace navsaar.api.Controllers
            
             return _bookingRepository.GetCheckList(bookingId);
         }
+        [HttpGet]
+        [Route("closure-validation/{bookingId}")]
+        public IActionResult GetClosureValidation(int bookingId)
+        {
+            var result = _bookingRepository.GetClosureValidation(bookingId);
+
+            if (result == null)
+                return NotFound();
+
+            return Ok(result);
+        }
         [HttpPost]
         [Route("SendForCloserRequest")]
         public IActionResult SendForCloserRequest([FromBody] SendForCloserRequest request)

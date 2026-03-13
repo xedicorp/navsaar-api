@@ -47,4 +47,16 @@ namespace navsaar.api.Models
 
         public int Status { get; set; }
     }
+        public class ClosureValidationResponse
+        {
+            public decimal AgreementValue { get; set; }
+            public decimal ReceivedAmount { get; set; }
+            public decimal PendingAmount { get; set; }
+
+            public List<string> DocumentsReceived { get; set; }
+            public List<string> DocumentsPending { get; set; }
+            public bool IsPaymentCompleted { get; set; }
+            public bool AreDocumentsComplete { get; set; }
+            public bool CanSendForClosure { get; set; }
+    }
 }
