@@ -32,8 +32,10 @@ namespace navsaar.api.Repositories
                         {
                             Id = p.Id,
                             Name = p.Name,
-                            Address = p.Address
-                        }).ToList();
+                            Address = p.Address,
+                            Latitude = p.Latitude,
+                            Longitude = p.Longitude
+                    }).ToList();
            
         }
 
@@ -51,6 +53,8 @@ namespace navsaar.api.Repositories
                 }
                 entity.Name  = request.Name;
                 entity.Address=request.Address;
+                entity.Latitude = request.Latitude;
+                entity.Longitude = request.Longitude;
             }
             if (request.Id == 0)
                 _context.Townships.Add(entity);
