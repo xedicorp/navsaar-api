@@ -72,5 +72,11 @@ namespace navsaar.api.Controllers
 
             return Ok(result);
         }
+        [HttpPost]
+        [Route("SendOtp")]
+        public SendOTPResponse SendOtp(SendOTPRequest request)
+        {
+            return _repository.SendOTP(request);
+        }
     }
 }
