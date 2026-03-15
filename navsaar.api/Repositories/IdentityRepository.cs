@@ -5,9 +5,11 @@ using Microsoft.EntityFrameworkCore;
 using navsaar.api.Infrastructure;
 using navsaar.api.Models;
 using navsaar.api.Repositories.Identity;
+using navsaar.api.Services;
 using navsaar.api.ViewModels;
 using navsaar.api.ViewModels.Associate;
 using navsaar.api.ViewModels.Identity;
+using System.Security.Cryptography;
 
 namespace navsaar.api.Repositories
 {
@@ -15,10 +17,13 @@ namespace navsaar.api.Repositories
     {
         private readonly AppDbContext _context;
         private readonly IPermissionRepository _permissionRepository;
-        public IdentityRepository(AppDbContext context, IPermissionRepository permissionRepository)
+        private readonly IFirebaseNotificationService _firebaseNotificationService;
+        public IdentityRepository(AppDbContext context, IPermissionRepository permissionRepository,
+             IFirebaseNotificationService firebaseNotificationService)
         {
             _context = context;
             _permissionRepository = permissionRepository;
+            _firebaseNotificationService = firebaseNotificationService;
         }
         public List<UserInfo> List()
         {
@@ -117,8 +122,10 @@ namespace navsaar.api.Repositories
                 };
             }
 
-            // Fixed OTP check
-            if (request.Otp != "123456")
+            // OTP check
+
+            var otp = _context.MobileOtps.FirstOrDefault(p => p.MobileNo == request.MobileNo && p.Otp ==request.Otp);
+            if (otp == null)
             {
                 return new AssociateLoginResponse
                 {
@@ -126,7 +133,9 @@ namespace navsaar.api.Repositories
                     Message = "Invalid OTP",
                     Associate = null
                 };
+
             }
+ 
 
             return new AssociateLoginResponse
             {
@@ -146,5 +155,82 @@ namespace navsaar.api.Repositories
             };
         }
 
+        public SendOTPResponse SendOTP(SendOTPRequest request)
+        {
+            //Check mobile no
+            var associate = _context.Associates
+             .FirstOrDefault(x => x.ContactNo == request.MobileNo);
+
+            if (associate == null)
+            {
+                return new SendOTPResponse
+                {
+                    IsSuccessful = false,
+                    Message = "Mobile number does not exists in system",
+
+                };
+            }
+
+            //Store fcm with Mobile No
+
+            string otp = GenerateSecureOtp();
+            //Store Otp
+
+            var existingOtp = _context.MobileOtps.FirstOrDefault(p => p.MobileNo == request.MobileNo);
+            if (existingOtp != null)
+            {
+                existingOtp.Otp = otp;
+                existingOtp.ExpiresAt = DateTime.UtcNow.AddMinutes(15);
+            }
+            else
+            {
+                existingOtp = new MobileOtp()
+                {
+                    Otp = otp,
+                    ExpiresAt = DateTime.UtcNow.AddMinutes(15),
+                    MobileNo = request.MobileNo,
+                };
+                _context.MobileOtps.Add(existingOtp);
+            }
+            _context.SaveChanges();
+
+            var existing = _context.FcmTokens.FirstOrDefault(p => p.MobileNo == request.MobileNo);
+            if (existing == null)
+            {
+                _context.FcmTokens.Add(new FcmToken
+                {
+
+                    MobileNo = request.MobileNo,
+                    Token = request.FcmToken
+                });
+            }
+            else
+            {
+                existing.Token = request.FcmToken;
+
+            }
+            _context.SaveChanges();
+
+            //Send Notification
+
+            _firebaseNotificationService.Send(  request.FcmToken, otp);
+
+            return new SendOTPResponse
+            {
+                IsSuccessful = true,
+                Message = "OTP sent sucessfully"
+            };
+        }
+        public static string GenerateSecureOtp()
+        {
+            // Get a cryptographically secure random number between 0 and 900000 (exclusive of 900000)
+            int randomNumber = RandomNumberGenerator.GetInt32(0, 900000);
+
+            // Add 100000 to ensure the result is in the range 100000 to 999999
+            int sixDigitNumber = randomNumber + 100000;
+
+            // Format as a 6-digit string, adding leading zeros if necessary (though the above logic should prevent this)
+            return sixDigitNumber.ToString("D6");
+        }
     }
 }

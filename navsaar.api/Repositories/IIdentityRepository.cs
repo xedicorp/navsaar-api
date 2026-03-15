@@ -15,6 +15,7 @@ namespace navsaar.api.Repositories
         List<UserTownshipInfo> UserTownships(int userId);
         bool AssignTownships(AssignUserTownshipsRequest request);
         AssociateLoginResponse AssociateLogin(AssociateLoginRequest request);
+        SendOTPResponse SendOTP(SendOTPRequest request);
 
     }
 }

@@ -51,6 +51,8 @@ namespace navsaar.api.Infrastructure
         public DbSet<RequiredClosureRole> RequiredClosureRoles { get; set; }
         public DbSet<MediaItem> MediaItems { get; set; }
         public DbSet<MediaItemType> MediaItemTypes { get; set; }
+        public DbSet<FcmToken> FcmTokens { get; set; }
+        public DbSet<MobileOtp> MobileOtps { get; set; }
 
 
     }
