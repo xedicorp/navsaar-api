@@ -64,6 +64,9 @@ builder.Services.AddCors(options =>
     });
 });
 
+
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+
 // 1. Add Hangfire services
 builder.Services.AddHangfire(config => config
     .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
@@ -74,7 +77,7 @@ builder.Services.AddHangfire(config => config
 // 2. Add the processing server
 builder.Services.AddHangfireServer();
 var app = builder.Build();
-
+//app.UseExceptionHandler();
 app.UseHangfireDashboard();
 // Configure the HTTP request pipeline.
 //if (app.Environment.IsDevelopment())

@@ -212,8 +212,21 @@ namespace navsaar.api.Repositories
             _context.SaveChanges();
 
             //Send Notification
+            try
+            {
+                _firebaseNotificationService.Send(request.FcmToken, otp);
+            }
+            catch (Exception ex)
+            {
+                File.AppendAllLines("log.txt", new List<string>  { ex.Message });
+                return new SendOTPResponse
+                {
+                    IsSuccessful = false,
+                    Message = "OTP could not sent."
+                };
 
-            _firebaseNotificationService.Send(  request.FcmToken, otp);
+            }
+          
 
             return new SendOTPResponse
             {
