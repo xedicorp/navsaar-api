@@ -416,3 +416,5 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+/navsaar.api/service-account.json
+/navsaar.api/google-services_navsaar.json
