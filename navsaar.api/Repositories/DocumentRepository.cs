@@ -101,7 +101,10 @@ namespace navsaar.api.Repositories
                         FileName = p.FileName,
                         IsDraft = p.IsDraft,
                         IsATT = p.IsATT,
-                        IsAllotment = p.IsAllotment
+                        IsAllotment = p.IsAllotment,
+                        ClientPhotoUrl = p.DocumentTypeId == 4
+                        ? "https://api.navsaargroup.com/Uploads/" + p.FilePath
+                        : null
                     };
             var data = q.ToList();
 

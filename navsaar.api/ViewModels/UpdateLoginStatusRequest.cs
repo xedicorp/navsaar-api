@@ -45,5 +45,6 @@
         public bool IsDraft { get; set; }
         public bool IsATT { get; set; }
         public bool IsAllotment { get; set; }
+        public string ClientPhotoUrl { get; set; }
     }
 }
