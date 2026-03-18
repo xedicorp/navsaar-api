@@ -16,6 +16,9 @@ namespace navsaar.api.Repositories
         bool AssignTownships(AssignUserTownshipsRequest request);
         AssociateLoginResponse AssociateLogin(AssociateLoginRequest request);
         SendOTPResponse SendOTP(SendOTPRequest request);
-
+        bool CreateUser(CreateUserRequest request);
+        string UpdateUser(UpdateUserRequest request);
+        bool ToggleUserStatus(int userId, bool isActive);
+        string ChangePassword(ChangePasswordRequest request);
     }
 }

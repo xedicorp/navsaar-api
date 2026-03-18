@@ -245,5 +245,88 @@ namespace navsaar.api.Repositories
             // Format as a 6-digit string, adding leading zeros if necessary (though the above logic should prevent this)
             return sixDigitNumber.ToString("D6");
         }
+
+        public bool CreateUser(CreateUserRequest request)
+        {
+            // Check duplicate username
+            bool exists = _context.Users.Any(u => u.UserName == request.UserName);
+            if (exists)
+                return false;
+
+            var user = new User
+            {
+                UserName = request.UserName,
+                Password = request.Password,
+                RoleId = request.RoleId,
+                IsActive = request.IsActive,
+            };
+
+            _context.Users.Add(user);
+            _context.SaveChanges();
+
+            return true;
+        }
+        public string UpdateUser(UpdateUserRequest request)
+        {
+            var user = _context.Users.FirstOrDefault(x => x.Id == request.Id);
+
+            if (user == null)
+                return "User not found.";
+
+            // Check duplicate username (excluding current user)
+            bool exists = _context.Users
+                .Any(x => x.UserName == request.UserName && x.Id != request.Id);
+
+            if (exists)
+                return "Username already exists.";
+
+            // Update fields (NOT password)
+            user.UserName = request.UserName;
+            user.RoleId = request.RoleId;
+            user.IsActive = request.IsActive;
+            _context.SaveChanges();
+
+            return "Success";
+        }
+        public bool ToggleUserStatus(int userId, bool isActive)
+        {
+            var user = _context.Users.FirstOrDefault(x => x.Id == userId);
+
+            if (user == null)
+                return false;
+
+            user.IsActive = isActive;
+
+            _context.SaveChanges();
+
+            return true;
+        }
+
+        public string ChangePassword(ChangePasswordRequest request)
+        {
+            var user = _context.Users.FirstOrDefault(x => x.Id == request.UserId);
+
+            if (user == null)
+                return "User not found.";
+
+            // Check current password
+            if (user.Password != request.CurrentPassword)
+                return "Current password is incorrect.";
+
+            // Check confirm password
+            if (request.NewPassword != request.ConfirmPassword)
+                return "New password and confirm password do not match.";
+
+            // Prevent same password
+            if (user.Password == request.NewPassword)
+                return "New password cannot be same as current password.";
+
+            // Update password
+            user.Password = request.NewPassword;
+
+            _context.SaveChanges();
+
+            return "Success";
+        }
     }
 }
