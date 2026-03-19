@@ -10,6 +10,7 @@ namespace navsaar.api.Models
         public string Address { get; set; }
         public decimal? Latitude { get; set; }
         public decimal? Longitude { get; set; }
+        public string? RERAno { get; set; }
 
     }
 }
