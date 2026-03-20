@@ -89,7 +89,12 @@ namespace navsaar.api.Models
 
         [StringLength(20)]
         public string? LeaderContactNo { get; set; }
+        public bool IsTerminated { get; set; } = false;
 
+        public DateTime? TerminatedOn { get; set; }
+
+        [StringLength(255)]
+        public string? TerminatedReason { get; set; }
 
     }
 }

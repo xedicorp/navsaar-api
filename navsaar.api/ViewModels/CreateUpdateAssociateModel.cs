@@ -25,4 +25,9 @@
         public string? LeaderName { get; set; }
         public string? LeaderContactNo { get; set; }
     }
+    public class TerminateAssociateModel
+    {
+        public int AssociateId { get; set; }
+        public string TerminatedReason { get; set; }
+    }
 }

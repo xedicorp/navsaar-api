@@ -114,5 +114,26 @@ namespace navsaar.api.Controllers
                 "Associate_List.xlsx"
             );
         }
+        [HttpPost]
+        [Route("terminate-associate")]
+        public async Task<IActionResult> TerminateAssociate([FromBody] TerminateAssociateModel model)
+        {
+            if (model == null)
+                return BadRequest("Request body is required");
+
+            if (string.IsNullOrWhiteSpace(model.TerminatedReason))
+                return BadRequest("Termination reason is required");
+
+            var result = await _associateRepository.TerminateAssociate(model);
+
+            if (!result)
+                return BadRequest("Associate not found");
+
+            return Ok(new
+            {
+                Success = true,
+                Message = "Associate terminated successfully"
+            });
+        }
     }
 }

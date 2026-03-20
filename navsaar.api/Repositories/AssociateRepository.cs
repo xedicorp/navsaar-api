@@ -162,5 +162,21 @@ namespace navsaar.api.Repositories
 
             return true;
         }
-}
+
+        public async Task<bool> TerminateAssociate(TerminateAssociateModel model)
+        {
+            var entity = _context.Associates.FirstOrDefault(x => x.ID == model.AssociateId);
+
+            if (entity == null)
+                return false;
+
+            entity.IsTerminated = true;
+            entity.TerminatedOn = DateTime.UtcNow;
+            entity.TerminatedReason = model.TerminatedReason;
+
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
+    }
 }

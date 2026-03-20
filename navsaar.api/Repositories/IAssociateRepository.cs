@@ -10,6 +10,7 @@ namespace navsaar.api.Repositories
 
         Task<bool> Save(CreateUpdateAssociateModel model);
         bool Delete(long id);
+        Task<bool> TerminateAssociate(TerminateAssociateModel model);
 
     }
 }

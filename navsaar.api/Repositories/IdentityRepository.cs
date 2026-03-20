@@ -170,7 +170,14 @@ namespace navsaar.api.Repositories
 
                 };
             }
-
+            if (associate.IsTerminated)
+            {
+                return new SendOTPResponse
+                {
+                    IsSuccessful = false,
+                    Message = "Associate is terminated,cannot send OTP"
+                };
+            }
             //Store fcm with Mobile No
 
             string otp = GenerateSecureOtp();
