@@ -75,10 +75,12 @@ namespace navsaar.api.Repositories
                 entity.Status = 1;
                 entity.LastStatusChangedBy = 1;
                 entity.LastStatusChangedOn = DateTime.Now;
-                entity.LeaderContactNo = booking.LeaderContactNo;   
-                entity.RelationType = booking.RelationType;         
+                entity.LeaderContactNo = booking.LeaderContactNo;
+                entity.RelationType = booking.RelationType;
                 entity.RelationName = booking.RelationName;
+               // entity.Discount = booking.Discount;
                 entity.CreatedBy = booking.UserId;
+                // AUTO FETCH ASSOCIATE ID BY RERA
                 if (!string.IsNullOrWhiteSpace(booking.AssociateReraNo))
                 {
                     var associate = await _context.Associates
@@ -86,36 +88,10 @@ namespace navsaar.api.Repositories
 
                     if (associate != null)
                     {
-                        entity.AssociateId =(int) associate.ID; // Auto set AssociateId
+                        entity.AssociateId = associate.ID; // Auto set AssociateId
                     }
                 }
                 await _context.SaveChangesAsync(); // BookingId generated here
-
-
-                // ========================
-                // SAVE DOCUMENT (AADHAR / PAN)
-                // ========================
-
-
-                if (booking.File != null && booking.File.Length > 0)
-                {
-                    string notes = booking.DocumentTypeId switch
-                    {
-                        1 => "Aadhar Card",
-                        2 => "PAN Card",
-                        _ => null
-                    };
-                    _documentRepository.Upload(new UploadDocumentRequest
-                    {
-                        BookingId = entity.Id,
-                        DocumentTypeId = booking.DocumentTypeId.GetValueOrDefault(),
-                        File = booking.File,
-                        IsAllotment = false,
-                        IsATT = false,
-                        IsDraft = false,
-                        Notes = notes
-                    });
-                }
 
                 // ========================
                 // UPDATE PLOT STATUS
@@ -146,25 +122,24 @@ namespace navsaar.api.Repositories
                 if (isNew && booking.InitialAmount.HasValue && booking.InitialAmount > 0)
                 {
                     // Prevent duplicate TransactionId
-                    if (!string.IsNullOrWhiteSpace(booking.InitialTransactionId))
-                    {
-                        var transactionExists = await _context.Receipts
-                            .AnyAsync(x => x.TransactionId == booking.InitialTransactionId);
+                    //if (!string.IsNullOrWhiteSpace(booking.InitialTransactionId))
+                    //{
+                    //    var transactionExists = await _context.Receipts
+                    //        .AnyAsync(x => x.TransactionId == booking.InitialTransactionId);
 
-                        if (transactionExists)
-                            throw new Exception("Transaction ID already exists.");
-                    }
+                    //    if (transactionExists)
+                    //        throw new Exception("Transaction ID already exists.");
+                    //}
 
-                    // Prevent duplicate ChequeNo
-                    if (!string.IsNullOrWhiteSpace(booking.InitialChequeNo))
-                    {
-                        var chequeExists = await _context.Receipts
-                            .AnyAsync(x => x.ChequeNo == booking.InitialChequeNo);
+                    //// Prevent duplicate ChequeNo
+                    //if (!string.IsNullOrWhiteSpace(booking.InitialChequeNo))
+                    //{
+                    //    var chequeExists = await _context.Receipts
+                    //        .AnyAsync(x => x.ChequeNo == booking.InitialChequeNo);
 
-                        if (chequeExists)
-                            throw new Exception("Cheque number already exists.");
-                    }
-
+                    //    if (chequeExists)
+                    //        throw new Exception("Cheque number already exists.");
+                    //}
                     var receipt = new Receipt
                     {
                         BookingId = entity.Id,
@@ -178,29 +153,41 @@ namespace navsaar.api.Repositories
                         Status = booking.InitialReceiptStatus ?? 1
                     };
 
+                    var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "Uploads");
+                    if (!Directory.Exists(uploadsFolder))
+                        Directory.CreateDirectory(uploadsFolder);
+                    //Save ID document if sent
+                    if (booking.File != null && booking.File.Length > 0)
+                    {
+                        string notes = booking.DocumentTypeId switch
+                        {
+                            1 => "Aadhar Card",
+                            2 => "PAN Card",
+                            _ => null
+                        };
+                        _documentRepository.Upload(new UploadDocumentRequest
+                        {
+                            BookingId = entity.Id,
+                            DocumentTypeId = booking.DocumentTypeId.GetValueOrDefault(),
+                            File = booking.File,
+                            IsAllotment = false,
+                            IsATT = false,
+                            IsDraft = false,
+                            Notes = notes
+                        });
+                    }
+
                     // ========================
                     // SAVE RECEIPT IMAGE
                     // ========================
 
-                    if (booking.InitialReceiptImage != null &&
-                        booking.InitialReceiptImage.Length > 0)
+                    if (booking.InitialReceiptImage != null && booking.InitialReceiptImage.Length > 0)
                     {
-                        var uploadsFolder = Path.Combine(
-                            Directory.GetCurrentDirectory(),
-                            "Uploads",
-                            "Receipts");
-
-                        if (!Directory.Exists(uploadsFolder))
-                            Directory.CreateDirectory(uploadsFolder);
-
-                        var fileName = Guid.NewGuid() + "_" +
-                                       booking.InitialReceiptImage.FileName;
-
+                        var fileName = Guid.NewGuid() + "_" + booking.InitialReceiptImage.FileName;
                         var filePath = Path.Combine(uploadsFolder, fileName);
-
                         using (var stream = new FileStream(filePath, FileMode.Create))
                         {
-                            await booking.InitialReceiptImage.CopyToAsync(stream);
+                            booking.InitialReceiptImage.CopyTo(stream);
                         }
 
                         receipt.receiptImage = fileName;
@@ -212,9 +199,9 @@ namespace navsaar.api.Repositories
                     _receiptRepository.SendVerificationRequest(new ViewModels.Receipt.VerifRequest
                     {
                         ReceiptId = receipt.Id,
-                         UserId=booking.UserId.GetValueOrDefault()
+                        UserId = booking.UserId.GetValueOrDefault()
                     });
-                 
+
                 }
 
                 await transaction.CommitAsync();
@@ -223,8 +210,8 @@ namespace navsaar.api.Repositories
                     //_bookingLogRepository.Log( new BookingLog { BookingId = entity.Id, Message = "Booking created", Timestamp = DateTime.Now, UserId = booking.UserId.GetValueOrDefault() });
 
                     //Send WhatsApp message for new booking and initial amount received (if any)
-                    _whatsAppService.SendMessage( BookingUpdate.New, entity );
-                    _whatsAppService.SendMessage(BookingUpdate.BookingAmountReceived,  entity );
+                    _whatsAppService.SendMessage(BookingUpdate.New, entity);
+                    _whatsAppService.SendMessage(BookingUpdate.BookingAmountReceived, entity);
                 }
                 return entity.Id;
             }
