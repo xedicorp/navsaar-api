@@ -53,7 +53,18 @@ namespace navsaar.api.Infrastructure
         public DbSet<MediaItemType> MediaItemTypes { get; set; }
         public DbSet<FcmToken> FcmTokens { get; set; }
         public DbSet<MobileOtp> MobileOtps { get; set; }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Township>()
+             .Property(p => p.Latitude)
+             .HasPrecision(18, 15); // 18 total digits, 2 after decimal point
 
+            modelBuilder.Entity<Township>()
+           .Property(p => p.Longitude)
+            .HasPrecision(18, 15); // 18 total digits, 2 after decimal point
+
+            base.OnModelCreating(modelBuilder);
+        }
 
     }
 }
