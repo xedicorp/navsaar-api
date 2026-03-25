@@ -52,6 +52,7 @@ namespace navsaar.api.Controllers
             return _masterRepository.BookingStatusTypeList();
         }
         [HttpGet]
+        [AllowAnonymous]
         [Route("AppSettings")]
         public ActionResult<IEnumerable<AppSettingInfo>> AppSettings()
         {
