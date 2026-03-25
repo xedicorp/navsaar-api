@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using navsaar.api.Repositories;
 using navsaar.api.ViewModels.FileTimelines;
@@ -5,6 +6,7 @@ using navsaar.api.ViewModels.FileTimelines;
 namespace navsaar.api.Controllers
 {
     [ApiController]
+    [Authorize]
     [Route("[controller]")]
     public class FileTimelineController : ControllerBase
     {

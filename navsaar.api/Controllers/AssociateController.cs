@@ -2,10 +2,12 @@ using Microsoft.AspNetCore.Mvc;
 using navsaar.api.Repositories;
 using navsaar.api.ViewModels.Associate;
 using ClosedXML.Excel;
+using Microsoft.AspNetCore.Authorization;
 
 namespace navsaar.api.Controllers
 {
     [ApiController]
+    [Authorize]
     [Route("[controller]")]
     public class AssociateController : ControllerBase
     {

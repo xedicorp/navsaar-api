@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using navsaar.api.Models;
 using navsaar.api.Repositories;
@@ -7,6 +8,7 @@ using navsaar.api.ViewModels.Booking;
 namespace navsaar.api.Controllers
 {
     [ApiController]
+    [Authorize]
     [Route("[controller]")]
     public class BookingController : ControllerBase
     {

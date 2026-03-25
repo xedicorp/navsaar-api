@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using navsaar.api.Repositories;
@@ -8,6 +9,7 @@ using navsaar.api.ViewModels.Identity;
 namespace navsaar.api.Controllers
 {
     [ApiController]
+    [Authorize]
     [Route("[controller]")]
     public class IdentityController : ControllerBase
     {
@@ -26,6 +28,7 @@ namespace navsaar.api.Controllers
             return _repository.List();
         }
         [HttpPost]
+        [AllowAnonymous]
         [Route("Login")]
         public LoginResponse Save(ViewModels.Identity.LoginRequest request)
         {
@@ -62,6 +65,7 @@ namespace navsaar.api.Controllers
             return _repository.AssignTownships(request);
         }
         [HttpPost]
+        [AllowAnonymous]
         [Route("associate-login")]
         public IActionResult AssociateLogin([FromBody] AssociateLoginRequest request)
         {
@@ -73,6 +77,7 @@ namespace navsaar.api.Controllers
             return Ok(result);
         }
         [HttpPost]
+        [AllowAnonymous]
         [Route("SendOtp")]
         public SendOTPResponse SendOtp(SendOTPRequest request)
         {

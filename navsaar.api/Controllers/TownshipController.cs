@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using navsaar.api.Repositories;
 using navsaar.api.ViewModels;
@@ -5,6 +6,7 @@ using navsaar.api.ViewModels;
 namespace navsaar.api.Controllers
 {
     [ApiController]
+    [Authorize]
     [Route("[controller]")]
     public class TownshipController : ControllerBase
     {

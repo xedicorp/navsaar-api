@@ -9,7 +9,9 @@ using navsaar.api.Repositories.Reminders;
 using navsaar.api.Services;
 using Microsoft.Extensions.FileProviders;
 using Hangfire;
- 
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -54,6 +56,7 @@ builder.Services.AddSwaggerGen(c =>
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
@@ -76,7 +79,40 @@ builder.Services.AddHangfire(config => config
 
 // 2. Add the processing server
 builder.Services.AddHangfireServer();
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    var jwtSettings = builder.Configuration.GetSection("Jwt");
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = false,
+        ValidateAudience = false,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+
+        ValidIssuer = jwtSettings["Issuer"],
+        ValidAudience = jwtSettings["Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(jwtSettings["Key"]))
+    };
+    options.UseSecurityTokenValidators = true;
+});
+builder.Services.AddAuthorization();
 var app = builder.Build();
+app.Use(async (context, next) =>
+{
+    await next();
+    if (context.Response.StatusCode == StatusCodes.Status401Unauthorized)
+    {
+        // context.Response.StatusCode = 200;
+        context.Response.ContentType = "application/json";
+        await context.Response.WriteAsync("{\"message\": \"Unauthorized access\"}");
+    }
+});
 //app.UseExceptionHandler();
 app.UseHangfireDashboard();
 // Configure the HTTP request pipeline.

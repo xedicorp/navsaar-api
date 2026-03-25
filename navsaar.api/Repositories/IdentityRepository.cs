@@ -18,12 +18,14 @@ namespace navsaar.api.Repositories
         private readonly AppDbContext _context;
         private readonly IPermissionRepository _permissionRepository;
         private readonly IFirebaseNotificationService _firebaseNotificationService;
+        private readonly ITokenService _tokenService;
         public IdentityRepository(AppDbContext context, IPermissionRepository permissionRepository,
-             IFirebaseNotificationService firebaseNotificationService)
+             IFirebaseNotificationService firebaseNotificationService, ITokenService tokenService   )
         {
             _context = context;
             _permissionRepository = permissionRepository;
             _firebaseNotificationService = firebaseNotificationService;
+            _tokenService = tokenService;
         }
         public List<UserInfo> List()
         {
@@ -61,7 +63,7 @@ namespace navsaar.api.Repositories
 
                 List<PermissionInfo> permissions = _permissionRepository.GetRolePermissions(usr.RoleId);
                 string roleName = _context.Roles.FirstOrDefault(r => r.Id == usr.RoleId)?.Name;
-
+                var token = _tokenService.GenerateToken(usr.Id.ToString(), roleName);
                 return new LoginResponse
                 {
                     IsSuccessful = true,
@@ -73,7 +75,8 @@ namespace navsaar.api.Repositories
                         RoleName = roleName,
                         UserName = usr.UserName
                     },
-                    Permissions = permissions
+                    Permissions = permissions,
+                    Token = token
                 };
             }
             else
@@ -139,6 +142,7 @@ namespace navsaar.api.Repositories
 
             return new AssociateLoginResponse
             {
+                Token = _tokenService.GenerateToken(associate.ContactNo, "associate"),
                 IsSuccessful = true,
                 Message = "Login successful",
                 Associate = new AssociateInfo

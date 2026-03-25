@@ -1,11 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using navsaar.api.Repositories;
 using navsaar.api.ViewModels.Media;
 
 namespace navsaar.api.Controllers
 {
     [Route("[controller]")]
+    [Authorize]
     [ApiController]
+  
     public class MediaController : ControllerBase
     {
         IMediaRepository _repository;

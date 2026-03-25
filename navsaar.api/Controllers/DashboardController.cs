@@ -1,14 +1,12 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using navsaar.api.Infrastructure;
 using navsaar.api.Repositories;
 using navsaar.api.ViewModels;
-using Microsoft.EntityFrameworkCore;   
-using navsaar.api.Infrastructure;
-using DocumentFormat.OpenXml.InkML;
 namespace navsaar.api.Controllers
 {
     [Route("[controller]")]
+    [Authorize]
     [ApiController]
     public class DashboardController : ControllerBase
     {

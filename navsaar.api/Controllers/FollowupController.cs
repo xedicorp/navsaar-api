@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using navsaar.api.Repositories;
 using navsaar.api.Repositories.Followups;
@@ -7,6 +8,7 @@ using navsaar.api.ViewModels.Followup;
 namespace navsaar.api.Controllers
 {
     [ApiController]
+    [Authorize]
     [Route("[controller]")]
     public class FollowupController : ControllerBase
     {
