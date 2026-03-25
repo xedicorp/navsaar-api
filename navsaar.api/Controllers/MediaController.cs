@@ -21,6 +21,7 @@ namespace navsaar.api.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         [Route("List")]
         public IEnumerable<MediaItemInfo> List()
         {
@@ -28,6 +29,7 @@ namespace navsaar.api.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         [Route("Get/{id}")]
         public IActionResult Get(int id)
         {
@@ -61,6 +63,7 @@ namespace navsaar.api.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         [Route("MediaItemTypes")]
         public IEnumerable<MediaItemTypeInfo> MediaItemTypes()
         {

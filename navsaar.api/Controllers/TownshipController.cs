@@ -22,6 +22,7 @@ namespace navsaar.api.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         [Route("List")]
         public IEnumerable<TownshipInfo> List(int userId=0)
         {
