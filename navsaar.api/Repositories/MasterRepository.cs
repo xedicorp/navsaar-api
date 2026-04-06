@@ -69,6 +69,56 @@ namespace navsaar.api.Repositories
                 .OrderBy(b => b.Name)
                 .ToList();
         }
+        public BankInfo GetBankById(int id)
+        {
+            return (from b in _context.Banks
+                    where b.Id == id
+                    select new BankInfo
+                    {
+                        Id = b.Id,
+                        Name = b.Name
+                    }).FirstOrDefault();
+        }
+
+        public async Task<bool> SaveBank(CreateUpdateBankModel model)
+        {
+            if (model.Id > 0)
+            {
+                // UPDATE
+                var existing = await _context.Banks.FindAsync(model.Id);
+                if (existing == null)
+                    return false;
+
+                existing.Name = model.Name;
+
+                _context.Banks.Update(existing);
+            }
+            else
+            {
+                // CREATE
+                var bank = new Bank
+                {
+                    Name = model.Name
+                };
+
+                await _context.Banks.AddAsync(bank);
+            }
+
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public bool DeleteBank(int id)
+        {
+            var bank = _context.Banks.Find(id);
+            if (bank == null)
+                return false;
+
+            _context.Banks.Remove(bank);
+            _context.SaveChanges();
+            return true;
+        }
+
         public List<PlotShape> PlotShapeList()
         {
             return _context.PlotShapes

@@ -14,6 +14,9 @@ namespace navsaar.api.Repositories
         AppSettingInfo GetAppSetting();
         List<AppSettingInfo> GetAllAppSettings();
         List<Bank> BankList();
+        BankInfo GetBankById(int id);
+        bool DeleteBank(int id);
+        Task<bool> SaveBank(CreateUpdateBankModel model);
         List<PlotShape> PlotShapeList();
         List<MediaItemType> MediaItemTypeList();
 

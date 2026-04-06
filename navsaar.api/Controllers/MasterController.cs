@@ -75,6 +75,41 @@ namespace navsaar.api.Controllers
             var banks = _masterRepository.BankList();
             return Ok(banks);
         }
+        [HttpGet]
+        [Route("Banks/GetById/{id}")]
+        public ActionResult<BankInfo> GetBankById(int id)
+        {
+            var result = _masterRepository.GetBankById(id);
+
+            if (result == null)
+                return NotFound("Bank not found");
+
+            return Ok(result);
+        }
+
+        [HttpPost]
+        [Route("Banks/Save")]
+        public async Task<ActionResult> SaveBank(CreateUpdateBankModel model)
+        {
+            var result = await _masterRepository.SaveBank(model);
+
+            if (!result)
+                return NotFound("Bank not found");
+
+            return Ok("Saved successfully");
+        }
+
+        [HttpPost]
+        [Route("Banks/Delete/{id}")]
+        public ActionResult DeleteBank(int id)
+        {
+            var deleted = _masterRepository.DeleteBank(id);
+
+            if (!deleted)
+                return NotFound("Bank not found");
+
+            return Ok("Deleted successfully");
+        }
 
         [HttpGet]
         [Route("PlotShapeTypes")]
