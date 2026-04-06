@@ -82,15 +82,31 @@ namespace navsaar.api.Repositories
                 })
                 .FirstOrDefault();
         }
-        public async Task<bool> Save(CreateUpdateAssociateModel model)
+        public async Task<(bool Success, string Message)> Save(CreateUpdateAssociateModel model)
         {
+            //duplicate ContactNo
+            var contactExists = _context.Associates
+                .Any(x => x.ContactNo == model.ContactNo && x.ID != model.Id);
+
+            if (contactExists)
+                return (false, "Contact number already exists");
+
+            //duplicate RERA No
+            if (!string.IsNullOrEmpty(model.ReraNo))
+            {
+                var reraExists = _context.Associates
+                    .Any(x => x.RERA == model.ReraNo && x.ID != model.Id);
+
+                if (reraExists)
+                    return (false, "RERA number already exists");
+            }
             Models.Associate entity;
 
             if (model.Id > 0)
             {
                 entity = _context.Associates.FirstOrDefault(x => x.ID == model.Id);
                 if (entity == null)
-                    return false;
+                    return (false, "Associate not found");
             }
             else
             {
@@ -133,8 +149,9 @@ namespace navsaar.api.Repositories
                 entity.BankDocumentFile = await SaveFile(model.BankDocumentFile, uploadsFolder);
 
             await _context.SaveChangesAsync();
-            return true;
+            return (true, "Saved successfully");
         }
+
 
         private async Task<string> SaveFile(IFormFile file, string folderPath)
         {

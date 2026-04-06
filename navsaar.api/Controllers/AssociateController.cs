@@ -50,15 +50,16 @@ namespace navsaar.api.Controllers
         }
 
         //Create
-        [HttpPost("Save")]
-        public async Task<ActionResult<bool>> Save([FromForm] CreateUpdateAssociateModel model)
+        [HttpPost]
+        [Route("Save")]
+        public async Task<ActionResult> Save([FromForm] CreateUpdateAssociateModel model)
         {
             var result = await _associateRepository.Save(model);
 
-            if (!result)
-                return NotFound("Associate not found");
+            if (!result.Success)
+                return BadRequest(result.Message);
 
-            return Ok(true);
+            return Ok(result.Message);
         }
 
 
