@@ -4,7 +4,7 @@ namespace navsaar.api.Repositories
 {
     public interface IMediaRepository
     {
-        List<MediaItemInfo> GetMediaItems();
+        List<MediaItemInfo> GetMediaItems(int? mediaTypeId = null);
         List<MediaItemTypeInfo> GetMediaItemTypes();
         MediaItemInfo? GetMediaItemById(int id);
         int SaveMediaItem(CreateUpdateMediaItemModel model);

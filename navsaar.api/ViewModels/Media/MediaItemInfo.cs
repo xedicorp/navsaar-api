@@ -6,6 +6,7 @@
         public string? Title { get; set; }
         public string? Description { get; set; }
         public int? MediaTypeId { get; set; }
+        public string? MediaTypeName { get; set; }
         public string? MediaUrl { get; set; }
         public string? MediaThumnailPath { get; set; }
         public bool? IsDeleted { get; set; }

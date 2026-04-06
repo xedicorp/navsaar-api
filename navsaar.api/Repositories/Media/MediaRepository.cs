@@ -12,25 +12,36 @@ namespace navsaar.api.Repositories
         {
             _context = context;
         }
-        public List<MediaItemInfo> GetMediaItems()
+        public List<MediaItemInfo> GetMediaItems(int? mediaTypeId = null)
         {
-            var data = _context.MediaItems
-                .Where(p => p.IsDeleted != true)
-                .Select(p => new MediaItemInfo
-                {
-                    Id = p.Id,
-                    CreatedOn = p.CreatedOn,
-                    Description = p.Description,
-                    IsDeleted = p.IsDeleted,
-                    MediaThumnailPath = string.IsNullOrEmpty(p.MediaThumnailPath)
-                        ? null
-                        : "https://api.navsaargroup.com/Uploads/Media/" + p.MediaThumnailPath,
-                    MediaTypeId = p.MediaTypeId,
-                    MediaUrl = p.MediaUrl,
-                    Title = p.Title
-                })
-                .ToList();
+            var query = _context.MediaItems
+                .Where(p => p.IsDeleted != true);
 
+            if (mediaTypeId.HasValue && mediaTypeId > 0)
+            {
+                query = query.Where(p => p.MediaTypeId == mediaTypeId);
+            }
+
+            var data = (from p in query
+                        join mt in _context.MediaItemTypes
+                            on p.MediaTypeId equals mt.Id into mtGroup
+                        from mt in mtGroup.DefaultIfEmpty()
+                        select new MediaItemInfo
+                        {
+                            Id = p.Id,
+                            CreatedOn = p.CreatedOn,
+                            Description = p.Description,
+                            IsDeleted = p.IsDeleted,
+                            MediaThumnailPath = string.IsNullOrEmpty(p.MediaThumnailPath)
+                                ? null
+                                : "https://api.navsaargroup.com/Uploads/Media/" + p.MediaThumnailPath,
+                            MediaTypeId = p.MediaTypeId,
+                            MediaTypeName = mt != null ? mt.Name : null, 
+                            MediaUrl = p.MediaUrl,
+                            Title = p.Title
+                        }).ToList();
+
+            // Convert UTC to IST
             var istZone = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
 
             foreach (var item in data)
@@ -40,25 +51,30 @@ namespace navsaar.api.Repositories
 
             return data;
         }
-
         public MediaItemInfo? GetMediaItemById(int id)
         {
-            var data = _context.MediaItems
-                .Where(p => p.Id == id && p.IsDeleted != true)
-                .Select(p => new MediaItemInfo
-                {
-                    Id = p.Id,
-                    Title = p.Title,
-                    Description = p.Description,
-                    MediaTypeId = p.MediaTypeId,
-                    MediaUrl = p.MediaUrl,
-                    MediaThumnailPath = string.IsNullOrEmpty(p.MediaThumnailPath)
-                        ? null
-                        : "https://api.navsaargroup.com/Uploads/Media/" + p.MediaThumnailPath,                    IsDeleted = p.IsDeleted,
-                    CreatedOn = p.CreatedOn
-                })
-                .FirstOrDefault();
+            var data = (from p in _context.MediaItems
+                        join mt in _context.MediaItemTypes
+                            on p.MediaTypeId equals mt.Id into mtGroup
+                        from mt in mtGroup.DefaultIfEmpty()
+                        where p.Id == id && p.IsDeleted != true
+                        select new MediaItemInfo
+                        {
+                            Id = p.Id,
+                            Title = p.Title,
+                            Description = p.Description,
+                            MediaTypeId = p.MediaTypeId,
+                            MediaTypeName = mt != null ? mt.Name : null, 
+                            MediaUrl = p.MediaUrl,
+                            MediaThumnailPath = string.IsNullOrEmpty(p.MediaThumnailPath)
+                                ? null
+                                : "https://api.navsaargroup.com/Uploads/Media/" + p.MediaThumnailPath,
+                            IsDeleted = p.IsDeleted,
+                            CreatedOn = p.CreatedOn
+                        })
+                        .FirstOrDefault();
 
+            // Convert UTC → IST
             if (data != null)
             {
                 var istZone = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");

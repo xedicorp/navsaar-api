@@ -23,8 +23,8 @@
     public class UploadDocumentRequest
     {
         public int BookingId { get; set; }
-        public int DocumentTypeId { get; set; }    
-        public IFormFile File { get; set; }
+        public int? DocumentTypeId { get; set; }    
+        public IFormFile? File { get; set; }
         public string Notes { get; set; }
         public bool IsDraft { get; set; }
         public bool IsATT { get; set; }
