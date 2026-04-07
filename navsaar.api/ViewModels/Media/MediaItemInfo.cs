@@ -11,5 +11,7 @@
         public string? MediaThumnailPath { get; set; }
         public bool? IsDeleted { get; set; }
         public DateTime CreatedOn { get; set; }
+        public int? TownshipId { get; set; }
+        public string? TownshipName { get; set; }
     }
 }

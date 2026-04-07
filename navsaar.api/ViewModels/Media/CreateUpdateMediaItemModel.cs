@@ -13,5 +13,6 @@
         public string? MediaUrl { get; set; }
 
         public IFormFile? ThumbnailFile { get; set; }
+        public int? TownshipId { get; set; }
     }
 }

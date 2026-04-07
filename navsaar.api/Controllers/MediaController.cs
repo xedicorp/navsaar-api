@@ -23,9 +23,9 @@ namespace navsaar.api.Controllers
         [HttpGet]
         [AllowAnonymous]
         [Route("List")]
-        public IEnumerable<MediaItemInfo> List(int? mediaTypeId)
+        public IEnumerable<MediaItemInfo> List(int? mediaTypeId, int? townshipId)
         {
-            return _repository.GetMediaItems(mediaTypeId);
+            return _repository.GetMediaItems(mediaTypeId, townshipId);
         }
 
         [HttpGet]
