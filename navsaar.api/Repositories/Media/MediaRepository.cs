@@ -42,9 +42,8 @@ namespace navsaar.api.Repositories
                             CreatedOn = p.CreatedOn,
                             Description = p.Description,
                             IsDeleted = p.IsDeleted,
-                            MediaThumnailPath = string.IsNullOrEmpty(p.MediaThumnailPath)
-                                ? null
-                                : "https://api.navsaargroup.com/Uploads/Media/" + p.MediaThumnailPath,
+                            MediaThumnailPath = p.MediaThumnailPath,
+                            VideoFilePath =  p.VideoFilePath,
                             MediaTypeId = p.MediaTypeId,
                             MediaTypeName = mt != null ? mt.Name : null,
                             TownshipId = p.TownshipId,
@@ -76,14 +75,15 @@ namespace navsaar.api.Repositories
                         select new MediaItemInfo
                         {
                             Id = p.Id,
+                            TownshipId = p.TownshipId,
+                            TownshipName = t != null ? t.Name : null,
                             Title = p.Title,
                             Description = p.Description,
                             MediaTypeId = p.MediaTypeId,
                             MediaTypeName = mt != null ? mt.Name : null, 
                             MediaUrl = p.MediaUrl,
-                            MediaThumnailPath = string.IsNullOrEmpty(p.MediaThumnailPath)
-                                ? null
-                                : "https://api.navsaargroup.com/Uploads/Media/" + p.MediaThumnailPath,
+                            MediaThumnailPath =  p.MediaThumnailPath,
+                            VideoFilePath = p.VideoFilePath,
                             IsDeleted = p.IsDeleted,
                             CreatedOn = p.CreatedOn
                         })
@@ -126,6 +126,7 @@ namespace navsaar.api.Repositories
             entity.MediaTypeId = request.MediaTypeId;
             entity.MediaUrl = request.MediaUrl;
             entity.TownshipId = request.TownshipId;
+
             var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "Uploads", "Media");
 
             if (!Directory.Exists(uploadsFolder))
@@ -134,7 +135,6 @@ namespace navsaar.api.Repositories
             if (request.ThumbnailFile != null)
             {
                 var uniqueFileName = Guid.NewGuid() + "_" + request.ThumbnailFile.FileName;
-
                 var filePath = Path.Combine(uploadsFolder, uniqueFileName);
 
                 using (var stream = new FileStream(filePath, FileMode.Create))
@@ -143,6 +143,35 @@ namespace navsaar.api.Repositories
                 }
 
                 entity.MediaThumnailPath = uniqueFileName;
+            }
+
+            if (request.VideoFile != null)
+            {
+                var allowedExtensions = new[] { ".mp4", ".mov", ".avi" };
+                var extension = Path.GetExtension(request.VideoFile.FileName).ToLower();
+
+                if (!allowedExtensions.Contains(extension))
+                    return 0;
+
+                if (request.VideoFile.Length > 50 * 1024 * 1024)
+                    return 0;
+
+                if (request.Id > 0 && !string.IsNullOrEmpty(entity.VideoFilePath))
+                {
+                    var oldPath = Path.Combine(uploadsFolder, entity.VideoFilePath);
+                    if (File.Exists(oldPath))
+                        File.Delete(oldPath);
+                }
+
+                var uniqueFileName = Guid.NewGuid() + "_" + request.VideoFile.FileName;
+                var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    request.VideoFile.CopyTo(stream);
+                }
+
+                entity.VideoFilePath = uniqueFileName;
             }
 
             _context.SaveChanges();

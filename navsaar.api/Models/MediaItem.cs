@@ -14,5 +14,6 @@ namespace navsaar.api.Models
         public bool? IsDeleted { get; set; }
         public DateTime CreatedOn { get; set; }
         public int? TownshipId { get; set; }
+        public string? VideoFilePath { get; set; }
     }
 }

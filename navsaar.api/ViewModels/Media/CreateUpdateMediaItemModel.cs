@@ -14,5 +14,6 @@
 
         public IFormFile? ThumbnailFile { get; set; }
         public int? TownshipId { get; set; }
+        public IFormFile? VideoFile { get; set; }
     }
 }

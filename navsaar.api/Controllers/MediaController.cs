@@ -6,7 +6,7 @@ using navsaar.api.ViewModels.Media;
 namespace navsaar.api.Controllers
 {
     [Route("[controller]")]
-    [Authorize]
+    //[Authorize]
     [ApiController]
   
     public class MediaController : ControllerBase

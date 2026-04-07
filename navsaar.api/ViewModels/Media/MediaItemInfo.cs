@@ -9,6 +9,7 @@
         public string? MediaTypeName { get; set; }
         public string? MediaUrl { get; set; }
         public string? MediaThumnailPath { get; set; }
+        public string? VideoFilePath { get; set; }
         public bool? IsDeleted { get; set; }
         public DateTime CreatedOn { get; set; }
         public int? TownshipId { get; set; }
