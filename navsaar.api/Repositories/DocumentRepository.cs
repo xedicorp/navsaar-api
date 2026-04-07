@@ -36,7 +36,7 @@ namespace navsaar.api.Repositories
 
             using (var stream = new FileStream(filePath, FileMode.Create))
             {
-                await request.File.CopyToAsync(stream);
+                  request.File.CopyTo(stream);
             }
 
 
