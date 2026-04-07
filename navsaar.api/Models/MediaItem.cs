@@ -13,5 +13,6 @@ namespace navsaar.api.Models
         public string? MediaThumnailPath { get; set; }
         public bool? IsDeleted { get; set; }
         public DateTime CreatedOn { get; set; }
+        public int? TownshipId { get; set; }
     }
 }

@@ -12,7 +12,7 @@ namespace navsaar.api.Repositories
         {
             _context = context;
         }
-        public List<MediaItemInfo> GetMediaItems(int? mediaTypeId = null)
+        public List<MediaItemInfo> GetMediaItems(int? mediaTypeId = null, int? townshipId = null)
         {
             var query = _context.MediaItems
                 .Where(p => p.IsDeleted != true);
@@ -22,10 +22,20 @@ namespace navsaar.api.Repositories
                 query = query.Where(p => p.MediaTypeId == mediaTypeId);
             }
 
+            if (townshipId.HasValue && townshipId > 0)
+            {
+                query = query.Where(p => p.TownshipId == townshipId);
+            }
+
             var data = (from p in query
                         join mt in _context.MediaItemTypes
                             on p.MediaTypeId equals mt.Id into mtGroup
                         from mt in mtGroup.DefaultIfEmpty()
+
+                        join t in _context.Townships
+                            on p.TownshipId equals t.Id into tGroup
+                        from t in tGroup.DefaultIfEmpty()
+
                         select new MediaItemInfo
                         {
                             Id = p.Id,
@@ -36,7 +46,9 @@ namespace navsaar.api.Repositories
                                 ? null
                                 : "https://api.navsaargroup.com/Uploads/Media/" + p.MediaThumnailPath,
                             MediaTypeId = p.MediaTypeId,
-                            MediaTypeName = mt != null ? mt.Name : null, 
+                            MediaTypeName = mt != null ? mt.Name : null,
+                            TownshipId = p.TownshipId,
+                            TownshipName = t != null ? t.Name : null,
                             MediaUrl = p.MediaUrl,
                             Title = p.Title
                         }).ToList();
@@ -57,6 +69,9 @@ namespace navsaar.api.Repositories
                         join mt in _context.MediaItemTypes
                             on p.MediaTypeId equals mt.Id into mtGroup
                         from mt in mtGroup.DefaultIfEmpty()
+                        join t in _context.Townships
+                        on p.TownshipId equals t.Id into tGroup
+                        from t in tGroup.DefaultIfEmpty()
                         where p.Id == id && p.IsDeleted != true
                         select new MediaItemInfo
                         {
@@ -110,7 +125,7 @@ namespace navsaar.api.Repositories
             entity.Description = request.Description;
             entity.MediaTypeId = request.MediaTypeId;
             entity.MediaUrl = request.MediaUrl;
-
+            entity.TownshipId = request.TownshipId;
             var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "Uploads", "Media");
 
             if (!Directory.Exists(uploadsFolder))
