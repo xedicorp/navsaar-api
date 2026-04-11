@@ -49,7 +49,8 @@ namespace navsaar.api.Repositories
                             TownshipId = p.TownshipId,
                             TownshipName = t != null ? t.Name : null,
                             MediaUrl = p.MediaUrl,
-                            Title = p.Title
+                            Title = p.Title,
+                            IsMarketingMedia = p.IsMarketingMedia
                         }).ToList();
 
             // Convert UTC to IST

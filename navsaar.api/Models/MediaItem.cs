@@ -15,5 +15,6 @@ namespace navsaar.api.Models
         public DateTime CreatedOn { get; set; }
         public int? TownshipId { get; set; }
         public string? VideoFilePath { get; set; }
+        public bool IsMarketingMedia { get; set; }
     }
 }

@@ -14,5 +14,7 @@
         public DateTime CreatedOn { get; set; }
         public int? TownshipId { get; set; }
         public string? TownshipName { get; set; }
+
+        public bool IsMarketingMedia { get; set; }
     }
 }
