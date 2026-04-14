@@ -34,18 +34,21 @@ namespace navsaar.api.Controllers
             return _repository.List();
         }
         [HttpGet]
+        [AllowAnonymous]
         [Route("PlotTypes")]
         public IEnumerable<PlotType> PlotTypeList()
         {
             return _masterRepository.PlotTypeList();
         }
         [HttpGet]
+        [AllowAnonymous]
         [Route("FacingTypes")]
         public IEnumerable<FacingType> FacingTypes()
         {
             return _masterRepository.FacingTypeList();
         }
         [HttpGet]
+        [AllowAnonymous]
         [Route("BookingStatusTypes")]
         public IEnumerable<BookingStatusType> BookingStatusTypes()
         {
@@ -112,6 +115,7 @@ namespace navsaar.api.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         [Route("PlotShapeTypes")]
         public ActionResult<IEnumerable<PlotShape>> PlotShapes()
         {
@@ -120,6 +124,7 @@ namespace navsaar.api.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         [Route("MediaItemTypes")]
         public IEnumerable<MediaItemType> MediaItemTypes()
         {
