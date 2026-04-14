@@ -13,7 +13,7 @@
         public DateTime BookingDate { get; set; }
         public string ClientName { get; set; }
         public string ClientEmail { get; set; }
-        public string ContactNo { get; set; }
+        public string? ContactNo { get; set; }
         public string? ClientAddress { get; set; }
 
         public string AssociateName { get; set; }
