@@ -44,10 +44,12 @@ namespace navsaar.api.Repositories
                         {
                             TownshipName = t.Name,
                             BookingNo = b.Id,
+                            PlotNo = b.PlotNo,
                             CustomerName = b.ClientName,
                             CustomerContactNo = b.ClientContactNo,
                             Description = "Receipt",
                             ReceiptDate =   r.ReceiptDate  ,
+                            ReceiptMethod = r.ReceiptMethod ,
                             Amount =   r.Amount  
                         };
 
