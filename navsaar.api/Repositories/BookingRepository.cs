@@ -211,7 +211,7 @@ namespace navsaar.api.Repositories
 
                     //Send WhatsApp message for new booking and initial amount received (if any)
                     _whatsAppService.SendMessage(BookingUpdate.New, entity);
-                    _whatsAppService.SendMessage(BookingUpdate.BookingAmountReceived, entity);
+                   // _whatsAppService.SendMessage(BookingUpdate.BookingAmountReceived, entity);
                 }
                 return entity.Id;
             }

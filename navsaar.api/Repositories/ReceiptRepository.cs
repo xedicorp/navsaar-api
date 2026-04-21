@@ -12,15 +12,18 @@ using iText.Layout.Properties;
 using iText.Kernel.Font;
 using iText.IO.Font.Constants;
 using Microsoft.EntityFrameworkCore;
+using navsaar.api.Services;
 
 namespace navsaar.api.Repositories
 {
     public class ReceiptRepository : IReceiptRepository
     {
         private readonly AppDbContext _context;
-        public ReceiptRepository(AppDbContext context)
+        IWhatsAppService _whatsAppService;
+        public ReceiptRepository(IWhatsAppService whatsAppService, AppDbContext context)
         {
             _context = context;
+            _whatsAppService = whatsAppService;
         }
         public List<ReceiptInfo> List()
         {
@@ -231,6 +234,7 @@ namespace navsaar.api.Repositories
             int bookingId = 0;
             bool isInitialPayment = false;
             var receipt = _context.Receipts.FirstOrDefault(p => p.Id == model.ReceiptId);
+            var entity = _context.Bookings.First(p => p.Id == receipt.BookingId);
             bookingId = receipt.BookingId;
             if (receipt.Notes == "Initial Payment")
             {
@@ -290,7 +294,9 @@ namespace navsaar.api.Repositories
             verifRequest.Status = 2; //2: Verification Done
             _context.SaveChanges();
 
-
+            if (isInitialPayment) {
+                _whatsAppService.SendInitialPaymentStatusVerifyUpdate(BookingUpdate.InititalPaymentUpdate, entity, model.Status);
+            }
 
 
             return true;

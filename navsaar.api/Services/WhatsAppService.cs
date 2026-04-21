@@ -1,7 +1,10 @@
-﻿using navsaar.api.Models;
+﻿using DocumentFormat.OpenXml.InkML;
+using navsaar.api.Infrastructure;
+using navsaar.api.Models;
 using navsaar.api.Repositories;
 using navsaar.api.ViewModels;
 using Newtonsoft.Json;
+using Org.BouncyCastle.Bcpg.OpenPgp;
 using Twilio;
 using Twilio.Rest.Api.V2010.Account;
 using Twilio.Types;
@@ -14,11 +17,11 @@ namespace navsaar.api.Services
         string authToken = ""; // Environment.GetEnvironmentVariable("TWILIO_AUTH_TOKEN");
         string contentSID = "";
         string from = "";
-
+        private readonly AppDbContext _context;
         private readonly IConfiguration _configuration;
-        public WhatsAppService(  IConfiguration configuration)
+        public WhatsAppService(  IConfiguration configuration, AppDbContext context)
         {
-           
+            _context = context;
             _configuration = configuration;
             accountSid = _configuration["Twilio:AccountSID"];
             authToken = _configuration["Twilio:AuthToken"];
@@ -31,7 +34,7 @@ namespace navsaar.api.Services
             try
             {
 
-
+            
                 TwilioClient.Init(accountSid, authToken);
                 switch (update)
                 {
@@ -63,8 +66,9 @@ namespace navsaar.api.Services
         {
             try
             {
-
-
+                var associate = _context.Associates.FirstOrDefault(p => p.ID == booking.AssociateId);
+                var plot = _context.Plots.FirstOrDefault(p => p.Id == booking.PlotId);
+                TwilioClient.Init(accountSid, authToken);
                 string message = string.Empty;
 
 
@@ -72,7 +76,34 @@ namespace navsaar.api.Services
                 switch (update)
                 {
                     case BookingUpdate.New:
-                        contentSID = "HXa17e8ccbee579e8c050d3d87b6fac57a";
+                        contentSID = "HX86a7d543985de4f48c746ea53c2aa681";
+                        if (!string.IsNullOrEmpty(booking.ClientContactNo))
+                        {
+                            //Send To client
+
+                            this.Send1(booking.ClientContactNo, booking, message);
+                        }
+                        //Send To Associate
+                        if (associate != null)
+                        {
+                            contentSID = "HX04220119c9bc44d94d55557ab8e7656f";
+                            this.Send(booking.AssociateContactNo, booking, message);
+                        }
+                        //Send To Leader
+                        if (associate != null && !string.IsNullOrEmpty(associate.LeaderContactNo))
+                        {
+                            contentSID = "HX6ac4292c575225c7819496dd9733a286";
+                            this.Send3(associate.LeaderContactNo, associate.FirstName + " " + associate.LastName ?? "",associate.LeaderName  , plot.PlotNo);
+                        }
+                        break;
+                    case BookingUpdate.InititalPaymentUpdate:
+
+                        if (associate != null)
+                        {
+                            contentSID = "HX86a7d543985de4f48c746ea53c2aa681";
+
+                            this.Send2(booking.AssociateContactNo, booking, message, associate.FirstName +" " +associate.LastName??"");
+                        }
                         break;
                     case BookingUpdate.BookingAmountReceived:
                         contentSID = "HXe019195b1d2cae126dca65e4b9536a98";
@@ -87,100 +118,12 @@ namespace navsaar.api.Services
                         contentSID = "HX596d37a6a4133a3a875e2ae63dc4a27f";
                         break;
                    
-                    //case BookingUpdate.BankLoginDone:
-                    //    message =
-                    //        $"Mr./Ms. {booking.ClientName},\n" +
-                    //        $"Your bank login process has been completed successfully.\n\n" +
-                    //        $"Plot No: {booking.PlotNo}\n" +
-                    //        $"Bank: {booking.BankName}\n" +
-                    //        $"Login Reference No: {booking.LoginRefNo}\n\n" +
-                    //        $"– Navsaar Group";
-                    //    break;
-
-                    //case BookingUpdate.BankDDReceived:
-                    //    message =
-                    //        $"Mr./Ms. {booking.ClientName},\n" +
-                    //        $"Your Bank Demand Draft (DD) has been received successfully.\n\n" +
-                    //        $"Plot No: {booking.PlotNo}\n" +
-                    //        $"DD Cleared On: {booking.DDClearedOn:dd MMM yyyy}\n\n" +
-                    //        $"– Navsaar Group";
-                    //    break;
-
-                    //case BookingUpdate.SentForJDAPatta:
-                    //    message =
-                    //        $"Mr./Ms. {booking.ClientName},\n" +
-                    //        $"Your plot documents have been sent for JDA Patta processing.\n\n" +
-                    //        $"Plot No: {booking.PlotNo}\n" +
-                    //        $"Applied On: {booking.JDAPattaAppliedOn:dd MMM yyyy}\n\n" +
-                    //        $"– Navsaar Group";
-                    //    break;
-
-                    //case BookingUpdate.LoanSanctioned:
-                    //    message =
-                    //        $"Mr./Ms. {booking.ClientName},\n" +
-                    //        $"We are pleased to inform you that your loan has been sanctioned successfully.\n\n" +
-                    //        $"Plot No: {booking.PlotNo}\n" +
-                    //        $"Sanction Date: {booking.LoanSanctionDate:dd MMM yyyy}\n\n" +
-                    //        $"– Navsaar Group";
-                    //    break;
-
-                    //case BookingUpdate.SentToAllotmentLetter:
-                    //    message =
-                    //        $"Mr./Ms. {booking.ClientName},\n" +
-                    //        $"Your request for Allotment Letter has been initiated successfully.\n\n" +
-                    //        $"Plot No: {booking.PlotNo}\n" +
-                    //        $"Status: Under preparation\n\n" +
-                    //        $"– Navsaar Group";
-                    //    break;
-
-                    //case BookingUpdate.AllotmentLetterReceived:
-                    //    message =
-                    //        $"Mr./Ms. {booking.ClientName},\n" +
-                    //        $"Your Allotment Letter has been prepared and received successfully.\n\n" +
-                    //        $"Plot No: {booking.PlotNo}\n\n" +
-                    //        $"– Navsaar Group";
-                    //    break;
-
-                    //case BookingUpdate.SentToDraft:
-                    //    message =
-                    //        $"Mr./Ms. {booking.ClientName},\n" +
-                    //        $"Your documents have been sent for Draft Agreement preparation.\n\n" +
-                    //        $"Plot No: {booking.PlotNo}\n" +
-                    //        $"Status: Under preparation\n\n" +
-                    //        $"– Navsaar Group";
-                    //    break;
-
-                    //case BookingUpdate.DokitSigned:
-                    //    message =
-                    //        $"Mr./Ms. {booking.ClientName},\n" +
-                    //        $"Your Dokit and related documents have been signed successfully.\n\n" +
-                    //        $"Plot No: {booking.PlotNo}\n" +
-                    //        $"Signed On: {booking.DokitSignDate:dd MMM yyyy}\n\n" +
-                    //        $"– Navsaar Group";
-                    //    break;
-
+                   
                     case BookingUpdate.Cancelled:
                         contentSID = "HXc778749b2004ea49beaea5ea02984e08";
                         break;
 
-                    //case BookingUpdate.PaymentReceived:
-                    //    message =
-                    //        $"Mr./Ms. {booking.ClientName},\n" +
-                    //        $"We have received your payment details.\n\n" +
-                    //        $"Plot No: {booking.PlotNo}\n" +
-                    //        $"Amount: ₹{booking.Amount_2}\n" +
-                    //        $"Transaction No: {booking.TransNo}\n\n" +
-                    //        $"– Navsaar Group";
-                    //    break;
-
-                    //case BookingUpdate.PaymentConfirmed:
-                    //    message =
-                    //        $"Mr./Ms. {booking.ClientName},\n" +
-                    //        $"Your payment has been verified and confirmed successfully.\n\n" +
-                    //        $"Plot No: {booking.PlotNo}\n" +
-                    //        $"Amount: ₹{booking.Amount_2}\n\n" +
-                    //        $"– Navsaar Group";
-                    //    break;
+                  
 
                     case BookingUpdate.RefundInitiated:
                         contentSID = "HX098262b271e69247a15b3ceba3d2a674";
@@ -189,19 +132,62 @@ namespace navsaar.api.Services
                 }
 
 
-                TwilioClient.Init(accountSid, authToken);
-                //Send To client
-                this.Send(booking.ClientContactNo, booking, message);
-                //Send To Associate
-                this.Send(booking.AssociateContactNo, booking, message);
+               
+ 
+            }
+            catch (Exception ex)
+            {
 
-                // var message = await MessageResource.CreateAsync(
-                //from: new Twilio.Types.PhoneNumber("whatsapp:+14155238886"),
-                //to: new Twilio.Types.PhoneNumber("whatsapp:+919414553440"),
-                //contentSid: "HXb5b62575e6e4ff6129ad7c8efe1f983e",
-                //contentVariables: JsonConvert.SerializeObject(
-                //    new Dictionary<string, Object>() { { "1", "22 July 2026" }, { "2", "3:15pm" } },
-                //    Formatting.Indented));
+
+            }
+        }
+        public void SendInitialPaymentStatusVerifyUpdate(
+          BookingUpdate update, Booking booking, int status)
+        {
+            try
+            {
+                var associate = _context.Associates.FirstOrDefault(p => p.ID == booking.AssociateId);
+                var plot = _context.Plots.FirstOrDefault(p => p.Id == booking.PlotId);
+                TwilioClient.Init(accountSid, authToken);
+                string message = string.Empty;
+
+
+
+                if (!string.IsNullOrEmpty(booking.ClientContactNo) && status == 1)
+                {
+                    var contentVariables = new Dictionary<string, string>
+                {
+                    { "customername", booking.ClientName },
+                    { "plotno", plot.PlotNo },
+                     { "projectname", "Navsaar Valley" }
+                };
+                    contentSID = "HX69b9541a68d99304734bf31257915e50";
+                    SendGeneric(booking.ClientContactNo, contentVariables);
+                }
+                if (!string.IsNullOrEmpty(associate.ContactNo) && status == 1)
+                {
+                    var contentVariables = new Dictionary<string, string>
+                    {
+                            { "associatename", associate.FirstName + " " + associate.LastName ?? "" },
+                            { "customername", booking.ClientName },
+                            { "plotno", plot.PlotNo },
+                            { "projectname", "Navsaar Valley" }
+                    };
+                    contentSID = "HX42badfa1deea131d2106be31c3a54ae3";
+                    SendGeneric(associate.ContactNo, contentVariables);
+                }
+                if (!string.IsNullOrEmpty(associate.LeaderContactNo) && status == 1)
+                {
+                    var contentVariables = new Dictionary<string, string>
+                    {
+                            { "leadername", associate.LeaderName   },
+                            { "customername", booking.ClientName },
+                            { "plotno", plot.PlotNo },
+                            { "projectname", "Navsaar Valley" }
+                    };
+                    contentSID = "HX78e7cddb9733f9b5399e4cf925ffa638";
+                    SendGeneric(associate.LeaderContactNo, contentVariables);
+                }
 
             }
             catch (Exception ex)
@@ -211,7 +197,16 @@ namespace navsaar.api.Services
             }
         }
 
-
+        private async void SendGeneric(string to,  Dictionary<string, string> contentVariables)
+        {
+          
+            await MessageResource.CreateAsync(
+                    from: new Twilio.Types.PhoneNumber("whatsapp:" + from),
+                    to: new Twilio.Types.PhoneNumber("whatsapp:" + to),
+                    contentSid: contentSID,
+                    contentVariables: Newtonsoft.Json.JsonConvert.SerializeObject(contentVariables)
+            );
+        }
         private async void Send(string to, Booking update, string message)
         {
                 var contentVariables = new Dictionary<string, string>
@@ -226,6 +221,56 @@ namespace navsaar.api.Services
                         contentSid: contentSID,
                         contentVariables: Newtonsoft.Json.JsonConvert.SerializeObject(contentVariables)
                 );
+        }
+        private async void Send1(string to, Booking update, string message)
+        {
+            var contentVariables = new Dictionary<string, string>
+                {
+                    { "clientname", update.ClientName },
+                    { "plotno", update.PlotNo }
+                };
+
+            await MessageResource.CreateAsync(
+                    from: new Twilio.Types.PhoneNumber("whatsapp:" + from),
+                    to: new Twilio.Types.PhoneNumber("whatsapp:" + to),
+                    contentSid: contentSID,
+                    contentVariables: Newtonsoft.Json.JsonConvert.SerializeObject(contentVariables)
+            );
+        }
+        private async void Send2(string to, Booking update, string message,string associateName)
+        {
+            
+            var contentVariables = new Dictionary<string, string>
+                {
+                    { "projectname", "Navsaar Valley"},
+                    { "associatename", associateName },
+                    { "customername", update.ClientName },
+                    { "plotno", update.PlotNo }
+                };
+
+            await MessageResource.CreateAsync(
+                    from: new Twilio.Types.PhoneNumber("whatsapp:" + from),
+                    to: new Twilio.Types.PhoneNumber("whatsapp:" + to),
+                    contentSid: contentSID,
+                    contentVariables: Newtonsoft.Json.JsonConvert.SerializeObject(contentVariables)
+            );
+        }
+        private async void Send3(string to,  string associateName, string leadername, string plotNo)
+        {
+
+            var contentVariables = new Dictionary<string, string>
+                {
+                    { "leadername",leadername},                  
+                    { "associatename", associateName },                 
+                    { "plotno", plotNo }
+                };
+
+            await MessageResource.CreateAsync(
+                    from: new Twilio.Types.PhoneNumber("whatsapp:" + from),
+                    to: new Twilio.Types.PhoneNumber("whatsapp:" + to),
+                    contentSid: contentSID,
+                    contentVariables: Newtonsoft.Json.JsonConvert.SerializeObject(contentVariables)
+            );
         }
     }
 }

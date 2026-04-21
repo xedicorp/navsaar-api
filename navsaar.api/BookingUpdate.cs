@@ -3,6 +3,7 @@
     public enum BookingUpdate
     {
         New,
+        InititalPaymentUpdate,
         Hold,
         BookingAmountReceived,
         LoanDocumentReminder,
