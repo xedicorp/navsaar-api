@@ -295,7 +295,7 @@ namespace navsaar.api.Repositories
             _context.SaveChanges();
 
             if (isInitialPayment) {
-                _whatsAppService.SendInitialPaymentStatusVerifyUpdate(BookingUpdate.InititalPaymentUpdate, entity, model.Status);
+                _whatsAppService.SendInitialPaymentStatusVerifyUpdate(BookingUpdate.InititalPaymentUpdate, entity, model.Status, model.RejectReason);
             }
 
 

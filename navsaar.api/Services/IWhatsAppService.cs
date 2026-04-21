@@ -7,6 +7,6 @@ namespace navsaar.api.Services
     {
         void SendMessage(BookingUpdate update,   Booking  booking);
         void SendMessage(BookingUpdate update, string plotNo, string associateName,   string associateNo);
-        void SendInitialPaymentStatusVerifyUpdate(BookingUpdate update, Booking booking, int status);
+        void SendInitialPaymentStatusVerifyUpdate(BookingUpdate update, Booking booking, int status, string rejectReason);
     } 
 }

@@ -142,7 +142,7 @@ namespace navsaar.api.Services
             }
         }
         public void SendInitialPaymentStatusVerifyUpdate(
-          BookingUpdate update, Booking booking, int status)
+          BookingUpdate update, Booking booking, int status, string rejectReason)
         {
             try
             {
@@ -188,6 +188,45 @@ namespace navsaar.api.Services
                     contentSID = "HX78e7cddb9733f9b5399e4cf925ffa638";
                     SendGeneric(associate.LeaderContactNo, contentVariables);
                 }
+                if (!string.IsNullOrEmpty(booking.ClientContactNo) && status == 2)
+                {
+                    var contentVariables = new Dictionary<string, string>
+                {
+                    { "customername", booking.ClientName },
+                    { "plotno", plot.PlotNo },
+                     { "projectname", "Navsaar Valley" },
+                     { "reason", rejectReason }
+                };
+                    contentSID = "HXe3a0921e604ee8285b31f4ba909e9846";
+                    SendGeneric(booking.ClientContactNo, contentVariables);
+                }
+                if (!string.IsNullOrEmpty(associate.ContactNo) && status == 2)
+                {
+                    var contentVariables = new Dictionary<string, string>
+                    {
+                            { "associatename", associate.FirstName + " " + associate.LastName ?? "" },
+                          
+                            { "plotno", plot.PlotNo },
+                            { "projectname", "Navsaar Valley" },
+                              { "reason", rejectReason }
+                    };
+                    contentSID = "HX1864451c32f0809f838c8000c29ed819";
+                    SendGeneric(associate.ContactNo, contentVariables);
+                }
+                if (!string.IsNullOrEmpty(associate.LeaderContactNo) && status == 2)
+                {
+                    var contentVariables = new Dictionary<string, string>
+                    {
+                            { "leadername", associate.LeaderName   },
+                            { "associatename", associate.FirstName + " " + associate.LastName ?? "" },
+                            { "plotno", plot.PlotNo },
+                            { "projectname", "Navsaar Valley" },
+                              { "reason", rejectReason }
+                    };
+                    contentSID = "HX587ab0a0a5eaede547f484f962df20b7";
+                    SendGeneric(associate.LeaderContactNo, contentVariables);
+                }
+
 
             }
             catch (Exception ex)
