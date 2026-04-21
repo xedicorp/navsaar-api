@@ -1,4 +1,5 @@
 ﻿using DocumentFormat.OpenXml.InkML;
+using Microsoft.Net.Http.Headers;
 using navsaar.api.Infrastructure;
 using navsaar.api.Models;
 using navsaar.api.Repositories;
@@ -81,19 +82,46 @@ namespace navsaar.api.Services
                         {
                             //Send To client
 
-                            this.Send1(booking.ClientContactNo, booking, message);
+                           // this.Send1(booking.ClientContactNo, booking, message);
+                            var contentVariables = new Dictionary<string, string>
+                            {
+                                { "customername", booking.ClientName },
+                                { "plotno", plot.PlotNo }
+                            };
+                            this.SendGeneric(associate.ContactNo, contentVariables);
                         }
                         //Send To Associate
-                        if (associate != null)
+                        if (associate != null && !string.IsNullOrEmpty(associate.ContactNo))
                         {
                             contentSID = "HX04220119c9bc44d94d55557ab8e7656f";
-                            this.Send(booking.AssociateContactNo, booking, message);
+                            var contentVariables = new Dictionary<string, string>
+                            {
+                                        { "associatename", booking.ClientName },
+                                        { "customername", booking.ClientName },
+                                        { "plotno", plot.PlotNo },
+                                        { "projectname", "Navsaar Valley" }
+                             };
+                          //  this.Send(associate.ContactNo, booking, message);
+                            //var contentVariables = new Dictionary<string, string>
+                            //        {
+                            //{ "leadername",associate.LeaderName},
+                            //{ "associatename", associate.FirstName + " " + associate.LastName ?? "" },
+                            //{ "plotno", plot.PlotNo }
+                            //};
+                            this.SendGeneric(associate.ContactNo, contentVariables);
                         }
                         //Send To Leader
                         if (associate != null && !string.IsNullOrEmpty(associate.LeaderContactNo))
                         {
-                            contentSID = "HX6ac4292c575225c7819496dd9733a286";
-                            this.Send3(associate.LeaderContactNo, associate.FirstName + " " + associate.LastName ?? "",associate.LeaderName  , plot.PlotNo);
+                                    contentSID = "HX6ac4292c575225c7819496dd9733a286";
+                               var contentVariables = new Dictionary<string, string>
+                                        {
+                                { "leadername",associate.LeaderName},
+                                { "associatename", associate.FirstName + " " + associate.LastName ?? "" },
+                                { "plotno", plot.PlotNo }
+                                };
+                                this.SendGeneric(associate.LeaderContactNo, contentVariables);
+                          //  this.Send3(associate.LeaderContactNo, associate.FirstName + " " + associate.LastName ?? "",associate.LeaderName  , plot.PlotNo);
                         }
                         break;
                     case BookingUpdate.InititalPaymentUpdate:
